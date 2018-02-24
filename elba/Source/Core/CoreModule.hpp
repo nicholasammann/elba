@@ -18,7 +18,7 @@ namespace ELBA
   {
   public:
     /**
-    * \brief cstor
+    * \brief constructor
     */
     CoreModule();
 

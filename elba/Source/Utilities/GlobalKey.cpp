@@ -1,3 +1,10 @@
+/**
+* \file GlobalKey.cpp
+* \author Nicholas Ammann
+* \date 2/24/2018
+* \brief Member function definitions for GUID.
+*/
+
 #include "Utilities/GlobalKey.hpp"
 
 namespace ELBA

@@ -19,8 +19,9 @@ namespace ELBA
   class Engine
   {
   public:
+
     /**
-    * \brief cstor
+    * \brief engine constructor
     */
     Engine();
 
