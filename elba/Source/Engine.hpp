@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Utilities/StdTypedefs.hpp"
 #include "Core/CoreForwardDeclarations.hpp"
 #include "Graphics/GraphicsForwardDeclarations.hpp"
 #include "Physics/PhysicsForwardDeclarations.hpp"
@@ -21,14 +22,24 @@ namespace ELBA
   public:
 
     /**
-    * \brief engine constructor
+    * \brief Engine constructor
     */
     Engine();
 
+    /**
+    * \brief Engine destructor
+    */
+    ~Engine();
+
+    /**
+    * \brief Initializes all modules.
+    */
+    void Initialize();
+
     // Modules
-    CoreModule* mCoreModule;
-    GraphicsModule* mGraphicsModule;
-    PhysicsModule* mPhysicsModule;
+    UniquePtr<CoreModule> mCoreModule;
+    UniquePtr<GraphicsModule> mGraphicsModule;
+    UniquePtr<PhysicsModule> mPhysicsModule;
   };
 
 }

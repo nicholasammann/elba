@@ -7,11 +7,26 @@
 
 #include <iostream>
 
+#include "Core/CoreModule.hpp"
+#include "Graphics/GraphicsModule.hpp"
+#include "Physics/PhysicsModule.hpp"
+
 #include "Engine.hpp"
 
 namespace ELBA
 {
   Engine::Engine()
+    : mCoreModule(NewUnique<CoreModule>())
+    , mGraphicsModule(NewUnique<GraphicsModule>())
+    , mPhysicsModule(NewUnique<PhysicsModule>())
+  {
+  }
+
+  Engine::~Engine()
+  {
+  }
+
+  void Engine::Initialize()
   {
   }
 }
