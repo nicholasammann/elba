@@ -9,7 +9,7 @@
 
 #include "Framework/Module.hpp"
 
-namespace ELBA
+namespace Elba
 {
   /**
   * \brief Module for the physics system. Manages physics for game objects.
@@ -18,9 +18,14 @@ namespace ELBA
   {
   public:
     /**
-    * \brief cstor
+    * \brief Constructor
     */
     PhysicsModule();
+
+    /**
+    * \brief Initialize function called by Engine. Initializes PhysicsModule.
+    */
+    void Initialize() override;
 
     /**
     * \brief Update function called by Engine. Updates physics.

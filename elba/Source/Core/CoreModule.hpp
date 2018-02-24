@@ -7,9 +7,15 @@
 
 #pragma once
 
+#include "Utilities/StdTypedefs.hpp"
+
 #include "Framework/Module.hpp"
 
-namespace ELBA
+#include "Core/CoreForwardDeclarations.hpp"
+#include "Core/Object.hpp"
+
+
+namespace Elba
 {
   /**
   * \brief Module for the core of the engine. Manages objects.
@@ -18,14 +24,29 @@ namespace ELBA
   {
   public:
     /**
-    * \brief constructor
+    * \brief Constructor
     */
     CoreModule();
+
+    /**
+    * \brief Initialize function called by Engine. Initializes CoreModule.
+    */
+    void Initialize() override;
 
     /**
     * \brief Update function called by Engine. Updates all game objects.
     */
     void Update() override;
+
+    /**
+    * \brief Getter for game world object.
+    * \return Game world object.
+    */
+    Object* GetGameWorld();
+
+  private:
+    
+    UniquePtr<Object> mGameWorld;
 
   };
 

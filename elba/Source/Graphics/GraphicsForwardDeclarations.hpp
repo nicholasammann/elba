@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace ELBA
+namespace Elba
 {
   class GraphicsModule;
 }

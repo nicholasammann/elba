@@ -9,7 +9,7 @@
 
 #include "Framework/Module.hpp"
 
-namespace ELBA
+namespace Elba
 {
   /**
   * \brief Module for the graphics system. Manages rendering.
@@ -18,9 +18,14 @@ namespace ELBA
   {
   public:
     /**
-    * \brief cstor
+    * \brief Constructor
     */
     GraphicsModule();
+
+    /**
+    * \brief Initialize function called by Engine. Initializes GraphicsModule.
+    */
+    void Initialize() override;
 
     /**
     * \brief Update function called by Engine. Updates graphics.

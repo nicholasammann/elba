@@ -7,7 +7,7 @@
 
 #include "Framework/Module.hpp"
 
-namespace ELBA
+namespace Elba
 {
   Module::Module()
   {

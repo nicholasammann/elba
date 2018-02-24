@@ -12,7 +12,7 @@
 #include "Graphics/GraphicsForwardDeclarations.hpp"
 #include "Physics/PhysicsForwardDeclarations.hpp"
 
-namespace ELBA
+namespace Elba
 {
   /**
   * \brief Handles all the modules that comprise the game engine.
@@ -36,10 +36,31 @@ namespace ELBA
     */
     void Initialize();
 
+    /**
+    * \brief Shuts down the engine and all its modules.
+    */
+    void Shutdown();
+
+    /**
+    * \brief Whether or not the engine should be running
+    * \return True if Engine should be running, False if Engine is ready to shutdown.
+    */
+    bool IsRunning() const;
+
+    /**
+    * \brief Getter for mCoreModule    
+    * \return Pointer to CoreModule
+    */
+    CoreModule* GetCoreModule();
+
+  private:
     // Modules
     UniquePtr<CoreModule> mCoreModule;
     UniquePtr<GraphicsModule> mGraphicsModule;
     UniquePtr<PhysicsModule> mPhysicsModule;
+
+    // Running status
+    bool mIsRunning;
   };
 
 }

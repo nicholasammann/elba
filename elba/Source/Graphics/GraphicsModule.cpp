@@ -7,9 +7,13 @@
 
 #include "Graphics/GraphicsModule.hpp"
 
-namespace ELBA
+namespace Elba
 {
   GraphicsModule::GraphicsModule()
+  {
+  }
+
+  void GraphicsModule::Initialize()
   {
   }
 

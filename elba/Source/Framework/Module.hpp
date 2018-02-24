@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace ELBA
+namespace Elba
 {
   /**
   * \brief Base class for systems that comprise the engine.
@@ -16,9 +16,14 @@ namespace ELBA
   {
   public:
     /**
-    * \brief cstor
+    * \brief Constructor
     */
     Module();
+
+    /**
+    * \brief Initialize function that Engine will call on each module.
+    */
+    virtual void Initialize() = 0;
 
     /**
     * \brief Update function that Engine will call on each module.

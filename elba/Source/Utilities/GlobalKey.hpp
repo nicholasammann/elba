@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include <string>
 #include <objbase.h>
 
 
-namespace ELBA
+namespace Elba
 {
   /**
   * \brief Wrapper around CoCreateGuid.
@@ -19,9 +20,29 @@ namespace ELBA
   {
   public:
     /**
-    * \brief cstor
+    * \brief Constructor
     */
     GlobalKey();
+
+    /**
+    * \brief Getter for underlying GUID data.
+    * \return Underlying GUID struct.
+    */
+    GUID GetGuid() const;
+
+    /**
+    * \brief Converts the data to string.
+    * \return Guid in string form.
+    */
+    std::string ToStdString() const;
+
+
+    /**
+    * \brief Getter for underlying GUID data.
+    * \param rhs GlobalKey we are comparing against.
+    * \return True if this key is less than the key passed in.
+    */
+    bool operator<(const GlobalKey& rhs) const;
 
   private:
     GUID mGuid;

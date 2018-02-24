@@ -13,12 +13,13 @@
 
 #include "Engine.hpp"
 
-namespace ELBA
+namespace Elba
 {
   Engine::Engine()
     : mCoreModule(NewUnique<CoreModule>())
     , mGraphicsModule(NewUnique<GraphicsModule>())
     , mPhysicsModule(NewUnique<PhysicsModule>())
+    , mIsRunning(true)
   {
   }
 
@@ -28,5 +29,23 @@ namespace ELBA
 
   void Engine::Initialize()
   {
+    // initialize all modules
+    mCoreModule->Initialize();
+    mGraphicsModule->Initialize();
+    mPhysicsModule->Initialize();
+  }
+
+  void Engine::Shutdown()
+  {
+  }
+  
+  bool Engine::IsRunning() const
+  {
+    return mIsRunning;
+  }
+
+  CoreModule* Engine::GetCoreModule()
+  {
+    return mCoreModule.get();
   }
 }

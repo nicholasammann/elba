@@ -6,16 +6,27 @@
 */
 
 #include "Core/CoreModule.hpp"
+#include "Core/Object.hpp"
 
-namespace ELBA
+namespace Elba
 {
   CoreModule::CoreModule()
+    : mGameWorld(NewUnique<Object>(nullptr))
   {
 
   }
 
+  void CoreModule::Initialize()
+  {
+  }
+
   void CoreModule::Update()
   {
+  }
+
+  Object * CoreModule::GetGameWorld()
+  {
+    return mGameWorld.get();
   }
 }
 

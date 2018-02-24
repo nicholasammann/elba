@@ -7,9 +7,13 @@
 
 #include "Physics/PhysicsModule.hpp"
 
-namespace ELBA
+namespace Elba
 {
   PhysicsModule::PhysicsModule()
+  {
+  }
+
+  void PhysicsModule::Initialize()
   {
   }
 
