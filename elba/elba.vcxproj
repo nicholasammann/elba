@@ -120,6 +120,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Component.cpp" />
     <ClCompile Include="Source\Core\CoreModule.cpp" />
     <ClCompile Include="Source\Framework\Module.cpp" />
     <ClCompile Include="Source\Graphics\GraphicsModule.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="Source\Utilities\GlobalKey.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\Component.hpp" />
     <ClInclude Include="Source\Core\CoreForwardDeclarations.hpp" />
     <ClInclude Include="Source\Core\CoreModule.hpp" />
     <ClInclude Include="Source\Core\CoreTypedefs.hpp" />

@@ -42,6 +42,9 @@
     <ClCompile Include="Source\Tests\CoreTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Object.hpp">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Tests\CoreTests.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Component.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
