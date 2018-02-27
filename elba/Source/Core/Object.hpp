@@ -24,12 +24,6 @@ namespace Elba
     Object(Object* parent);
 
     /**
-    * \brief Move constructor
-    * \param other R-value reference to class type
-    */
-    Object(Object&& other);
-
-    /**
     * \brief Gets this object's parent.
     * \return The parent of this object.
     */

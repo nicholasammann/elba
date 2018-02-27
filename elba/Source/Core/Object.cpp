@@ -16,16 +16,6 @@ namespace Elba
   {
   }
 
-  Object::Object(Object&& other)
-  {
-    mParent = other.mParent;
-    //mChildren = std::move(other.mChildren);
-    mGuid = other.mGuid;
-
-    other.mParent = nullptr;
-    other.mChildren.clear();
-  }
-
   Object* Object::Parent() const
   {
     return mParent;
