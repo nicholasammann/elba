@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Framework/Module.hpp"
+#include <glm/vec3.hpp>
 
 namespace Elba
 {
@@ -28,7 +29,7 @@ namespace Elba
     void Update();
 
   private:
-    
+    glm::vec3 mPosition;
 
   };
 

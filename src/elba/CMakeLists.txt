@@ -18,6 +18,7 @@ PRIVATE
 target_include_directories(elba
 PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
+    ${submodule_root}/glm/
 )
 
 add_executable(game 
