@@ -9,6 +9,7 @@
 
 #include "Framework/Module.hpp"
 #include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace Elba
 {
@@ -30,6 +31,8 @@ namespace Elba
 
   private:
     glm::vec3 mPosition;
+    glm::vec3 mScale;
+    glm::quat mRotation;
 
   };
 
