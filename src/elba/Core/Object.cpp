@@ -6,15 +6,16 @@
 */
 
 #include "Core/Object.hpp"
+#include "Core/Component.hpp"
 
 namespace Elba
 {
   Object::Object(Object* parent)
-    : mCoreModule(parent->GetCoreModule())
-    , mParent(parent)
+    : mParent(parent)
     , mChildren()
     , mGuid()
   {
+    mCoreModule = parent ? parent->GetCoreModule() : nullptr;
   }
 
   Object* Object::Parent() const

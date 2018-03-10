@@ -9,6 +9,7 @@
 
 #include "Core/CoreTypedefs.hpp"
 #include "Utilities/GlobalKey.hpp"
+#include "Core/Component.hpp"
 
 namespace Elba
 {
@@ -62,7 +63,10 @@ namespace Elba
     */
     CoreModule* GetCoreModule() const;
 
+
   private:
+    // so CoreModule can set the pointer to itself on the root object
+    friend class CoreModule;
     CoreModule* mCoreModule;
 
     Object* mParent;

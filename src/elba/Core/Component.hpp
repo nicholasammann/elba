@@ -38,7 +38,5 @@ namespace Elba
   private:
     Object* mParent;
     GlobalKey mGuid;
-    
-
   };
 }

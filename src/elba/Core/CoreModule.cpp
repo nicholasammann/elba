@@ -13,7 +13,7 @@ namespace Elba
   CoreModule::CoreModule()
     : mGameWorld(NewUnique<Object>(nullptr))
   {
-
+    mGameWorld->mCoreModule = this;
   }
 
   void CoreModule::Initialize()
