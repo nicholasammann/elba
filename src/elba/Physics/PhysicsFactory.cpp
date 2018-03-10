@@ -6,6 +6,7 @@
 */
 
 #include "Physics/PhysicsFactory.hpp"
+#include "Physics/PhysicsTransform.hpp"
 
 namespace Elba
 {
@@ -13,7 +14,8 @@ namespace Elba
   {
   }
 
-  void PhysicsFactory::CreatePhysicsTransform()
+  PhysicsTransform* PhysicsFactory::CreatePhysicsTransform()
   {
+    return new PhysicsTransform();
   }
 }

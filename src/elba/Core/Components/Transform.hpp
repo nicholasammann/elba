@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Core/Component.hpp"
+#include "Physics/PhysicsForwardDeclarations.hpp"
 
 namespace Elba
 {
@@ -29,7 +30,7 @@ namespace Elba
     void Initialize() override;
 
   private:
-    // physics transform
+    PhysicsTransform* mPhysicsTransform;
     
   };
 }

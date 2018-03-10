@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "Physics/PhysicsForwardDeclarations.hpp"
+
 namespace Elba
 {
   /**
@@ -23,7 +25,7 @@ namespace Elba
     /**
     * \brief Constructs a transform and adds it to the physics system.
     */
-    void CreatePhysicsTransform();
+    PhysicsTransform* CreatePhysicsTransform();
 
   };
 

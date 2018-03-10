@@ -11,4 +11,5 @@ namespace Elba
 {
   class CoreModule;
   class Object;
+  class Component;
 }

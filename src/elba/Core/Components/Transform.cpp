@@ -12,6 +12,7 @@ namespace Elba
   Transform::Transform(Object* parent) : Component(parent)
   {
     // ask physics module to create transform object
+    
   }
 
   void Transform::Initialize()

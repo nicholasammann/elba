@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Framework/Module.hpp"
+#include "PhysicsForwardDeclarations.hpp"
 
 namespace Elba
 {
@@ -31,6 +32,14 @@ namespace Elba
     * \brief Update function called by Engine. Updates physics.
     */
     void Update() override;
+
+    /**
+    * \brief Getter for the PhysicsFactory.
+    */
+    PhysicsFactory* GetFactory() const;
+
+  private:
+    PhysicsFactory* mFactory;
 
   };
 

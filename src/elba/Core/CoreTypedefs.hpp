@@ -15,4 +15,5 @@
 namespace Elba
 {
   using ObjectMap = Map<GlobalKey, UniquePtr<Object>>;
+  using ComponentMap = Map<GlobalKey, UniquePtr<Component>>;
 }

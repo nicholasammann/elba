@@ -7,11 +7,18 @@
 
 #include "Core/Object.hpp"
 #include "Core/Component.hpp"
+#include "Component.hpp"
 
 namespace Elba
 {
   Component::Component(Object* parent)
     : mParent(parent)
+    , mGuid()
   {
+  }
+
+  GlobalKey Component::GetGuid() const
+  {
+    return mGuid;
   }
 }

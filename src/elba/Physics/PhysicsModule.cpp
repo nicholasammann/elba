@@ -20,4 +20,9 @@ namespace Elba
   void PhysicsModule::Update()
   {
   }
+
+  PhysicsFactory* PhysicsModule::GetFactory() const
+  {
+    return mFactory;
+  }
 }

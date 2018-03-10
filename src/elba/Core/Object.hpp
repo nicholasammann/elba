@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Core/CoreTypedefs.hpp"
+#include "Utilities/GlobalKey.hpp"
 
 namespace Elba
 {
@@ -37,6 +38,13 @@ namespace Elba
     Object* FindChild(const GlobalKey& guid) const;
 
     /**
+    * \brief Find a component on this object.
+    * \param guid Global key of desired component.
+    * \return The component with the given key. nullptr if not found.
+    */
+    Component* FindComponent(const GlobalKey& guid) const;
+
+    /**
     * \brief Creates a new child object.
     * \return The new child object. nullptr if insertion into map of children failed.
     */
@@ -44,7 +52,7 @@ namespace Elba
 
     /**
     * \brief Getter for object's guid;
-    * \return The new child object. nullptr if insertion into map of children failed.
+    * \return The guid of the object.
     */
     GlobalKey GetGuid() const;
 
@@ -52,6 +60,8 @@ namespace Elba
     Object* mParent;
 
     ObjectMap mChildren;
+    
+    ComponentMap mComponents;
 
     GlobalKey mGuid;
 

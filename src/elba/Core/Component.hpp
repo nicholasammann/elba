@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Core/CoreForwardDeclarations.hpp"
+#include "Utilities/GlobalKey.hpp"
 
 namespace Elba
 {
@@ -28,8 +29,16 @@ namespace Elba
     */
     virtual void Initialize() = 0;
 
+    /**
+    * \brief Getter for component's guid;
+    * \return The guid for the component.
+    */
+    GlobalKey GetGuid() const;
+
   private:
     Object* mParent;
+    GlobalKey mGuid;
+    
 
   };
 }

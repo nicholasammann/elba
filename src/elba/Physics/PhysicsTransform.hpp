@@ -20,19 +20,56 @@ namespace Elba
   {
   public:
     /**
-    * \brief Constructor
+    * \brief Default constructor
     */
     PhysicsTransform();
 
     /**
-    * \brief Update function called by PhysicsModule. Updates physics.
+    * \brief Alternate constructor
     */
-    void Update();
+    PhysicsTransform(glm::vec3 worldTrans, glm::vec3 worldScale, glm::quat worldRot);
+
+    /**
+    * \brief Sets the world position.
+    * \param worldTrans The new world translation.
+    */
+    void SetWorldTranslation(const glm::vec3& worldTrans);
+
+    /**
+    * \brief Gets the world position.
+    * \return The current world translation.
+    */
+    const glm::vec3& GetWorldTranslation() const;
+
+    /**
+    * \brief Sets the world scale.
+    * \param worldScale The new world scale.
+    */
+    void SetWorldScale(const glm::vec3& worldScale);
+
+    /**
+    * \brief Gets the world scale.
+    * \return The current world scale.
+    */
+    const glm::vec3& GetWorldScale() const;
+
+    /**
+    * \brief Sets the world rotation.
+    * \param worldRot The new world rotation.
+    */
+    void SetWorldRotation(const glm::quat& worldRot);
+
+    /**
+    * \brief Gets the world rotation.
+    * \return The current world rotation.
+    */
+    const glm::quat& GetWorldRotation() const;
 
   private:
-    glm::vec3 mPosition;
-    glm::vec3 mScale;
-    glm::quat mRotation;
+    // absolute world variables
+    glm::vec3 mWorldTranslation;
+    glm::vec3 mWorldScale;
+    glm::quat mWorldRotation;
 
   };
 

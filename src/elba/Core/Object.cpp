@@ -33,6 +33,18 @@ namespace Elba
     return nullptr;
   }
 
+  Component* Object::FindComponent(const GlobalKey& guid) const
+  {
+    auto it = mComponents.find(guid);
+
+    if (it != mComponents.end())
+    {
+      return it->second.get();
+    }
+
+    return nullptr;
+  }
+
   Object* Object::CreateChild()
   {
     UniquePtr<Object> child = NewUnique<Object>(this);

@@ -10,4 +10,6 @@
 namespace Elba
 {
   class PhysicsModule;
+  class PhysicsFactory;
+  class PhysicsTransform;
 }
