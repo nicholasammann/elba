@@ -10,4 +10,6 @@
 namespace Elba
 {
   class GraphicsModule;
+  class Mesh;
+  class Submesh;
 }
