@@ -56,7 +56,15 @@ namespace Elba
     */
     GlobalKey GetGuid() const;
 
+    /**
+    * \brief Getter for the core module;
+    * \return The core module.
+    */
+    CoreModule* GetCoreModule() const;
+
   private:
+    CoreModule* mCoreModule;
+
     Object* mParent;
 
     ObjectMap mChildren;

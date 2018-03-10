@@ -10,7 +10,8 @@
 namespace Elba
 {
   Object::Object(Object* parent)
-    : mParent(parent)
+    : mCoreModule(parent->GetCoreModule())
+    , mParent(parent)
     , mChildren()
     , mGuid()
   {
@@ -65,5 +66,10 @@ namespace Elba
   GlobalKey Object::GetGuid() const
   {
     return mGuid;
+  }
+
+  CoreModule* Object::GetCoreModule() const
+  {
+    return mCoreModule;
   }
 }
