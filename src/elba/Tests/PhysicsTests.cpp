@@ -74,6 +74,10 @@ namespace Elba
           {
             throw std::exception("Mismatch between input and output when testing WorldTranslation on PhysicsTransform.");
           }
+
+          std::cout << "World Translation " << i << " : ";
+          PrintVector(output);
+          std::cout << std::endl;
         }
 
         PrintTestFooter();
@@ -97,6 +101,10 @@ namespace Elba
           {
             throw std::exception("Mismatch between input and output when testing WorldScale on PhysicsTransform.");
           }
+
+          std::cout << "World Scale " << i << " : ";
+          PrintVector(output);
+          std::cout << std::endl;
         }
 
         PrintTestFooter();
@@ -120,6 +128,10 @@ namespace Elba
           {
             throw std::exception("Mismatch between input and output when testing WorldRotation on PhysicsTransform.");
           }
+
+          std::cout << "World Rotation " << i << " : ";
+          PrintQuaternion(output);
+          std::cout << std::endl;
         }
 
         PrintTestFooter();
