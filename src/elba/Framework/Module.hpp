@@ -19,7 +19,7 @@ namespace Elba
   public:
     /**
     * \brief Constructor
-    * \param Pointer to engine, which owns all modules.
+    * \param engine The engine, which owns all modules.
     */
     Module(Engine* engine);
 
@@ -35,6 +35,7 @@ namespace Elba
 
     /**
     * \brief Getter for the engine.
+    * \return A pointer to the engine.
     */
     Engine* GetEngine() const;
 

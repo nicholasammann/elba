@@ -42,6 +42,7 @@ namespace Elba
 
     /**
     * \brief Getter for the PhysicsFactory.
+    * \return The PhysicsFactory owned by this Module.
     */
     PhysicsFactory* GetFactory() const;
 

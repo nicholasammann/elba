@@ -1,3 +1,10 @@
+/**
+* \file TestHelpers.hpp
+* \author Nicholas Ammann
+* \date 3/10/2018
+* \brief Helper functions for running tests.
+*/
+
 #pragma once
 
 #include <iostream>
@@ -12,7 +19,7 @@ inline void PrintTestHeader(const char* testName)
   std::cout << "Test: " << testName << std::endl;
   std::cout << "*************************************" << std::endl;
 
-  std::this_thread::sleep_for(std::chrono::seconds(2));
+  //std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 inline void PrintTestFooter()

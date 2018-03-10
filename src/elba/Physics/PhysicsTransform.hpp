@@ -26,6 +26,9 @@ namespace Elba
 
     /**
     * \brief Alternate constructor
+    * \param worldTrans Initial world translation.
+    * \param worldScale Initial world scale.
+    * \param worldRot Initial world rotation.
     */
     PhysicsTransform(glm::vec3 worldTrans, glm::vec3 worldScale, glm::quat worldRot);
 
@@ -66,7 +69,7 @@ namespace Elba
     const glm::quat& GetWorldRotation() const;
 
   private:
-    // absolute world variables
+    // world variables
     glm::vec3 mWorldTranslation;
     glm::vec3 mWorldScale;
     glm::quat mWorldRotation;

@@ -1,3 +1,10 @@
+/**
+* \file CoreTests.cpp
+* \author Nicholas Ammann
+* \date 3/10/2018
+* \brief Function definitions for CoreModule test functions.
+*/
+
 #include <iostream>
 
 #include "Utilities/GlobalKey.hpp"

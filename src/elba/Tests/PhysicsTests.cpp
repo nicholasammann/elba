@@ -1,3 +1,10 @@
+/**
+* \file PhysicsTests.cpp
+* \author Nicholas Ammann
+* \date 3/10/2018
+* \brief Function definitions for PhysicsModule test functions.
+*/
+
 #include <iostream>
 
 #include "PhysicsTests.hpp"

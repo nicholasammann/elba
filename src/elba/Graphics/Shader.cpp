@@ -1,3 +1,10 @@
+/**
+* \file Shader.cpp
+* \author Nicholas Ammann
+* \date 3/10/2018
+* \brief Member function definitions for Shader.
+*/
+
 #include "Graphics/Shader.hpp"
 
 namespace Elba

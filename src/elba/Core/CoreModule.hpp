@@ -27,7 +27,7 @@ namespace Elba
   public:
     /**
     * \brief Constructor
-    * \param Pointer to engine, which owns all modules.
+    * \param engine Pointer to engine, which owns all modules.
     */
     CoreModule(Engine* engine);
 
