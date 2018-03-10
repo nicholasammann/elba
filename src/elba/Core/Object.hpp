@@ -29,7 +29,7 @@ namespace Elba
     * \brief Gets this object's parent.
     * \return The parent of this object.
     */
-    Object* Parent() const;
+    Object* GetParent() const;
 
     /**
     * \brief Find a direct child of this object.
@@ -62,7 +62,6 @@ namespace Elba
     * \return The core module.
     */
     CoreModule* GetCoreModule() const;
-
 
   private:
     // so CoreModule can set the pointer to itself on the root object

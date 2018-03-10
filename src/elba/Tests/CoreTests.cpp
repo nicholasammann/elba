@@ -3,50 +3,67 @@
 #include "Utilities/GlobalKey.hpp"
 
 #include "Tests/CoreTests.hpp"
+#include "Tests/TestHelpers.hpp"
 
 namespace Elba
 {
   namespace Test
   {
-    void CoreTest1(CoreModule* core)
+    namespace Core
     {
-      Object* world = core->GetGameWorld();
-
-      CreateObjects(world, 10);
-    }
-
-    void CoreTest2(CoreModule* core)
-    {
-      Object* world = core->GetGameWorld();
-
-      CreateObjects(world, 100);
-    }
-
-    void CoreTest3(CoreModule* core)
-    {
-      Object* world = core->GetGameWorld();
-
-      CreateObjects(world, 1000);
-    }
-
-    void CoreTest4(CoreModule* core)
-    {
-      Object* world = core->GetGameWorld();
-
-      CreateObjects(world, 10000);
-    }
-
-    void CreateObjects(Object* object, int numObjects)
-    {
-      for (int i = 0; i < numObjects; i++)
+      void RunAllTests(CoreModule* coreModule)
       {
-        Object* obj = object->CreateChild();
+        // Creating top level objects (parent is root object/game world)
+        CreateObjects1(coreModule);
+        CreateObjects2(coreModule);
+        CreateObjects3(coreModule);
+        CreateObjects4(coreModule);
+      }
 
-        GlobalKey guid = obj->GetGuid();
+      void CreateObjects1(CoreModule* coreModule)
+      {
+        PrintTestHeader("Create Objects 1");
+        Object* world = coreModule->GetGameWorld();
+        CreateObjects(world, 10);
+        PrintTestFooter();
+      }
 
-        std::string guidStr = guid.ToStdString();
+      void CreateObjects2(CoreModule* coreModule)
+      {
+        PrintTestHeader("Create Objects 2");
+        Object* world = coreModule->GetGameWorld();
+        CreateObjects(world, 100);
+        PrintTestFooter();
+      }
 
-        std::cout << "Object " << i << " created.  ID: " << guidStr << std::endl;
+      void CreateObjects3(CoreModule* coreModule)
+      {
+        PrintTestHeader("Create Objects 3");
+        Object* world = coreModule->GetGameWorld();
+        CreateObjects(world, 1000);
+        PrintTestFooter();
+      }
+
+      void CreateObjects4(CoreModule* coreModule)
+      {
+        PrintTestHeader("Create Objects 4");
+        Object* world = coreModule->GetGameWorld();
+        CreateObjects(world, 10000);
+        PrintTestFooter();
+      }
+
+      void CreateObjects(Object* object, int numObjects)
+      {
+        for (int i = 0; i < numObjects; i++)
+        {
+          Object* obj = object->CreateChild();
+
+          GlobalKey guid = obj->GetGuid();
+
+          std::string guidStr = guid.ToStdString();
+
+          std::cout << "Object " << i << " created.  ID: " << guidStr << std::endl;
+        }
       }
     }
   }

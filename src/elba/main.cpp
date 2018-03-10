@@ -6,22 +6,30 @@
 */
 
 #include "Tests/CoreTests.hpp"
+#include "Tests/PhysicsTests.hpp"
 
 #include "Engine.hpp"
 #include "Core/CoreModule.hpp"
+#include "Physics/PhysicsModule.hpp"
+
+using namespace Elba;
 
 /**
 * \brief main function
 */
 int main(int argc, char** argv)
 {
-  Elba::Engine* elba = new Elba::Engine();
+  Engine* elba = new Elba::Engine();
 
   elba->Initialize();
 
-  Elba::CoreModule* coreModule = elba->GetCoreModule();
+  // Core Module tests //
+  CoreModule* coreModule = elba->GetCoreModule();
+  Test::Core::RunAllTests(coreModule);
 
-  Elba::Test::CoreTest1(coreModule);
+  // Physics Module tests //
+  PhysicsModule* physicsModule = elba->GetPhysicsModule();
+  Test::Physics::RunAllTests(physicsModule);
 
   return 0;
 }

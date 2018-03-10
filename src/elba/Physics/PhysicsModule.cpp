@@ -5,11 +5,14 @@
 * \brief Member function definitions for PhysicsModule.
 */
 
+#include "Engine.hpp"
 #include "Physics/PhysicsModule.hpp"
 
 namespace Elba
 {
-  PhysicsModule::PhysicsModule()
+  PhysicsModule::PhysicsModule(Engine* engine) 
+    : Module(engine)
+    , mFactory(NewUnique<PhysicsFactory>())
   {
   }
 
@@ -23,6 +26,6 @@ namespace Elba
 
   PhysicsFactory* PhysicsModule::GetFactory() const
   {
-    return mFactory;
+    return mFactory.get();
   }
 }

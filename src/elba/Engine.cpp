@@ -16,9 +16,9 @@
 namespace Elba
 {
   Engine::Engine()
-    : mCoreModule(NewUnique<CoreModule>())
-    , mGraphicsModule(NewUnique<GraphicsModule>())
-    , mPhysicsModule(NewUnique<PhysicsModule>())
+    : mCoreModule(NewUnique<CoreModule>(this))
+    , mGraphicsModule(NewUnique<GraphicsModule>(this))
+    , mPhysicsModule(NewUnique<PhysicsModule>(this))
     , mIsRunning(true)
   {
   }
@@ -47,5 +47,15 @@ namespace Elba
   CoreModule* Engine::GetCoreModule()
   {
     return mCoreModule.get();
+  }
+
+  GraphicsModule* Engine::GetGraphicsModule()
+  {
+    return mGraphicsModule.get();
+  }
+
+  PhysicsModule* Engine::GetPhysicsModule()
+  {
+    return mPhysicsModule.get();
   }
 }

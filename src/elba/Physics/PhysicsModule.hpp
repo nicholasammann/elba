@@ -8,12 +8,19 @@
 #pragma once
 
 #include "Framework/Module.hpp"
-#include "PhysicsForwardDeclarations.hpp"
+
+#include "Physics/PhysicsForwardDeclarations.hpp"
+#include "Physics/PhysicsFactory.hpp"
+
+#include "Utilities/StdTypedefs.hpp"
 
 namespace Elba
 {
+  class Engine;
+
   /**
   * \brief Module for the physics system. Manages physics for game objects.
+  * \param Pointer to engine, which owns all modules.
   */
   class PhysicsModule : public Module
   {
@@ -21,7 +28,7 @@ namespace Elba
     /**
     * \brief Constructor
     */
-    PhysicsModule();
+    PhysicsModule(Engine* engine);
 
     /**
     * \brief Initialize function called by Engine. Initializes PhysicsModule.
@@ -39,7 +46,7 @@ namespace Elba
     PhysicsFactory* GetFactory() const;
 
   private:
-    PhysicsFactory* mFactory;
+    UniquePtr<PhysicsFactory> mFactory;
 
   };
 

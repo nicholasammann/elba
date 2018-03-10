@@ -18,7 +18,7 @@ namespace Elba
     mCoreModule = parent ? parent->GetCoreModule() : nullptr;
   }
 
-  Object* Object::Parent() const
+  Object* Object::GetParent() const
   {
     return mParent;
   }

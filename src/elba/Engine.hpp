@@ -53,6 +53,18 @@ namespace Elba
     */
     CoreModule* GetCoreModule();
 
+    /**
+    * \brief Getter for mGraphicsModule
+    * \return Pointer to GraphicsModule
+    */
+    GraphicsModule* GetGraphicsModule();
+
+    /**
+    * \brief Getter for mPhysicsModule
+    * \return Pointer to PhysicsModule
+    */
+    PhysicsModule* GetPhysicsModule();
+
   private:
     // Modules
     UniquePtr<CoreModule> mCoreModule;

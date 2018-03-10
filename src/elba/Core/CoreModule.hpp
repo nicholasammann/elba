@@ -17,6 +17,8 @@
 
 namespace Elba
 {
+  class Engine;
+
   /**
   * \brief Module for the core of the engine. Manages objects.
   */
@@ -25,8 +27,9 @@ namespace Elba
   public:
     /**
     * \brief Constructor
+    * \param Pointer to engine, which owns all modules.
     */
-    CoreModule();
+    CoreModule(Engine* engine);
 
     /**
     * \brief Initialize function called by Engine. Initializes CoreModule.
@@ -45,7 +48,7 @@ namespace Elba
     Object* GetGameWorld();
 
   private:
-    
+
     UniquePtr<Object> mGameWorld;
 
   };

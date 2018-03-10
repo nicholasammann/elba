@@ -9,11 +9,17 @@ namespace Elba
 {
   namespace Test
   {
-    void CoreTest1(CoreModule* core);
-    void CoreTest2(CoreModule* core);
-    void CoreTest3(CoreModule* core);
-    void CoreTest4(CoreModule* core);
+    namespace Core
+    {
+      void RunAllTests(CoreModule* coreModule);
 
-    void CreateObjects(Object* object, int numObjects);
+      void CreateObjects1(CoreModule* coreModule);
+      void CreateObjects2(CoreModule* coreModule);
+      void CreateObjects3(CoreModule* coreModule);
+      void CreateObjects4(CoreModule* coreModule);
+
+      // helper functions
+      void CreateObjects(Object* object, int numObjects);
+    }
   }
 }

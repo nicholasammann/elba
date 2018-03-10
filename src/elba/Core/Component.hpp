@@ -30,10 +30,16 @@ namespace Elba
     virtual void Initialize() = 0;
 
     /**
-    * \brief Getter for component's guid;
+    * \brief Getter for component's guid.
     * \return The guid for the component.
     */
     GlobalKey GetGuid() const;
+
+    /**
+    * \brief Getter for parent object.
+    * \return The parent object of the component.
+    */
+    Object* GetParent() const;
 
   private:
     Object* mParent;

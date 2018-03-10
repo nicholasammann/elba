@@ -7,11 +7,13 @@
 
 #include "Core/CoreModule.hpp"
 #include "Core/Object.hpp"
+#include "Engine.hpp"
 
 namespace Elba
 {
-  CoreModule::CoreModule()
-    : mGameWorld(NewUnique<Object>(nullptr))
+  CoreModule::CoreModule(Engine* engine) 
+    : Module(engine)
+    , mGameWorld(NewUnique<Object>(nullptr))
   {
     mGameWorld->mCoreModule = this;
   }
@@ -24,7 +26,7 @@ namespace Elba
   {
   }
 
-  Object * CoreModule::GetGameWorld()
+  Object* CoreModule::GetGameWorld()
   {
     return mGameWorld.get();
   }

@@ -5,11 +5,14 @@
 * \brief Class definition for GraphicsModule.
 */
 
+#include "Engine.hpp"
+
 #include "Graphics/GraphicsModule.hpp"
 
 namespace Elba
 {
-  GraphicsModule::GraphicsModule()
+  GraphicsModule::GraphicsModule(Engine* engine)
+    : Module(engine)
   {
   }
 

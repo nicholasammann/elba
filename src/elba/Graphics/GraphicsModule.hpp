@@ -11,6 +11,8 @@
 
 namespace Elba
 {
+  class Engine;
+
   /**
   * \brief Module for the graphics system. Manages rendering.
   */
@@ -19,8 +21,9 @@ namespace Elba
   public:
     /**
     * \brief Constructor
+    * \param Pointer to engine, which owns all modules.
     */
-    GraphicsModule();
+    GraphicsModule(Engine* engine);
 
     /**
     * \brief Initialize function called by Engine. Initializes GraphicsModule.

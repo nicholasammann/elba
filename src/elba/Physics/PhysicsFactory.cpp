@@ -14,8 +14,8 @@ namespace Elba
   {
   }
 
-  PhysicsTransform* PhysicsFactory::CreatePhysicsTransform()
+  UniquePtr<PhysicsTransform> PhysicsFactory::CreatePhysicsTransform()
   {
-    return new PhysicsTransform();
+    return std::move(NewUnique<PhysicsTransform>());
   }
 }

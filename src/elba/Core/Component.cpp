@@ -21,4 +21,9 @@ namespace Elba
   {
     return mGuid;
   }
+
+  Object* Component::GetParent() const
+  {
+    return mParent;
+  }
 }

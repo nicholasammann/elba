@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Utilities/StdTypedefs.hpp"
 #include "Physics/PhysicsForwardDeclarations.hpp"
 
 namespace Elba
@@ -25,7 +26,7 @@ namespace Elba
     /**
     * \brief Constructs a transform and adds it to the physics system.
     */
-    PhysicsTransform* CreatePhysicsTransform();
+    UniquePtr<PhysicsTransform> CreatePhysicsTransform();
 
   };
 

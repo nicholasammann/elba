@@ -9,6 +9,8 @@
 
 namespace Elba
 {
+  class Engine;
+
   /**
   * \brief Base class for systems that comprise the engine.
   */
@@ -17,8 +19,9 @@ namespace Elba
   public:
     /**
     * \brief Constructor
+    * \param Pointer to engine, which owns all modules.
     */
-    Module();
+    Module(Engine* engine);
 
     /**
     * \brief Initialize function that Engine will call on each module.
@@ -29,5 +32,13 @@ namespace Elba
     * \brief Update function that Engine will call on each module.
     */
     virtual void Update() = 0;
+
+    /**
+    * \brief Getter for the engine.
+    */
+    Engine* GetEngine() const;
+
+  private:
+    Engine* mEngine;
   };
 }

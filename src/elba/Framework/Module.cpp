@@ -6,11 +6,18 @@
 */
 
 #include "Framework/Module.hpp"
+#include "Engine.hpp"
 
 namespace Elba
 {
-  Module::Module()
+  Module::Module(Engine* engine)
+    : mEngine(engine)
   {
+  }
+
+  Engine* Module::GetEngine() const
+  {
+    return mEngine;
   }
 
 }
