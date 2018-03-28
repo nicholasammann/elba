@@ -23,13 +23,20 @@ int main(int argc, char** argv)
 
   elba->Initialize();
 
+  while (elba->IsRunning())
+  {
+    elba->Update();
+  }
+
+  elba->Shutdown();
+
   // Core Module tests //
-  CoreModule* coreModule = elba->GetCoreModule();
-  Test::Core::RunAllTests(coreModule);
+  //CoreModule* coreModule = elba->GetCoreModule();
+  //Test::Core::RunAllTests(coreModule);
 
   // Physics Module tests //
-  PhysicsModule* physicsModule = elba->GetPhysicsModule();
-  Test::Physics::RunAllTests(physicsModule);
+  //PhysicsModule* physicsModule = elba->GetPhysicsModule();
+  //Test::Physics::RunAllTests(physicsModule);
 
   return 0;
 }

@@ -19,13 +19,21 @@ target_include_directories(elba
 PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${submodule_root}/glm/
+    ${includes_root}
 )
 
 add_executable(game 
     "main.cpp"
 )
 
+find_package(OpenGL REQUIRED)
+
 target_link_libraries(game
 PRIVATE
     elba
+    ${libs_root}/assimp.lib
+    ${libs_root}/glew32.lib
+    ${libs_root}/glew32s.lib
+    ${libs_root}/glfw3.lib
+    ${OPENGL_LIBRARIES}
 )

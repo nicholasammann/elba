@@ -9,5 +9,13 @@
 
 namespace Elba
 {
+  Submesh::Submesh()
+  {
 
+  }
+
+  void Submesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+  {
+
+  }
 }

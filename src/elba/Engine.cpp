@@ -35,8 +35,16 @@ namespace Elba
     mPhysicsModule->Initialize();
   }
 
+  void Engine::Update()
+  {
+    mCoreModule->Update();
+    mGraphicsModule->Update();
+    mPhysicsModule->Update();
+  }
+
   void Engine::Shutdown()
   {
+    
   }
   
   bool Engine::IsRunning() const

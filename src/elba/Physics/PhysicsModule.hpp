@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Framework/Module.hpp"
 
 #include "Physics/PhysicsForwardDeclarations.hpp"
@@ -48,6 +50,9 @@ namespace Elba
 
   private:
     UniquePtr<PhysicsFactory> mFactory;
+    friend PhysicsFactory;
+
+    std::vector<PhysicsTransform*> mPhysicsTransforms;
 
   };
 

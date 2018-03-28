@@ -21,13 +21,16 @@ namespace Elba
     /**
     * \brief Constructor
     */
-    PhysicsFactory();
+    PhysicsFactory(PhysicsModule* physicsModule);
 
     /**
     * \brief Constructs a transform and adds it to the physics system.
     * \return The PhysicsTransform that was just created.
     */
     UniquePtr<PhysicsTransform> CreatePhysicsTransform();
+
+  private:
+    PhysicsModule* mPhysicsModule;
 
   };
 

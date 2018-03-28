@@ -12,7 +12,7 @@ namespace Elba
 {
   PhysicsModule::PhysicsModule(Engine* engine) 
     : Module(engine)
-    , mFactory(NewUnique<PhysicsFactory>())
+    , mFactory(NewUnique<PhysicsFactory>(this))
   {
   }
 

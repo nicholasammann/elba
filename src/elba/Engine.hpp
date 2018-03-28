@@ -37,6 +37,11 @@ namespace Elba
     void Initialize();
 
     /**
+    * \brief Updates all modules.
+    */
+    void Update();
+
+    /**
     * \brief Shuts down the engine and all its modules.
     */
     void Shutdown();

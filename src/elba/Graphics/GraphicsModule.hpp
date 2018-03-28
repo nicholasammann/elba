@@ -7,7 +7,15 @@
 
 #pragma once
 
+#include <vector>
+
+#include <gl/glew.h>
+#include <GLFW/glfw3.h>
+
 #include "Framework/Module.hpp"
+
+#include "Graphics/GraphicsFactory.hpp"
+
 
 namespace Elba
 {
@@ -34,6 +42,15 @@ namespace Elba
     * \brief Update function called by Engine. Updates graphics.
     */
     void Update() override;
+
+
+  private:
+    UniquePtr<GraphicsFactory> mFactory;
+    friend GraphicsFactory;
+
+    std::vector<Mesh*> mMeshes;
+    
+    GLFWwindow* mWindow;
 
   };
 

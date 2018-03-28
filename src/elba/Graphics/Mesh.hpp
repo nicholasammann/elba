@@ -10,6 +10,8 @@
 
 #include "Graphics/GraphicsForwardDeclarations.hpp"
 
+#include "Graphics/Submesh.hpp"
+
 namespace Elba
 {
   /**
