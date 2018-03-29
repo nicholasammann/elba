@@ -43,6 +43,12 @@ namespace Elba
     */
     void Update() override;
 
+    /**
+    * \brief Getter for the GraphicsFactory.
+    * \return The GraphicsFactory owned by this Module.
+    */
+    GraphicsFactory* GetFactory() const;
+
 
   private:
     UniquePtr<GraphicsFactory> mFactory;

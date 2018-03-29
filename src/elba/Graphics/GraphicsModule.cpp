@@ -69,4 +69,9 @@ namespace Elba
     glfwSwapBuffers(mWindow);
     glfwPollEvents();
   }
+
+  GraphicsFactory* GraphicsModule::GetFactory() const
+  {
+    return mFactory.get();
+  }
 }

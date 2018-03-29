@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Core/Component.hpp"
+#include "Graphics/Mesh.hpp"
 
 namespace Elba
 {
@@ -32,6 +33,7 @@ namespace Elba
   private:
 
     // graphics model
+    UniquePtr<Mesh> mMesh;
 
   };
 }
