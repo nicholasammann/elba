@@ -11,6 +11,9 @@ set(bin_root ${CMAKE_CURRENT_LIST_DIR}/bin)
 set(cmake_dir ${CMAKE_CURRENT_LIST_DIR}/cmake)
 set(qt_root ${CMAKE_CURRENT_LIST_DIR}/qt)
 
+set(elba_root ${CMAKE_CURRENT_LIST_DIR}/src/Elba)
+set(editor_root ${CMAKE_CURRENT_LIST_DIR}/src/Editor)
+
 # mimic folder structure
 include(${cmake_dir}/YTE_Source_Group.cmake)
 

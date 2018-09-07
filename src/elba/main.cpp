@@ -19,7 +19,7 @@ using namespace Elba;
 */
 int main(int argc, char** argv)
 {
-  Engine* elba = new Elba::Engine();
+  Engine* elba = new Engine();
 
   elba->Initialize();
 
