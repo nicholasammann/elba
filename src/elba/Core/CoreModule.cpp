@@ -11,24 +11,24 @@
 
 namespace Elba
 {
-  CoreModule::CoreModule(Engine* engine) 
-    : Module(engine)
-    , mGameWorld(NewUnique<Object>(nullptr))
-  {
-    mGameWorld->mCoreModule = this;
-  }
-
-  void CoreModule::Initialize()
-  {
-  }
-
-  void CoreModule::Update()
-  {
-  }
-
-  Object* CoreModule::GetGameWorld()
-  {
-    return mGameWorld.get();
-  }
+CoreModule::CoreModule(Engine* engine)
+  : Module(engine)
+  , mGameWorld(NewUnique<Object>(nullptr))
+{
+  mGameWorld->mCoreModule = this;
 }
 
+void CoreModule::Initialize()
+{
+}
+
+void CoreModule::Update()
+{
+}
+
+Object* CoreModule::GetGameWorld()
+{
+  return mGameWorld.get();
+}
+
+} // End of Elba namespace

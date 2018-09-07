@@ -14,70 +14,70 @@
 
 namespace Elba
 {
+/**
+* \brief Handles all the modules that comprise the game engine.
+*/
+class Engine
+{
+public:
+
   /**
-  * \brief Handles all the modules that comprise the game engine.
+  * \brief Engine constructor
   */
-  class Engine
-  {
-  public:
+  Engine();
 
-    /**
-    * \brief Engine constructor
-    */
-    Engine();
+  /**
+  * \brief Engine destructor
+  */
+  ~Engine();
 
-    /**
-    * \brief Engine destructor
-    */
-    ~Engine();
+  /**
+  * \brief Initializes all modules.
+  */
+  void Initialize();
 
-    /**
-    * \brief Initializes all modules.
-    */
-    void Initialize();
+  /**
+  * \brief Updates all modules.
+  */
+  void Update();
 
-    /**
-    * \brief Updates all modules.
-    */
-    void Update();
+  /**
+  * \brief Shuts down the engine and all its modules.
+  */
+  void Shutdown();
 
-    /**
-    * \brief Shuts down the engine and all its modules.
-    */
-    void Shutdown();
+  /**
+  * \brief Whether or not the engine should be running
+  * \return True if Engine should be running, False if Engine is ready to shutdown.
+  */
+  bool IsRunning() const;
 
-    /**
-    * \brief Whether or not the engine should be running
-    * \return True if Engine should be running, False if Engine is ready to shutdown.
-    */
-    bool IsRunning() const;
+  /**
+  * \brief Getter for mCoreModule
+  * \return Pointer to CoreModule
+  */
+  CoreModule* GetCoreModule();
 
-    /**
-    * \brief Getter for mCoreModule    
-    * \return Pointer to CoreModule
-    */
-    CoreModule* GetCoreModule();
+  /**
+  * \brief Getter for mGraphicsModule
+  * \return Pointer to GraphicsModule
+  */
+  GraphicsModule* GetGraphicsModule();
 
-    /**
-    * \brief Getter for mGraphicsModule
-    * \return Pointer to GraphicsModule
-    */
-    GraphicsModule* GetGraphicsModule();
+  /**
+  * \brief Getter for mPhysicsModule
+  * \return Pointer to PhysicsModule
+  */
+  PhysicsModule* GetPhysicsModule();
 
-    /**
-    * \brief Getter for mPhysicsModule
-    * \return Pointer to PhysicsModule
-    */
-    PhysicsModule* GetPhysicsModule();
+private:
+  // Modules
+  UniquePtr<CoreModule> mCoreModule;
+  UniquePtr<GraphicsModule> mGraphicsModule;
+  UniquePtr<PhysicsModule> mPhysicsModule;
 
-  private:
-    // Modules
-    UniquePtr<CoreModule> mCoreModule;
-    UniquePtr<GraphicsModule> mGraphicsModule;
-    UniquePtr<PhysicsModule> mPhysicsModule;
+  // Running status
+  bool mIsRunning;
+};
 
-    // Running status
-    bool mIsRunning;
-  };
-
-}
+} // End of Elba namespace

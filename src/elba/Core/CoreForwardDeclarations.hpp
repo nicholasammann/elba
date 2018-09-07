@@ -9,7 +9,9 @@
 
 namespace Elba
 {
-  class CoreModule;
-  class Object;
-  class Component;
-}
+
+class CoreModule;
+class Object;
+class Component;
+
+} // End of Elba namespace

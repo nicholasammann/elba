@@ -12,26 +12,26 @@
 
 namespace Elba
 {
+/**
+* \brief Handles creation of objects in GraphicsModule.
+*/
+class GraphicsFactory
+{
+public:
   /**
-  * \brief Handles creation of objects in GraphicsModule.
+  * \brief Constructor
   */
-  class GraphicsFactory
-  {
-  public:
-    /**
-    * \brief Constructor
-    */
-    GraphicsFactory(GraphicsModule* graphicsModule);
+  GraphicsFactory(GraphicsModule* graphicsModule);
 
-    /**
-    * \brief Constructs a Mesh and adds it to the graphics module.
-    * \return The Mesh that was just created.
-    */
-    UniquePtr<Mesh> CreateMesh();
+  /**
+  * \brief Constructs a Mesh and adds it to the graphics module.
+  * \return The Mesh that was just created.
+  */
+  UniquePtr<Mesh> CreateMesh();
 
-  private:
-    GraphicsModule* mModule;
+private:
+  GraphicsModule * mModule;
 
-  };
+};
 
-}
+} // End of Elba namespace

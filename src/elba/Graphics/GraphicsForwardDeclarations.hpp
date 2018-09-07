@@ -9,8 +9,10 @@
 
 namespace Elba
 {
-  class GraphicsModule;
-  class GraphicsFactory;
-  class Mesh;
-  class Submesh;
-}
+
+class GraphicsModule;
+class GraphicsFactory;
+class Mesh;
+class Submesh;
+
+} // End of Elba namespace

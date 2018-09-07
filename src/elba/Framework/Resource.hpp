@@ -11,27 +11,27 @@
 
 namespace Elba
 {
+/**
+* \brief Base class for resources to inherit from.
+*/
+class Resource
+{
+public:
+
   /**
-  * \brief Base class for resources to inherit from.
+  * \brief Constructor
   */
-  class Resource
-  {
-  public:
+  Resource(std::string identifier);
 
-    /**
-    * \brief Constructor
-    */
-    Resource(std::string identifier);
+  /**
+  * \brief Destructor
+  */
+  virtual ~Resource();
 
-    /**
-    * \brief Destructor
-    */
-    virtual ~Resource();
+private:
 
-  private:
+  std::string mIdentifier;
 
-    std::string mIdentifier;
+};
 
-  };
-
-}
+} // End of Elba namespace

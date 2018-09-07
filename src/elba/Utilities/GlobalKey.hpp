@@ -13,39 +13,39 @@
 
 namespace Elba
 {
+/**
+* \brief Wrapper around CoCreateGuid.
+*/
+class GlobalKey
+{
+public:
   /**
-  * \brief Wrapper around CoCreateGuid.
+  * \brief Constructor
   */
-  class GlobalKey
-  {
-  public:
-    /**
-    * \brief Constructor
-    */
-    GlobalKey();
+  GlobalKey();
 
-    /**
-    * \brief Getter for underlying GUID data.
-    * \return Underlying GUID struct.
-    */
-    GUID GetGuid() const;
+  /**
+  * \brief Getter for underlying GUID data.
+  * \return Underlying GUID struct.
+  */
+  GUID GetGuid() const;
 
-    /**
-    * \brief Converts the data to string.
-    * \return Guid in string form.
-    */
-    std::string ToStdString() const;
+  /**
+  * \brief Converts the data to string.
+  * \return Guid in string form.
+  */
+  std::string ToStdString() const;
 
 
-    /**
-    * \brief Getter for underlying GUID data.
-    * \param rhs GlobalKey we are comparing against.
-    * \return True if this key is less than the key passed in.
-    */
-    bool operator<(const GlobalKey& rhs) const;
+  /**
+  * \brief Getter for underlying GUID data.
+  * \param rhs GlobalKey we are comparing against.
+  * \return True if this key is less than the key passed in.
+  */
+  bool operator<(const GlobalKey& rhs) const;
 
-  private:
-    GUID mGuid;
+private:
+  GUID mGuid;
 
-  };
-}
+};
+} // End of Elba namespace

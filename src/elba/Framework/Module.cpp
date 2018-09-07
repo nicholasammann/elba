@@ -10,14 +10,14 @@
 
 namespace Elba
 {
-  Module::Module(Engine* engine)
-    : mEngine(engine)
-  {
-  }
-
-  Engine* Module::GetEngine() const
-  {
-    return mEngine;
-  }
-
+Module::Module(Engine* engine)
+  : mEngine(engine)
+{
 }
+
+Engine* Module::GetEngine() const
+{
+  return mEngine;
+}
+
+} // End of Elba namespace

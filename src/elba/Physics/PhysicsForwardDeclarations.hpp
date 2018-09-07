@@ -9,7 +9,9 @@
 
 namespace Elba
 {
-  class PhysicsModule;
-  class PhysicsFactory;
-  class PhysicsTransform;
-}
+
+class PhysicsModule;
+class PhysicsFactory;
+class PhysicsTransform;
+
+} // End of Elba namespace

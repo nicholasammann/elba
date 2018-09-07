@@ -11,17 +11,18 @@
 
 namespace Elba
 {
-  GraphicsFactory::GraphicsFactory(GraphicsModule* graphicsModule)
-    : mModule(graphicsModule)
-  {
-  }
-
-  UniquePtr<Mesh> GraphicsFactory::CreateMesh()
-  {
-    UniquePtr<Mesh> mesh = NewUnique<Mesh>();
-
-    mModule->mMeshes.push_back(mesh.get());
-
-    return std::move(mesh);
-  }
+GraphicsFactory::GraphicsFactory(GraphicsModule* graphicsModule)
+  : mModule(graphicsModule)
+{
 }
+
+UniquePtr<Mesh> GraphicsFactory::CreateMesh()
+{
+  UniquePtr<Mesh> mesh = NewUnique<Mesh>();
+
+  mModule->mMeshes.push_back(mesh.get());
+
+  return std::move(mesh);
+}
+
+} // End of Elba namespace

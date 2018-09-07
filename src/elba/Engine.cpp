@@ -15,55 +15,56 @@
 
 namespace Elba
 {
-  Engine::Engine()
-    : mCoreModule(NewUnique<CoreModule>(this))
-    , mGraphicsModule(NewUnique<GraphicsModule>(this))
-    , mPhysicsModule(NewUnique<PhysicsModule>(this))
-    , mIsRunning(true)
-  {
-  }
-
-  Engine::~Engine()
-  {
-  }
-
-  void Engine::Initialize()
-  {
-    // initialize all modules
-    mCoreModule->Initialize();
-    mGraphicsModule->Initialize();
-    mPhysicsModule->Initialize();
-  }
-
-  void Engine::Update()
-  {
-    mCoreModule->Update();
-    mGraphicsModule->Update();
-    mPhysicsModule->Update();
-  }
-
-  void Engine::Shutdown()
-  {
-    
-  }
-  
-  bool Engine::IsRunning() const
-  {
-    return mIsRunning;
-  }
-
-  CoreModule* Engine::GetCoreModule()
-  {
-    return mCoreModule.get();
-  }
-
-  GraphicsModule* Engine::GetGraphicsModule()
-  {
-    return mGraphicsModule.get();
-  }
-
-  PhysicsModule* Engine::GetPhysicsModule()
-  {
-    return mPhysicsModule.get();
-  }
+Engine::Engine()
+  : mCoreModule(NewUnique<CoreModule>(this))
+  , mGraphicsModule(NewUnique<GraphicsModule>(this))
+  , mPhysicsModule(NewUnique<PhysicsModule>(this))
+  , mIsRunning(true)
+{
 }
+
+Engine::~Engine()
+{
+}
+
+void Engine::Initialize()
+{
+  // initialize all modules
+  mCoreModule->Initialize();
+  mGraphicsModule->Initialize();
+  mPhysicsModule->Initialize();
+}
+
+void Engine::Update()
+{
+  mCoreModule->Update();
+  mGraphicsModule->Update();
+  mPhysicsModule->Update();
+}
+
+void Engine::Shutdown()
+{
+
+}
+
+bool Engine::IsRunning() const
+{
+  return mIsRunning;
+}
+
+CoreModule* Engine::GetCoreModule()
+{
+  return mCoreModule.get();
+}
+
+GraphicsModule* Engine::GetGraphicsModule()
+{
+  return mGraphicsModule.get();
+}
+
+PhysicsModule* Engine::GetPhysicsModule()
+{
+  return mPhysicsModule.get();
+}
+
+} // End of Elba namespace

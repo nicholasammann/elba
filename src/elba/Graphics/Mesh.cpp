@@ -9,19 +9,20 @@
 
 namespace Elba
 {
-  Mesh::Mesh()
-  {
-  }
+Mesh::Mesh()
+{
+}
 
-  void Mesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void Mesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+{
+  for (UniquePtr<Submesh>& submesh : mSubmeshes)
   {
-    for (UniquePtr<Submesh>& submesh : mSubmeshes)
-    {
-      submesh->Draw(proj, view, model);
-    }
-  }
-
-  void Mesh::SetShader(const char* shaderName)
-  {
+    submesh->Draw(proj, view, model);
   }
 }
+
+void Mesh::SetShader(const char* shaderName)
+{
+}
+
+} // End of Elba namespace

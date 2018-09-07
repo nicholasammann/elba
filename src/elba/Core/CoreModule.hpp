@@ -17,40 +17,39 @@
 
 namespace Elba
 {
-  class Engine;
+class Engine;
+
+/**
+* \brief Module for the core of the engine. Manages objects.
+*/
+class CoreModule : public Module
+{
+public:
+  /**
+  * \brief Constructor
+  * \param engine Pointer to engine, which owns all modules.
+  */
+  CoreModule(Engine* engine);
 
   /**
-  * \brief Module for the core of the engine. Manages objects.
+  * \brief Initialize function called by Engine. Initializes CoreModule.
   */
-  class CoreModule : public Module
-  {
-  public:
-    /**
-    * \brief Constructor
-    * \param engine Pointer to engine, which owns all modules.
-    */
-    CoreModule(Engine* engine);
+  void Initialize() override;
 
-    /**
-    * \brief Initialize function called by Engine. Initializes CoreModule.
-    */
-    void Initialize() override;
+  /**
+  * \brief Update function called by Engine. Updates all game objects.
+  */
+  void Update() override;
 
-    /**
-    * \brief Update function called by Engine. Updates all game objects.
-    */
-    void Update() override;
+  /**
+  * \brief Getter for game world object.
+  * \return Game world object.
+  */
+  Object* GetGameWorld();
 
-    /**
-    * \brief Getter for game world object.
-    * \return Game world object.
-    */
-    Object* GetGameWorld();
+private:
 
-  private:
+  UniquePtr<Object> mGameWorld;
+};
 
-    UniquePtr<Object> mGameWorld;
-
-  };
-
-}
+} // End of Elba namespace

@@ -9,5 +9,7 @@
 
 namespace Elba
 {
-  class Module;
-}
+
+class Module;
+
+} // End of Elba namespace

@@ -18,42 +18,42 @@
 
 namespace Elba
 {
-  class Engine;
+class Engine;
+
+/**
+* \brief Module for the physics system. Manages physics for game objects.
+* \param Pointer to engine, which owns all modules.
+*/
+class PhysicsModule : public Module
+{
+public:
+  /**
+  * \brief Constructor
+  */
+  PhysicsModule(Engine* engine);
 
   /**
-  * \brief Module for the physics system. Manages physics for game objects.
-  * \param Pointer to engine, which owns all modules.
+  * \brief Initialize function called by Engine. Initializes PhysicsModule.
   */
-  class PhysicsModule : public Module
-  {
-  public:
-    /**
-    * \brief Constructor
-    */
-    PhysicsModule(Engine* engine);
+  void Initialize() override;
 
-    /**
-    * \brief Initialize function called by Engine. Initializes PhysicsModule.
-    */
-    void Initialize() override;
+  /**
+  * \brief Update function called by Engine. Updates physics.
+  */
+  void Update() override;
 
-    /**
-    * \brief Update function called by Engine. Updates physics.
-    */
-    void Update() override;
+  /**
+  * \brief Getter for the PhysicsFactory.
+  * \return The PhysicsFactory owned by this Module.
+  */
+  PhysicsFactory* GetFactory() const;
 
-    /**
-    * \brief Getter for the PhysicsFactory.
-    * \return The PhysicsFactory owned by this Module.
-    */
-    PhysicsFactory* GetFactory() const;
+private:
+  UniquePtr<PhysicsFactory> mFactory;
+  friend PhysicsFactory;
 
-  private:
-    UniquePtr<PhysicsFactory> mFactory;
-    friend PhysicsFactory;
+  std::vector<PhysicsTransform*> mPhysicsTransforms;
 
-    std::vector<PhysicsTransform*> mPhysicsTransforms;
+};
 
-  };
-
-}
+} // End of Elba namespace

@@ -13,69 +13,69 @@
 
 namespace Elba
 {
+/**
+* \brief Any possible object in the game.
+*/
+class Object
+{
+public:
   /**
-  * \brief Any possible object in the game.
+  * \brief Constructor
+  * \param parent The parent object.
   */
-  class Object
-  {
-  public:
-    /**
-    * \brief Constructor
-    * \param parent The parent object.
-    */
-    Object(Object* parent);
+  Object(Object* parent);
 
-    /**
-    * \brief Gets this object's parent.
-    * \return The parent of this object.
-    */
-    Object* GetParent() const;
+  /**
+  * \brief Gets this object's parent.
+  * \return The parent of this object.
+  */
+  Object* GetParent() const;
 
-    /**
-    * \brief Find a direct child of this object.
-    * \param guid Global key of desired object.
-    * \return The child object with the given key. nullptr if not found.
-    */
-    Object* FindChild(const GlobalKey& guid) const;
+  /**
+  * \brief Find a direct child of this object.
+  * \param guid Global key of desired object.
+  * \return The child object with the given key. nullptr if not found.
+  */
+  Object* FindChild(const GlobalKey& guid) const;
 
-    /**
-    * \brief Find a component on this object.
-    * \param guid Global key of desired component.
-    * \return The component with the given key. nullptr if not found.
-    */
-    Component* FindComponent(const GlobalKey& guid) const;
+  /**
+  * \brief Find a component on this object.
+  * \param guid Global key of desired component.
+  * \return The component with the given key. nullptr if not found.
+  */
+  Component* FindComponent(const GlobalKey& guid) const;
 
-    /**
-    * \brief Creates a new child object.
-    * \return The new child object. nullptr if insertion into map of children failed.
-    */
-    Object* CreateChild();
+  /**
+  * \brief Creates a new child object.
+  * \return The new child object. nullptr if insertion into map of children failed.
+  */
+  Object* CreateChild();
 
-    /**
-    * \brief Getter for object's guid;
-    * \return The guid of the object.
-    */
-    GlobalKey GetGuid() const;
+  /**
+  * \brief Getter for object's guid;
+  * \return The guid of the object.
+  */
+  GlobalKey GetGuid() const;
 
-    /**
-    * \brief Getter for the core module;
-    * \return The core module.
-    */
-    CoreModule* GetCoreModule() const;
+  /**
+  * \brief Getter for the core module;
+  * \return The core module.
+  */
+  CoreModule* GetCoreModule() const;
 
-  private:
-    // so CoreModule can set the pointer to itself on the root object
-    friend class CoreModule;
-    CoreModule* mCoreModule;
+private:
+  // so CoreModule can set the pointer to itself on the root object
+  friend class CoreModule;
+  CoreModule* mCoreModule;
 
-    Object* mParent;
+  Object* mParent;
 
-    ObjectMap mChildren;
-    
-    ComponentMap mComponents;
+  ObjectMap mChildren;
 
-    GlobalKey mGuid;
+  ComponentMap mComponents;
 
-  };
+  GlobalKey mGuid;
 
-}
+};
+
+} // End of Elba namespace

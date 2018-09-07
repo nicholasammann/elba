@@ -10,22 +10,23 @@
 
 namespace Elba
 {
-  PhysicsModule::PhysicsModule(Engine* engine) 
-    : Module(engine)
-    , mFactory(NewUnique<PhysicsFactory>(this))
-  {
-  }
-
-  void PhysicsModule::Initialize()
-  {
-  }
-
-  void PhysicsModule::Update()
-  {
-  }
-
-  PhysicsFactory* PhysicsModule::GetFactory() const
-  {
-    return mFactory.get();
-  }
+PhysicsModule::PhysicsModule(Engine* engine)
+  : Module(engine)
+  , mFactory(NewUnique<PhysicsFactory>(this))
+{
 }
+
+void PhysicsModule::Initialize()
+{
+}
+
+void PhysicsModule::Update()
+{
+}
+
+PhysicsFactory* PhysicsModule::GetFactory() const
+{
+  return mFactory.get();
+}
+
+} // End of Elba namespace

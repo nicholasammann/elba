@@ -9,13 +9,14 @@
 
 namespace Elba
 {
-  Resource::Resource(std::string identifier) : mIdentifier(identifier)
-  {
+Resource::Resource(std::string identifier) : mIdentifier(identifier)
+{
 
-  }
-
-  Resource::~Resource()
-  {
-
-  }
 }
+
+Resource::~Resource()
+{
+
+}
+
+} // End of Elba namespace

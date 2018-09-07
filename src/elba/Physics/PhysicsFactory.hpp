@@ -12,26 +12,26 @@
 
 namespace Elba
 {
+/**
+* \brief Handles creation of objects in PhysicsModule.
+*/
+class PhysicsFactory
+{
+public:
   /**
-  * \brief Handles creation of objects in PhysicsModule.
+  * \brief Constructor
   */
-  class PhysicsFactory
-  {
-  public:
-    /**
-    * \brief Constructor
-    */
-    PhysicsFactory(PhysicsModule* physicsModule);
+  PhysicsFactory(PhysicsModule* physicsModule);
 
-    /**
-    * \brief Constructs a transform and adds it to the physics system.
-    * \return The PhysicsTransform that was just created.
-    */
-    UniquePtr<PhysicsTransform> CreatePhysicsTransform();
+  /**
+  * \brief Constructs a transform and adds it to the physics system.
+  * \return The PhysicsTransform that was just created.
+  */
+  UniquePtr<PhysicsTransform> CreatePhysicsTransform();
 
-  private:
-    PhysicsModule* mPhysicsModule;
+private:
+  PhysicsModule * mPhysicsModule;
 
-  };
+};
 
-}
+} // End of Elba namespace

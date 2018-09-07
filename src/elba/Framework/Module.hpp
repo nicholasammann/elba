@@ -9,37 +9,37 @@
 
 namespace Elba
 {
-  class Engine;
+class Engine;
+
+/**
+* \brief Base class for systems that comprise the engine.
+*/
+class Module
+{
+public:
+  /**
+  * \brief Constructor
+  * \param engine The engine, which owns all modules.
+  */
+  Module(Engine* engine);
 
   /**
-  * \brief Base class for systems that comprise the engine.
+  * \brief Initialize function that Engine will call on each module.
   */
-  class Module
-  {
-  public:
-    /**
-    * \brief Constructor
-    * \param engine The engine, which owns all modules.
-    */
-    Module(Engine* engine);
+  virtual void Initialize() = 0;
 
-    /**
-    * \brief Initialize function that Engine will call on each module.
-    */
-    virtual void Initialize() = 0;
+  /**
+  * \brief Update function that Engine will call on each module.
+  */
+  virtual void Update() = 0;
 
-    /**
-    * \brief Update function that Engine will call on each module.
-    */
-    virtual void Update() = 0;
+  /**
+  * \brief Getter for the engine.
+  * \return A pointer to the engine.
+  */
+  Engine* GetEngine() const;
 
-    /**
-    * \brief Getter for the engine.
-    * \return A pointer to the engine.
-    */
-    Engine* GetEngine() const;
-
-  private:
-    Engine* mEngine;
-  };
-}
+private:
+  Engine * mEngine;
+};
+} // End of Elba namespace

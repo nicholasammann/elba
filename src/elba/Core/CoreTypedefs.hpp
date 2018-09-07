@@ -14,6 +14,8 @@
 
 namespace Elba
 {
-  using ObjectMap = Map<GlobalKey, UniquePtr<Object>>;
-  using ComponentMap = Map<GlobalKey, UniquePtr<Component>>;
-}
+
+using ObjectMap = Map<GlobalKey, UniquePtr<Object>>;
+using ComponentMap = Map<GlobalKey, UniquePtr<Component>>;
+
+} // End of Elba namespace

@@ -12,37 +12,38 @@
 
 namespace Elba
 {
+/**
+* \brief Component base class.
+*/
+class Component
+{
+public:
   /**
-  * \brief Component base class.
+  * \brief Constructor
+  * \param parent The parent object.
   */
-  class Component
-  {
-  public:
-    /**
-    * \brief Constructor
-    * \param parent The parent object.
-    */
-    Component(Object* parent);
+  Component(Object* parent);
 
-    /**
-    * \brief Initializes derived class.
-    */
-    virtual void Initialize() = 0;
+  /**
+  * \brief Initializes derived class.
+  */
+  virtual void Initialize() = 0;
 
-    /**
-    * \brief Getter for component's guid.
-    * \return The guid for the component.
-    */
-    GlobalKey GetGuid() const;
+  /**
+  * \brief Getter for component's guid.
+  * \return The guid for the component.
+  */
+  GlobalKey GetGuid() const;
 
-    /**
-    * \brief Getter for parent object.
-    * \return The parent object of the component.
-    */
-    Object* GetParent() const;
+  /**
+  * \brief Getter for parent object.
+  * \return The parent object of the component.
+  */
+  Object* GetParent() const;
 
-  private:
-    Object* mParent;
-    GlobalKey mGuid;
-  };
-}
+private:
+  Object * mParent;
+  GlobalKey mGuid;
+};
+
+} // End of Elba namespace

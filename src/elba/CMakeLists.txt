@@ -1,4 +1,4 @@
-add_library(elba "")
+add_library(elba)
 
 include(Core/CMakeLists.txt)
 include(Framework/CMakeLists.txt)
@@ -38,3 +38,6 @@ PRIVATE
     ${libs_root}/glfw3.lib
     ${OPENGL_LIBRARIES}
 )
+
+# for dlls
+set(CMAKE_MSVCIDE_RUN_PATH ${bin_root})

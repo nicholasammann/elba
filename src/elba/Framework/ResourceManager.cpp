@@ -10,13 +10,13 @@
 
 namespace Elba
 {
-  ResourceManager::ResourceManager()
-  {
+ResourceManager::ResourceManager()
+{
 
-  }
-
-  ResourceManager::~ResourceManager()
-  {
-
-  }
 }
+
+ResourceManager::~ResourceManager()
+{
+
+}
+} // End of Elba namespace

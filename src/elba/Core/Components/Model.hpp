@@ -12,28 +12,29 @@
 
 namespace Elba
 {
+/**
+* \brief Interface for communicating with a model object in the graphics module.
+The graphics related data should all be contained in the graphics module.
+*/
+class Model : public Component
+{
+public:
   /**
-  * \brief Interface for communicating with a model object in the graphics module. 
-  The graphics related data should all be contained in the graphics module.
+  * \brief Constructor
+  * \param parent The parent object.
   */
-  class Model : public Component
-  {
-  public:
-    /**
-    * \brief Constructor
-    * \param parent The parent object.
-    */
-    Model(Object* parent);
+  Model(Object* parent);
 
-    /**
-    * \brief Initializes derived class.
-    */
-    void Initialize() override;
+  /**
+  * \brief Initializes derived class.
+  */
+  void Initialize() override;
 
-  private:
+private:
 
-    // graphics model
-    UniquePtr<Mesh> mMesh;
+  // graphics model
+  UniquePtr<Mesh> mMesh;
 
-  };
-}
+};
+
+} // End of Elba namespace

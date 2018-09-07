@@ -11,19 +11,19 @@
 
 namespace Elba
 {
-  Component::Component(Object* parent)
-    : mParent(parent)
-    , mGuid()
-  {
-  }
-
-  GlobalKey Component::GetGuid() const
-  {
-    return mGuid;
-  }
-
-  Object* Component::GetParent() const
-  {
-    return mParent;
-  }
+Component::Component(Object* parent)
+  : mParent(parent)
+  , mGuid()
+{
 }
+
+GlobalKey Component::GetGuid() const
+{
+  return mGuid;
+}
+
+Object* Component::GetParent() const
+{
+  return mParent;
+}
+} // End of Elba namespace

@@ -19,45 +19,45 @@
 
 namespace Elba
 {
-  class Engine;
+class Engine;
+
+/**
+* \brief Module for the graphics system. Manages rendering.
+*/
+class GraphicsModule : public Module
+{
+public:
+  /**
+  * \brief Constructor
+  * \param engine The engine, which owns all modules.
+  */
+  GraphicsModule(Engine* engine);
 
   /**
-  * \brief Module for the graphics system. Manages rendering.
+  * \brief Initialize function called by Engine. Initializes GraphicsModule.
   */
-  class GraphicsModule : public Module
-  {
-  public:
-    /**
-    * \brief Constructor
-    * \param engine The engine, which owns all modules.
-    */
-    GraphicsModule(Engine* engine);
+  void Initialize() override;
 
-    /**
-    * \brief Initialize function called by Engine. Initializes GraphicsModule.
-    */
-    void Initialize() override;
+  /**
+  * \brief Update function called by Engine. Updates graphics.
+  */
+  void Update() override;
 
-    /**
-    * \brief Update function called by Engine. Updates graphics.
-    */
-    void Update() override;
-
-    /**
-    * \brief Getter for the GraphicsFactory.
-    * \return The GraphicsFactory owned by this Module.
-    */
-    GraphicsFactory* GetFactory() const;
+  /**
+  * \brief Getter for the GraphicsFactory.
+  * \return The GraphicsFactory owned by this Module.
+  */
+  GraphicsFactory* GetFactory() const;
 
 
-  private:
-    UniquePtr<GraphicsFactory> mFactory;
-    friend GraphicsFactory;
+private:
+  UniquePtr<GraphicsFactory> mFactory;
+  friend GraphicsFactory;
 
-    std::vector<Mesh*> mMeshes;
-    
-    GLFWwindow* mWindow;
+  std::vector<Mesh*> mMeshes;
 
-  };
+  GLFWwindow* mWindow;
 
-}
+};
+
+} // End of Elba namespace
