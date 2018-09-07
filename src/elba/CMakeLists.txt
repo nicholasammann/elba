@@ -20,6 +20,7 @@ PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${submodule_root}/glm/
     ${includes_root}
+    ${bin_root}
 )
 
 add_executable(game 
