@@ -12,9 +12,9 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Framework/Module.hpp"
+#include "Elba/Framework/Module.hpp"
 
-#include "Graphics/GraphicsFactory.hpp"
+#include "Elba/Graphics/GraphicsFactory.hpp"
 
 
 namespace Elba
@@ -36,19 +36,18 @@ public:
   /**
   * \brief Initialize function called by Engine. Initializes GraphicsModule.
   */
-  void Initialize() override;
+  virtual void Initialize() override;
 
   /**
   * \brief Update function called by Engine. Updates graphics.
   */
-  void Update() override;
+  virtual void Update() override;
 
   /**
   * \brief Getter for the GraphicsFactory.
   * \return The GraphicsFactory owned by this Module.
   */
   GraphicsFactory* GetFactory() const;
-
 
 private:
   UniquePtr<GraphicsFactory> mFactory;

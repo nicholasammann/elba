@@ -5,7 +5,7 @@
 * \brief Member function definitions for Mesh.
 */
 
-#include "Graphics/Mesh.hpp"
+#include "Elba/Graphics/Mesh.hpp"
 
 namespace Elba
 {

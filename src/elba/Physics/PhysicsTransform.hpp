@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include "Framework/Module.hpp"
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+
+#include "Elba/Framework/Module.hpp"
 
 namespace Elba
 {

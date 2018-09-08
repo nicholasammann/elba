@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Core/Component.hpp"
-#include "Graphics/Mesh.hpp"
+#include "Elba/Core/Component.hpp"
+#include "Elba/Graphics/Mesh.hpp"
 
 namespace Elba
 {

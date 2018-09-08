@@ -8,9 +8,9 @@
 #include <iostream>
 
 
-#include "Engine.hpp"
+#include "Elba/Engine.hpp"
 
-#include "Graphics/GraphicsModule.hpp"
+#include "Elba/Graphics/GraphicsModule.hpp"
 
 int g_width = 800;
 int g_height = 600;

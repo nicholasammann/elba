@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "Utilities/StdTypedefs.hpp"
-#include "Core/CoreForwardDeclarations.hpp"
-#include "Graphics/GraphicsForwardDeclarations.hpp"
-#include "Physics/PhysicsForwardDeclarations.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Core/CoreForwardDeclarations.hpp"
+#include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
+#include "Elba/Physics/PhysicsForwardDeclarations.hpp"
 
 namespace Elba
 {

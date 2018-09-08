@@ -9,15 +9,15 @@ include(Utilities/CMakeLists.txt)
 
 target_sources(elba
 PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/Engine.cpp
-
-#PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/Engine.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Engine.cpp
 )
+
+YTE_Source_Group(CMAKE_CURRENT_LIST_DIR elba)
 
 target_include_directories(elba
 PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/../
     ${submodule_root}/glm/
     ${includes_root}
     ${bin_root}
@@ -38,6 +38,3 @@ PRIVATE
     ${libs_root}/glfw3.lib
     ${OPENGL_LIBRARIES}
 )
-
-# for dlls
-set(CMAKE_MSVCIDE_RUN_PATH ${bin_root})

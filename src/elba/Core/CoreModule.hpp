@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "Utilities/StdTypedefs.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
 
-#include "Framework/Module.hpp"
+#include "Elba/Framework/Module.hpp"
 
-#include "Core/CoreForwardDeclarations.hpp"
-#include "Core/Object.hpp"
+#include "Elba/Core/CoreForwardDeclarations.hpp"
+#include "Elba/Core/Object.hpp"
 
 
 namespace Elba

@@ -7,13 +7,13 @@
 
 #include <iostream>
 
-#include "PhysicsTests.hpp"
+#include "Elba/Tests/PhysicsTests.hpp"
 
-#include "Physics/PhysicsModule.hpp"
-#include "Physics/PhysicsFactory.hpp"
-#include "Physics/PhysicsTransform.hpp"
+#include "Elba/Physics/PhysicsModule.hpp"
+#include "Elba/Physics/PhysicsFactory.hpp"
+#include "Elba/Physics/PhysicsTransform.hpp"
 
-#include "Tests/TestHelpers.hpp"
+#include "Elba/Tests/TestHelpers.hpp"
 
 namespace Elba
 {

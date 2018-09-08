@@ -7,10 +7,10 @@
 
 #include <iostream>
 
-#include "Utilities/GlobalKey.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
 
-#include "Tests/CoreTests.hpp"
-#include "Tests/TestHelpers.hpp"
+#include "Elba/Tests/CoreTests.hpp"
+#include "Elba/Tests/TestHelpers.hpp"
 
 namespace Elba
 {

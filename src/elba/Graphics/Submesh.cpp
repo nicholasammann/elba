@@ -5,7 +5,7 @@
 * \brief Member function definitions for Submesh.
 */
 
-#include "Graphics/Submesh.hpp"
+#include "Elba/Graphics/Submesh.hpp"
 
 namespace Elba
 {

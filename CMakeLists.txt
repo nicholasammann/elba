@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
 
 project(elba CXX C)
-project(editor CXX C)
-project(game CXX C)
 
 set(submodule_root ${CMAKE_CURRENT_LIST_DIR}/submodules)
 set(includes_root ${CMAKE_CURRENT_LIST_DIR}/includes)
@@ -13,6 +11,11 @@ set(qt_root ${CMAKE_CURRENT_LIST_DIR}/qt)
 
 set(elba_root ${CMAKE_CURRENT_LIST_DIR}/src/Elba)
 set(editor_root ${CMAKE_CURRENT_LIST_DIR}/src/Editor)
+
+set(build_type $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>)
+
+set(elba_out ${CMAKE_CURRENT_LIST_DIR}/build/src/elba/${build_type})
+set(editor_out ${CMAKE_CURRENT_LIST_DIR}/build/src/editor/${build_type})
 
 # mimic folder structure
 include(${cmake_dir}/YTE_Source_Group.cmake)

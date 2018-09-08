@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "Core/CoreTypedefs.hpp"
-#include "Utilities/GlobalKey.hpp"
-#include "Core/Component.hpp"
+#include "Elba/Core/CoreTypedefs.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
+#include "Elba/Core/Component.hpp"
 
 namespace Elba
 {

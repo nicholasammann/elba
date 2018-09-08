@@ -5,7 +5,7 @@
 * \brief Member function definitions for Shader.
 */
 
-#include "Graphics/Shader.hpp"
+#include "Elba/Graphics/Shader.hpp"
 
 namespace Elba
 {

@@ -5,11 +5,11 @@
 * \brief Member function definitions for Model.
 */
 
-#include "Engine.hpp"
-#include "Core/Object.hpp"
-#include "Core/CoreModule.hpp"
-#include "Core/Components/Model.hpp"
-#include "Graphics/GraphicsModule.hpp"
+#include "Elba/Engine.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/Model.hpp"
+#include "Elba/Graphics/GraphicsModule.hpp"
 
 namespace Elba
 {

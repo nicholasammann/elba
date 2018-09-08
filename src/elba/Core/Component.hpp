@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Core/CoreForwardDeclarations.hpp"
-#include "Utilities/GlobalKey.hpp"
+#include "Elba/Core/CoreForwardDeclarations.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
 
 namespace Elba
 {

@@ -5,9 +5,9 @@
 * \brief Member function definitions for CoreModule.
 */
 
-#include "Core/CoreModule.hpp"
-#include "Core/Object.hpp"
-#include "Engine.hpp"
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Engine.hpp"
 
 namespace Elba
 {

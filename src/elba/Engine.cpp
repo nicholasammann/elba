@@ -7,11 +7,11 @@
 
 #include <iostream>
 
-#include "Core/CoreModule.hpp"
-#include "Graphics/GraphicsModule.hpp"
-#include "Physics/PhysicsModule.hpp"
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Physics/PhysicsModule.hpp"
 
-#include "Engine.hpp"
+#include "Elba/Engine.hpp"
 
 namespace Elba
 {

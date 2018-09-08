@@ -5,8 +5,8 @@
 * \brief Member function definitions for Object.
 */
 
-#include "Core/Object.hpp"
-#include "Core/Component.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Core/Component.hpp"
 
 namespace Elba
 {

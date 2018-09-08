@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "Utilities/StdTypedefs.hpp"
-#include "Utilities/GlobalKey.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
 
-#include "Core/CoreForwardDeclarations.hpp"
+#include "Elba/Core/CoreForwardDeclarations.hpp"
 
 namespace Elba
 {

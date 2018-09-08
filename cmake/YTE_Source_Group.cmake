@@ -41,6 +41,6 @@ function(YTE_Source_Group aRoot aTarget)
   # We use a one space prefix with files not in folders, otherwise the files 
   # are put into "Source Files" and "Header Files" filters. 
   source_group(TREE ${${aRoot}}  
-               PREFIX "" 
+               PREFIX " " 
                FILES ${notInAFolder}) 
 endfunction() 

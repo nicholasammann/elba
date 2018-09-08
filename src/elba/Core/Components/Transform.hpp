@@ -10,10 +10,10 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "Utilities/StdTypedefs.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
 
-#include "Core/Component.hpp"
-#include "Physics/PhysicsForwardDeclarations.hpp"
+#include "Elba/Core/Component.hpp"
+#include "Elba/Physics/PhysicsForwardDeclarations.hpp"
 
 namespace Elba
 {

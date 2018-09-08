@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Utilities/StdTypedefs.hpp"
-#include "Graphics/GraphicsForwardDeclarations.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
 namespace Elba
 {

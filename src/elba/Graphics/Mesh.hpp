@@ -6,11 +6,12 @@
 */
 
 #include <glm/mat4x4.hpp>
-#include "Utilities/StdTypedefs.hpp"
 
-#include "Graphics/GraphicsForwardDeclarations.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
 
-#include "Graphics/Submesh.hpp"
+#include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
+
+#include "Elba/Graphics/Submesh.hpp"
 
 namespace Elba
 {

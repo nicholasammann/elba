@@ -1,4 +1,4 @@
-#include "Framework/Resource.hpp"
+#include "Elba/Framework/Resource.hpp"
 
 /**
 * \file Resource.cpp

@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "Utilities/StdTypedefs.hpp"
-#include "Physics/PhysicsForwardDeclarations.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Physics/PhysicsForwardDeclarations.hpp"
 
 namespace Elba
 {
