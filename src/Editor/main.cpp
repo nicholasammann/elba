@@ -4,6 +4,8 @@
 #include "Editor/Framework/MainWindow.hpp"
 #include "Editor/LevelEditor/LevelEditor.hpp"
 
+#define EDITOR_MODE
+
 using namespace Editor;
 
 // Change the app style

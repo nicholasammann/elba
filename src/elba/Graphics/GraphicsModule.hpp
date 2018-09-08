@@ -9,13 +9,9 @@
 
 #include <vector>
 
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
-
 #include "Elba/Framework/Module.hpp"
 
 #include "Elba/Graphics/GraphicsFactory.hpp"
-
 
 namespace Elba
 {
@@ -36,12 +32,17 @@ public:
   /**
   * \brief Initialize function called by Engine. Initializes GraphicsModule.
   */
-  virtual void Initialize() override;
+  virtual void Initialize() override = 0;
 
   /**
   * \brief Update function called by Engine. Updates graphics.
   */
-  virtual void Update() override;
+  virtual void Update() override = 0;
+  
+  /**
+  * \brief Window/context agnostic rendering calls.
+  */
+  virtual void Render() = 0;
 
   /**
   * \brief Getter for the GraphicsFactory.
@@ -54,9 +55,6 @@ private:
   friend GraphicsFactory;
 
   std::vector<Mesh*> mMeshes;
-
-  GLFWwindow* mWindow;
-
 };
 
 } // End of Elba namespace

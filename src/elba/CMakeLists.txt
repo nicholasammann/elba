@@ -1,20 +1,26 @@
 add_library(elba)
 
-include(Core/CMakeLists.txt)
-include(Framework/CMakeLists.txt)
-include(Graphics/CMakeLists.txt)
-include(Physics/CMakeLists.txt)
-include(Tests/CMakeLists.txt)
-include(Utilities/CMakeLists.txt)
+# Include all subdirectories
+add_subdirectory(Core)
+add_subdirectory(Framework)
+add_subdirectory(Graphics)
+add_subdirectory(Physics)
+add_subdirectory(Tests)
+add_subdirectory(Utilities)
 
+# Add engine source files
 target_sources(elba
 PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/Engine.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Engine.cpp
+
+PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/Engine.hpp
 )
 
+# Joshua T. Fisher's function for mimicking directories in VS solution
 YTE_Source_Group(CMAKE_CURRENT_LIST_DIR elba)
 
+# Add necessary dirs to include path
 target_include_directories(elba
 PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../
@@ -23,12 +29,15 @@ PUBLIC
     ${bin_root}
 )
 
+# Game exe
 add_executable(game 
     "main.cpp"
 )
 
+# Verify that OpenGL is available
 find_package(OpenGL REQUIRED)
 
+# Link all libraries for game/engine
 target_link_libraries(game
 PRIVATE
     elba
@@ -37,4 +46,9 @@ PRIVATE
     ${libs_root}/glew32s.lib
     ${libs_root}/glfw3.lib
     ${OPENGL_LIBRARIES}
+)
+
+# Post-build step for copying dll's to same folder as exe
+add_custom_command(TARGET game POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${bin_root}/glew32.dll ${elba_out}/glew32.dll
 )

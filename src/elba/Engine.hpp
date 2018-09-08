@@ -23,8 +23,9 @@ public:
 
   /**
   * \brief Engine constructor
+  * \param inEditorMode Is the engine being run inside the editor.
   */
-  Engine();
+  Engine(bool inEditorMode);
 
   /**
   * \brief Engine destructor
@@ -70,6 +71,12 @@ public:
   */
   PhysicsModule* GetPhysicsModule();
 
+  /**
+  * \brief Check if engine is running inside editor.
+  * \return True if being run by editor, false otherwise.
+  */
+  bool InEditor() const;
+
 private:
   // Modules
   UniquePtr<CoreModule> mCoreModule;
@@ -78,6 +85,7 @@ private:
 
   // Running status
   bool mIsRunning;
+  bool mInEditorMode;
 };
 
 } // End of Elba namespace

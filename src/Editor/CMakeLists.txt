@@ -1,15 +1,19 @@
 add_executable(editor)
 
-include(Framework/CMakeLists.txt)
-include(LevelEditor/CMakeLists.txt)
+# Include all subdirectories
+add_subdirectory(Framework)
+add_subdirectory(LevelEditor)
 
+# Add main source file
 target_sources(editor
 PRIVATE
   main.cpp
 )
 
+# Joshua T. Fisher's function for mimicking directories in VS solution
 YTE_Source_Group(CMAKE_CURRENT_LIST_DIR editor)
 
+# Add directories to include path
 target_include_directories(editor
 PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}
@@ -20,32 +24,25 @@ PUBLIC
   ${qt_root}/include/QtWidgets
 )
 
+# Make sure OpenGL is present
 find_package(OpenGL REQUIRED)
 
+# Link to all libs necessary for editor and engine
 target_link_libraries(editor
 PRIVATE
-    elba
-    ${libs_root}/assimp.lib
-    ${libs_root}/glew32.lib
-    ${libs_root}/glew32s.lib
-    ${libs_root}/glfw3.lib
-    ${OPENGL_LIBRARIES}
+  elba
+  ${libs_root}/assimp.lib
+  ${libs_root}/glew32.lib
+  ${libs_root}/glew32s.lib
+  ${libs_root}/glfw3.lib
 
-    ${qt_root}/lib/Qt5Core.lib
-    ${qt_root}/lib/Qt5Gui.lib
-    ${qt_root}/lib/Qt5Widgets.lib
+  ${OPENGL_LIBRARIES}
+  ${qt_root}/lib/Qt5Core.lib
+  ${qt_root}/lib/Qt5Gui.lib
+  ${qt_root}/lib/Qt5Widgets.lib
 )
 
-add_custom_command(TARGET editor POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-
-  # file to copy
-  ${bin_root}/glew32.dll
-
-  # output file
-  ${editor_out}/glew32.dll
-)
-
+# Post-build step for copying dll's to same folder as exe
 add_custom_command(TARGET editor POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${bin_root}/glew32.dll ${editor_out}/glew32.dll
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/bin/Qt5Core.dll ${editor_out}/Qt5Core.dll

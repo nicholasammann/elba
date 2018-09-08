@@ -8,7 +8,7 @@ namespace Editor
 LevelEditor::LevelEditor(Framework::MainWindow* mainWindow)
 : Workspace(mainWindow)
 {
-  mEngine = new Elba::Engine();
+  mEngine = new Elba::Engine(true);
 
   mEngine->Initialize();
   
