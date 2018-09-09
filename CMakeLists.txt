@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
 
 project(elba CXX C)
 
-set(submodule_root ${CMAKE_CURRENT_LIST_DIR}/submodules)
+set(submodules_root ${CMAKE_CURRENT_LIST_DIR}/submodules)
 set(includes_root ${CMAKE_CURRENT_LIST_DIR}/includes)
 set(libs_root ${CMAKE_CURRENT_LIST_DIR}/libs)
 set(bin_root ${CMAKE_CURRENT_LIST_DIR}/bin)

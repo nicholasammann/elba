@@ -2,6 +2,7 @@
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
+#include "Editor/LevelEditor/ObjectBrowser/ObjectBrowser.hpp"
 
 namespace Editor
 {
@@ -33,6 +34,8 @@ bool LevelEditor::Initialize()
   mainWindow->setCentralWidget(tabs);
   QWidget* container = mainWindow->createWindowContainer(mLevelWindow);
   tabs->addTab(container, "Level Window");
+
+  LoadWidget<ObjectBrowser>(this);
 
   return true;
 }

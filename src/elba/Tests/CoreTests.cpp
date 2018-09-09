@@ -30,32 +30,32 @@ void RunAllTests(CoreModule* coreModule)
 void CreateObjects1(CoreModule* coreModule)
 {
   PrintTestHeader("Create Objects 1");
-  Object* world = coreModule->GetGameWorld();
-  CreateObjects(world, 10);
+  Level* level = coreModule->GetGameLevel();
+  CreateObjects(level, 10);
   PrintTestFooter();
 }
 
 void CreateObjects2(CoreModule* coreModule)
 {
   PrintTestHeader("Create Objects 2");
-  Object* world = coreModule->GetGameWorld();
-  CreateObjects(world, 100);
+  Level* level = coreModule->GetGameLevel();
+  CreateObjects(level, 100);
   PrintTestFooter();
 }
 
 void CreateObjects3(CoreModule* coreModule)
 {
   PrintTestHeader("Create Objects 3");
-  Object* world = coreModule->GetGameWorld();
-  CreateObjects(world, 1000);
+  Level* level = coreModule->GetGameLevel();
+  CreateObjects(level, 1000);
   PrintTestFooter();
 }
 
 void CreateObjects4(CoreModule* coreModule)
 {
   PrintTestHeader("Create Objects 4");
-  Object* world = coreModule->GetGameWorld();
-  CreateObjects(world, 10000);
+  Level* level = coreModule->GetGameLevel();
+  CreateObjects(level, 10000);
   PrintTestFooter();
 }
 

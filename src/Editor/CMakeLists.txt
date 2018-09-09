@@ -18,6 +18,7 @@ target_include_directories(editor
 PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}
   ${elba_root}/../
+  ${submodules_root}/rapidjson/include/
   ${qt_root}/include
   ${qt_root}/include/QtCore
   ${qt_root}/include/QtGui

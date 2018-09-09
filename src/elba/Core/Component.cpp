@@ -25,4 +25,9 @@ Object* Component::GetParent() const
 {
   return mParent;
 }
+
+void Component::Update()
+{
+}
+
 } // End of Elba namespace

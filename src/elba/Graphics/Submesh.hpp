@@ -1,3 +1,5 @@
+#pragma once
+
 /**
 * \file Submesh.hpp
 * \author Nicholas Ammann
@@ -18,6 +20,7 @@ struct Vertex
 {
   glm::vec3 mPos;
   glm::vec3 mNormal;
+  glm::vec2 mTexCoords;
 
   Vertex() : mPos(glm::vec3()), mNormal(glm::vec3()) { }
 };
@@ -50,6 +53,9 @@ public:
   */
   Submesh();
 
+  /**
+  * \brief Initialize fn
+  */
   virtual void Initialize() = 0;
 
   /**

@@ -13,9 +13,9 @@ namespace Elba
 {
 CoreModule::CoreModule(Engine* engine)
   : Module(engine)
-  , mGameWorld(NewUnique<Object>(nullptr))
+  , mGameLevel(NewUnique<Level>())
 {
-  mGameWorld->mCoreModule = this;
+  mGameLevel->mCoreModule = this;
 }
 
 void CoreModule::Initialize()
@@ -26,9 +26,9 @@ void CoreModule::Update()
 {
 }
 
-Object* CoreModule::GetGameWorld()
+Level* CoreModule::GetGameLevel()
 {
-  return mGameWorld.get();
+  return mGameLevel.get();
 }
 
 } // End of Elba namespace

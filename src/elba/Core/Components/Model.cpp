@@ -13,20 +13,25 @@
 
 namespace Elba
 {
-Model::Model(Object* parent) : Component(parent)
+Model::Model(Object* parent)
+: Component(parent)
+, mMesh()
 {
-  // ask graphics module to create model object
-  CoreModule* core = parent->GetCoreModule();
-  Engine* engine = core->GetEngine();
-  GraphicsModule* graphics = engine->GetGraphicsModule();
-  GraphicsFactory* factory = graphics->GetFactory();
-
-  mMesh = factory->CreateMesh();
 }
 
 void Model::Initialize()
 {
 
+}
+
+void Model::LoadMesh(std::string name)
+{
+  CoreModule* core = GetParent()->GetCoreModule();
+  Engine* engine = core->GetEngine();
+  GraphicsModule* graphicsModule = engine->GetGraphicsModule();
+
+  // get mesh from graphics factory
+  mMesh = graphicsModule->RequestMesh(name);
 }
 
 } // End of Elba namespace

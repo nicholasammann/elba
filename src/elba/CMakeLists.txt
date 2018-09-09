@@ -24,7 +24,8 @@ YTE_Source_Group(CMAKE_CURRENT_LIST_DIR elba)
 target_include_directories(elba
 PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../
-    ${submodule_root}/glm/
+    ${submodules_root}/glm/
+    ${submodules_root}/rapidjson/include/
     ${includes_root}
     ${bin_root}
 )
@@ -37,7 +38,7 @@ add_executable(game
 # Verify that OpenGL is available
 find_package(OpenGL REQUIRED)
 
-# Link all libraries for game/engine
+# Link libaries for game/engine
 target_link_libraries(game
 PRIVATE
     elba

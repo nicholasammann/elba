@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
 
 namespace Elba
 {
@@ -35,7 +36,15 @@ public:
   */
   void Render() final;
 
+  /**
+  * \brief Constructs a Mesh and adds it to the graphics module.
+  * \param name The name of the fbx file.
+  * \return The Mesh that was just created.
+  */
+  UniquePtr<Mesh> RequestMesh(std::string name) final;
+
 private:
+  UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow * mWindow;
 
 };

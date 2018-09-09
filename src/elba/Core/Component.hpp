@@ -41,8 +41,13 @@ public:
   */
   Object* GetParent() const;
 
+  /**
+  * \brief Updates this component.
+  */
+  virtual void Update();
+
 private:
-  Object * mParent;
+  Object* mParent;
   GlobalKey mGuid;
 };
 

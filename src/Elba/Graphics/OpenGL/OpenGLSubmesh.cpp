@@ -5,8 +5,15 @@
 namespace Elba
 {
 
-OpenGLSubmesh::OpenGLSubmesh() : Submesh()
+OpenGLSubmesh::OpenGLSubmesh()
+  : Submesh()
 {
+}
+
+OpenGLSubmesh::OpenGLSubmesh(const std::vector<Vertex>& verts, const std::vector<Face>& faces)
+{
+  mVertices = verts;
+  mFaces = faces;
 }
 
 void OpenGLSubmesh::Initialize()

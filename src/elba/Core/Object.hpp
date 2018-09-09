@@ -63,6 +63,11 @@ public:
   */
   CoreModule* GetCoreModule() const;
 
+  /**
+  * \brief Updates all child objects and components on this object.
+  */
+  virtual void Update();
+
 private:
   // so CoreModule can set the pointer to itself on the root object
   friend class CoreModule;

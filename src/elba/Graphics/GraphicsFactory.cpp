@@ -16,13 +16,4 @@ GraphicsFactory::GraphicsFactory(GraphicsModule* graphicsModule)
 {
 }
 
-UniquePtr<Mesh> GraphicsFactory::CreateMesh()
-{
-  UniquePtr<Mesh> mesh = NewUnique<Mesh>();
-
-  mModule->mMeshes.push_back(mesh.get());
-
-  return std::move(mesh);
-}
-
 } // End of Elba namespace

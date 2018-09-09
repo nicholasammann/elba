@@ -15,13 +15,7 @@ namespace Elba
 {
 GraphicsModule::GraphicsModule(Engine* engine)
   : Module(engine)
-  , mFactory(NewUnique<GraphicsFactory>(this))
 {
-}
-
-GraphicsFactory* GraphicsModule::GetFactory() const
-{
-  return mFactory.get();
 }
 
 } // End of Elba namespace

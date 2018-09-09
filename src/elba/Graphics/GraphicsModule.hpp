@@ -45,16 +45,11 @@ public:
   virtual void Render() = 0;
 
   /**
-  * \brief Getter for the GraphicsFactory.
-  * \return The GraphicsFactory owned by this Module.
+  * \brief Constructs a Mesh and adds it to the graphics module.
+  * \param name The name of the fbx file.
+  * \return The Mesh that was just created.
   */
-  GraphicsFactory* GetFactory() const;
-
-private:
-  UniquePtr<GraphicsFactory> mFactory;
-  friend GraphicsFactory;
-
-  std::vector<Mesh*> mMeshes;
+  virtual UniquePtr<Mesh> RequestMesh(std::string name) = 0;
 };
 
 } // End of Elba namespace

@@ -71,5 +71,10 @@ void OpenGLModule::Render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
+{
+  return std::move(mFactory->RequestMesh(name));
+}
+
 } // End of Elba namespace
 

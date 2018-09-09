@@ -13,8 +13,7 @@
 namespace Elba
 {
 /**
-* \brief Interface for communicating with a model object in the graphics module.
-The graphics related data should all be contained in the graphics module.
+* \brief Interface for communicating with a mesh.
 */
 class Model : public Component
 {
@@ -29,6 +28,12 @@ public:
   * \brief Initializes derived class.
   */
   void Initialize() override;
+
+  /**
+  * \brief Loads a new mesh for this model component.
+  * \param name The name of the mesh (fbx file).
+  */
+  void LoadMesh(std::string name);
 
 private:
   // graphics mesh

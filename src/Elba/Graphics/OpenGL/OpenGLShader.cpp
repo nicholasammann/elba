@@ -9,7 +9,7 @@
 
 #include <gl/glew.h>
 
-#include "Elba/Graphics/Shader.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
 
 namespace Elba
 {

@@ -74,4 +74,19 @@ CoreModule* Object::GetCoreModule() const
   return mCoreModule;
 }
 
+void Object::Update()
+{
+  // Update components on this object
+  for (std::pair<const GlobalKey, UniquePtr<Component> >& component : mComponents)
+  {
+    component.second->Update();
+  }
+
+  // Update child objects
+  for (std::pair<const GlobalKey, UniquePtr<Object> >& child : mChildren)
+  {
+    child.second->Update();
+  }
+}
+
 } // End of Elba namespace
