@@ -6,6 +6,7 @@
 
 namespace Editor
 {
+class LevelWindow;
 
 class LevelEditor : public Framework::Workspace
 {
@@ -17,9 +18,12 @@ public:
 
   void Update();
 
+  Elba::Engine* GetEngine();
+
 private:
   Elba::Engine* mEngine;
 
+  LevelWindow* mLevelWindow;
 };
 
 } // End of Editor namespace

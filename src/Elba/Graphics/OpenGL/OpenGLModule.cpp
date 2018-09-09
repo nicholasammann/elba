@@ -55,11 +55,11 @@ void OpenGLModule::Initialize()
 
 void OpenGLModule::Update()
 {
-  Render();
-
-  // Swap buffers and handle events if engine is NOT running in editor
+  // Run update if engine is NOT running in editor
+  // If running in editor, the Render function will be called explicitly
   if (!GetEngine()->InEditor())
   {
+    Render();
     glfwSwapBuffers(mWindow);
     glfwPollEvents();
   }

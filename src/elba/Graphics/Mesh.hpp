@@ -27,18 +27,17 @@ public:
   Mesh();
 
   /**
+  * \brief Initializes all contained submeshes.
+  */
+  void Initialize();
+
+  /**
   * \brief Draws all submeshes contained by this Mesh.
   * \param proj The projection matrix.
   * \param view The view matrix.
   * \param model The model matrix.
   */
   void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model);
-
-  /**
-  * \brief Sets the shader this mesh will use to draw.
-  * \param shaderName The name of the shader that will be used.
-  */
-  void SetShader(const char* shaderName);
 
 private:
   std::vector<UniquePtr<Submesh>> mSubmeshes;

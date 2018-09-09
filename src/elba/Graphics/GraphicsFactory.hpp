@@ -10,6 +10,8 @@
 #include "Elba/Utilities/StdTypedefs.hpp"
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
+#include "Elba/Utilities/GlobalKey.hpp"
+
 namespace Elba
 {
 /**
@@ -30,7 +32,7 @@ public:
   UniquePtr<Mesh> CreateMesh();
 
 private:
-  GraphicsModule * mModule;
+  GraphicsModule* mModule;
 
 };
 

@@ -31,8 +31,7 @@ public:
   void Initialize() override;
 
 private:
-
-  // graphics model
+  // graphics mesh
   UniquePtr<Mesh> mMesh;
 
 };

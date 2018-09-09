@@ -1,6 +1,7 @@
 #include <qtimer.h>
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
+#include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
 
 namespace Editor
 {
@@ -16,10 +17,23 @@ LevelEditor::LevelEditor(Framework::MainWindow* mainWindow)
   {
     Update();
   });
+
+  mLevelWindow = new LevelWindow(this);
 }
 
 bool LevelEditor::Initialize()
 {
+  QTabWidget* tabs = new QTabWidget();
+  tabs->setMovable(true);
+  tabs->setTabsClosable(true);
+  tabs->setUsesScrollButtons(true);
+
+  Framework::MainWindow* mainWindow = GetMainWindow();
+
+  mainWindow->setCentralWidget(tabs);
+  QWidget* container = mainWindow->createWindowContainer(mLevelWindow);
+  tabs->addTab(container, "Level Window");
+
   return true;
 }
 
@@ -35,6 +49,11 @@ void LevelEditor::Update()
   {
     Update();
   });
+}
+
+Elba::Engine* LevelEditor::GetEngine()
+{
+  return mEngine;
 }
 
 } // End of Editor namespace

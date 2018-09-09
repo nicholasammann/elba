@@ -11,11 +11,21 @@ namespace Elba
 {
 Submesh::Submesh()
 {
-
 }
 
-void Submesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void Submesh::AddVertex(float aX, float aY, float aZ)
 {
+  Vertex v;
+  v.mPos.x = aX;
+  v.mPos.y = aY;
+  v.mPos.z = aZ;
 
+  mVertices.push_back(v);
 }
+
+void Submesh::AddFace(uint32_t a, uint32_t b, uint32_t c)
+{
+  mFaces.push_back(Face(a, b, c));
+}
+
 } // End of Elba namespace

@@ -1,4 +1,4 @@
-add_subdirectory(LevelWindow/CMakeLists.txt)
+add_subdirectory(LevelWindow)
 
 target_sources(editor
 PRIVATE
