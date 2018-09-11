@@ -8,18 +8,23 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 
-#include <gl/glew.h>
-#include <GLFW/glfw3.h>
+#include "Elba/Framework/Module.hpp"
 
-#include "Framework/Module.hpp"
-
-#include "Graphics/GraphicsFactory.hpp"
-
+#include "Elba/Graphics/GraphicsFactory.hpp"
 
 namespace Elba
 {
 class Engine;
+
+struct DrawEvent
+{
+  glm::mat4 proj;
+  glm::mat4 view;
+};
+
+typedef std::function<void(const DrawEvent&)> DrawCallback;
 
 /**
 * \brief Module for the graphics system. Manages rendering.
@@ -36,27 +41,31 @@ public:
   /**
   * \brief Initialize function called by Engine. Initializes GraphicsModule.
   */
-  void Initialize() override;
+  virtual void Initialize() override = 0;
 
   /**
   * \brief Update function called by Engine. Updates graphics.
   */
-  void Update() override;
+  virtual void Update() override = 0;
+  
+  /**
+  * \brief Window/context agnostic rendering calls.
+  */
+  virtual void Render() = 0;
 
   /**
-  * \brief Getter for the GraphicsFactory.
-  * \return The GraphicsFactory owned by this Module.
+  * \brief Constructs a Mesh and adds it to the graphics module.
+  * \param name The name of the fbx file.
+  * \return The Mesh that was just created.
   */
-  GraphicsFactory* GetFactory() const;
+  virtual UniquePtr<Mesh> RequestMesh(std::string name) = 0;
 
+  void RegisterForDraw(GlobalKey key, DrawCallback callback);
 
-private:
-  UniquePtr<GraphicsFactory> mFactory;
-  friend GraphicsFactory;
+  bool DeregisterForDraw(GlobalKey key);
 
-  std::vector<Mesh*> mMeshes;
-
-  GLFWwindow* mWindow;
+protected:
+  std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
 
 };
 

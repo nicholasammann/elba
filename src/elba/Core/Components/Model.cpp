@@ -5,28 +5,58 @@
 * \brief Member function definitions for Model.
 */
 
-#include "Engine.hpp"
-#include "Core/Object.hpp"
-#include "Core/CoreModule.hpp"
-#include "Core/Components/Model.hpp"
-#include "Graphics/GraphicsModule.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
+
+#include "Elba/Engine.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/Model.hpp"
+#include "Elba/Graphics/GraphicsModule.hpp"
 
 namespace Elba
 {
-Model::Model(Object* parent) : Component(parent)
+Model::Model(Object* parent)
+: Component(parent)
 {
-  // ask graphics module to create model object
-  CoreModule* core = parent->GetCoreModule();
-  Engine* engine = core->GetEngine();
-  GraphicsModule* graphics = engine->GetGraphicsModule();
-  GraphicsFactory* factory = graphics->GetFactory();
-
-  mMesh = factory->CreateMesh();
 }
 
 void Model::Initialize()
 {
 
+}
+
+void Model::LoadMesh(std::string name)
+{
+  CoreModule* core = GetParent()->GetCoreModule();
+  Engine* engine = core->GetEngine();
+  GraphicsModule* graphicsModule = engine->GetGraphicsModule();
+
+  // get mesh from graphics factory
+  mMesh = graphicsModule->RequestMesh(name);
+  mMesh->Initialize();
+
+  graphicsModule->RegisterForDraw(GetGuid(), 
+    [this](const DrawEvent& drawEvent)
+    {
+      Transform* transform = this->GetParent()->GetComponent<Transform>();
+      
+      glm::mat4 scale = glm::scale(transform->GetWorldScale());
+      glm::mat4 rotate = glm::toMat4(transform->GetWorldRotation());
+      glm::mat4 translate = glm::translate(transform->GetWorldTranslation());
+
+      glm::mat4 modelMat = translate * rotate * scale;
+
+      mMesh->Draw(drawEvent.proj, drawEvent.view, modelMat);
+    }
+  );
+}
+
+void Model::LoadShader(std::string name)
+{
+  mMesh->LoadShader(name);
 }
 
 } // End of Elba namespace

@@ -7,14 +7,13 @@
 
 #pragma once
 
-#include "Core/Component.hpp"
-#include "Graphics/Mesh.hpp"
+#include "Elba/Core/Component.hpp"
+#include "Elba/Graphics/Mesh.hpp"
 
 namespace Elba
 {
 /**
-* \brief Interface for communicating with a model object in the graphics module.
-The graphics related data should all be contained in the graphics module.
+* \brief Interface for communicating with a mesh.
 */
 class Model : public Component
 {
@@ -30,9 +29,16 @@ public:
   */
   void Initialize() override;
 
-private:
+  /**
+  * \brief Loads a new mesh for this model component.
+  * \param name The name of the mesh (fbx file).
+  */
+  void LoadMesh(std::string name);
 
-  // graphics model
+  void LoadShader(std::string name);
+
+private:
+  // graphics mesh
   UniquePtr<Mesh> mMesh;
 
 };

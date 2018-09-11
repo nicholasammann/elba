@@ -5,8 +5,8 @@
 * \brief Member function definitions for Module.
 */
 
-#include "Framework/Module.hpp"
-#include "Engine.hpp"
+#include "Elba/Framework/Module.hpp"
+#include "Elba/Engine.hpp"
 
 namespace Elba
 {

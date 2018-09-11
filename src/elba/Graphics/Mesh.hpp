@@ -1,3 +1,5 @@
+#pragma once
+
 /**
 * \file Mesh.hpp
 * \author Nicholas Ammann
@@ -6,11 +8,18 @@
 */
 
 #include <glm/mat4x4.hpp>
-#include "Utilities/StdTypedefs.hpp"
 
-#include "Graphics/GraphicsForwardDeclarations.hpp"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
-#include "Graphics/Submesh.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
+
+#include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
+
+#include "Elba/Graphics/Submesh.hpp"
+#include "Elba/Graphics/Texture.hpp"
 
 namespace Elba
 {
@@ -26,21 +35,21 @@ public:
   Mesh();
 
   /**
-  * \brief Draws all submeshes contained by this Mesh.
+  * \brief Initialize.
+  */
+  virtual void Initialize() = 0;
+
+  /**
+  * \brief Draws the Mesh.
   * \param proj The projection matrix.
   * \param view The view matrix.
   * \param model The model matrix.
   */
-  void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model);
+  virtual void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) = 0;
 
-  /**
-  * \brief Sets the shader this mesh will use to draw.
-  * \param shaderName The name of the shader that will be used.
-  */
-  void SetShader(const char* shaderName);
+  virtual void LoadMesh(std::string path) = 0;
 
-private:
-  std::vector<UniquePtr<Submesh>> mSubmeshes;
+  virtual void LoadShader(std::string name) = 0;
 };
 
 } // End of Elba namespace

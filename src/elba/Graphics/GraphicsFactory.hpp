@@ -7,8 +7,12 @@
 
 #pragma once
 
-#include "Utilities/StdTypedefs.hpp"
-#include "Graphics/GraphicsForwardDeclarations.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
+
+#include "Elba/Graphics/Mesh.hpp"
+
+#include "Elba/Utilities/GlobalKey.hpp"
 
 namespace Elba
 {
@@ -23,15 +27,8 @@ public:
   */
   GraphicsFactory(GraphicsModule* graphicsModule);
 
-  /**
-  * \brief Constructs a Mesh and adds it to the graphics module.
-  * \return The Mesh that was just created.
-  */
-  UniquePtr<Mesh> CreateMesh();
-
 private:
-  GraphicsModule * mModule;
-
+  GraphicsModule* mModule;
 };
 
 } // End of Elba namespace

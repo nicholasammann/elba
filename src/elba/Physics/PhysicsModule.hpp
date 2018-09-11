@@ -9,12 +9,12 @@
 
 #include <vector>
 
-#include "Framework/Module.hpp"
+#include "Elba/Framework/Module.hpp"
 
-#include "Physics/PhysicsForwardDeclarations.hpp"
-#include "Physics/PhysicsFactory.hpp"
+#include "Elba/Physics/PhysicsForwardDeclarations.hpp"
+#include "Elba/Physics/PhysicsFactory.hpp"
 
-#include "Utilities/StdTypedefs.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
 
 namespace Elba
 {

@@ -1,3 +1,4 @@
+#include "Mesh.hpp"
 /**
 * \file Mesh.cpp
 * \author Nicholas Ammann
@@ -5,23 +6,15 @@
 * \brief Member function definitions for Mesh.
 */
 
-#include "Graphics/Mesh.hpp"
+#include <iostream>
+#include <fstream>
+
+#include "Elba/Core/Object.hpp"
+#include "Elba/Graphics/Mesh.hpp"
 
 namespace Elba
 {
 Mesh::Mesh()
-{
-}
-
-void Mesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
-{
-  for (UniquePtr<Submesh>& submesh : mSubmeshes)
-  {
-    submesh->Draw(proj, view, model);
-  }
-}
-
-void Mesh::SetShader(const char* shaderName)
 {
 }
 

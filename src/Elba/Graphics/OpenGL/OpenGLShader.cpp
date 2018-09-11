@@ -5,17 +5,20 @@
 * \brief Member function definitions for Shader.
 */
 
-#include "Graphics/Shader.hpp"
+#include <fstream>
+
+#include <gl/glew.h>
+
+#include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
 
 namespace Elba
 {
-/*
-  Shader::Shader(const char *aName, const char *vertPath, const char *fragPath)
-  : mName(aName), mShaderProgram(0), mVertShader(0), mFragShader(0),
-    mVertPath(vertPath), mFragPath(fragPath)
+OpenGLShader::OpenGLShader(const char* aName, const char* vertPath, const char* fragPath)
+: mName(aName), mShaderProgram(0), mVertShader(0), mFragShader(0),
+mVertPath(vertPath), mFragPath(fragPath)
 {
   // read in vertex shader
-  const GLchar *vertexShaderSource = ReadShader(vertPath);
+  const GLchar* vertexShaderSource = ReadShader(vertPath);
 
   // create a shader object (return value is the id)
   mVertShader = glCreateShader(GL_VERTEX_SHADER);
@@ -60,7 +63,6 @@ namespace Elba
     throw error;
   }
 
-
   // create a shader program
   mShaderProgram = glCreateProgram();
 
@@ -76,7 +78,6 @@ namespace Elba
   }
   catch (...)
   {
-    std::cout << "Exception" << std::endl;
   }
 
   if (!success)
@@ -95,57 +96,57 @@ namespace Elba
   //glDeleteShader(mFragShader);
 }
 
-void Shader::UseShaderProgram()
+void OpenGLShader::UseShaderProgram()
 {
   glUseProgram(mShaderProgram);
 }
 
-void Shader::SetBool(const std::string &name, bool value)
+void OpenGLShader::SetBool(const std::string& name, bool value)
 {
   glUniform1i(glGetUniformLocation(mShaderProgram, name.c_str()), static_cast<int>(value));
 }
 
-void Shader::SetInt(const std::string &name, int value)
+void OpenGLShader::SetInt(const std::string& name, int value)
 {
   glUniform1i(glGetUniformLocation(mShaderProgram, name.c_str()), value);
 }
 
-void Shader::SetFloat(const std::string &name, float value)
+void OpenGLShader::SetFloat(const std::string& name, float value)
 {
   glUniform1f(glGetUniformLocation(mShaderProgram, name.c_str()), value);
 }
 
-unsigned int Shader::GetShaderProgram() const
+unsigned int OpenGLShader::GetShaderProgram() const
 {
   return mShaderProgram;
 }
 
-unsigned int Shader::GetVertShader() const
+unsigned int OpenGLShader::GetVertShader() const
 {
   return mVertShader;
 }
 
-unsigned int Shader::GetFragShader() const
+unsigned int OpenGLShader::GetFragShader() const
 {
   return mFragShader;
 }
 
-std::string Shader::GetName()
+std::string OpenGLShader::GetName()
 {
   return mName;
 }
 
-std::string Shader::GetVertPath()
+std::string OpenGLShader::GetVertPath()
 {
   return mVertPath;
 }
 
-std::string Shader::GetFragPath()
+std::string OpenGLShader::GetFragPath()
 {
   return mFragPath;
 }
 
-const GLchar * Shader::ReadShader(const std::string & filename)
+const GLchar* OpenGLShader::ReadShader(const std::string& filename)
 {
   std::string source;
   std::string line;
@@ -163,18 +164,13 @@ const GLchar * Shader::ReadShader(const std::string & filename)
     }
     file.close();
   }
-  else
-  {
-    std::cout << "Unable to open shader: " + filename << std::endl;
-  }
 
-  char *sourceChar = new char[source.size() + 1];
+  char* sourceChar = new char[source.size() + 1];
   strcpy(sourceChar, source.data());
 
   sourceChar[source.size()] = '\0';
 
   return sourceChar;
 }
-*/
 
 } // End of Elba namespace

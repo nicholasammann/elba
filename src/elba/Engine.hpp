@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "Utilities/StdTypedefs.hpp"
-#include "Core/CoreForwardDeclarations.hpp"
-#include "Graphics/GraphicsForwardDeclarations.hpp"
-#include "Physics/PhysicsForwardDeclarations.hpp"
+#include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Core/CoreForwardDeclarations.hpp"
+#include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
+#include "Elba/Physics/PhysicsForwardDeclarations.hpp"
 
 namespace Elba
 {
@@ -23,8 +23,9 @@ public:
 
   /**
   * \brief Engine constructor
+  * \param inEditorMode Is the engine being run inside the editor.
   */
-  Engine();
+  Engine(bool inEditorMode);
 
   /**
   * \brief Engine destructor
@@ -70,6 +71,12 @@ public:
   */
   PhysicsModule* GetPhysicsModule();
 
+  /**
+  * \brief Check if engine is running inside editor.
+  * \return True if being run by editor, false otherwise.
+  */
+  bool InEditor() const;
+
 private:
   // Modules
   UniquePtr<CoreModule> mCoreModule;
@@ -78,6 +85,7 @@ private:
 
   // Running status
   bool mIsRunning;
+  bool mInEditorMode;
 };
 
 } // End of Elba namespace

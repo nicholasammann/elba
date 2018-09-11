@@ -5,9 +5,8 @@
 * \brief Member function definitions for Component.
 */
 
-#include "Core/Object.hpp"
-#include "Core/Component.hpp"
-#include "Component.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Core/Component.hpp"
 
 namespace Elba
 {
@@ -26,4 +25,9 @@ Object* Component::GetParent() const
 {
   return mParent;
 }
+
+void Component::Update()
+{
+}
+
 } // End of Elba namespace

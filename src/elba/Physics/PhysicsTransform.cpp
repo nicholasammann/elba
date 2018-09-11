@@ -5,7 +5,7 @@
 * \brief Member function definitions for PhysicsTransform.
 */
 
-#include "PhysicsTransform.hpp"
+#include "Elba/Physics/PhysicsTransform.hpp"
 
 namespace Elba
 {

@@ -19,9 +19,25 @@ using namespace Elba;
 */
 int main(int argc, char** argv)
 {
-  Engine* elba = new Elba::Engine();
+  Engine* elba = new Engine(false);
 
   elba->Initialize();
+
+  // Test Level
+  Elba::CoreModule* core = elba->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+
+  Elba::Object* object = level->CreateChild();
+
+  Elba::Transform* transform = object->AddComponent<Elba::Transform>();
+
+  transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
+  transform->SetWorldScale(glm::vec3(1.0f, 1.0f, 1.0f));
+
+  Elba::Model* model = object->AddComponent<Elba::Model>();
+  model->LoadMesh("crysis/nanosuit.obj");
+  model->LoadShader("simple");
+  ////////////////////////
 
   while (elba->IsRunning())
   {

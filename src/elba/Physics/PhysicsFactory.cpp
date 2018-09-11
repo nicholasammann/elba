@@ -5,9 +5,9 @@
 * \brief Member function definitions for PhysicsFactory.
 */
 
-#include "Physics/PhysicsModule.hpp"
-#include "Physics/PhysicsFactory.hpp"
-#include "Physics/PhysicsTransform.hpp"
+#include "Elba/Physics/PhysicsModule.hpp"
+#include "Elba/Physics/PhysicsFactory.hpp"
+#include "Elba/Physics/PhysicsTransform.hpp"
 
 namespace Elba
 {

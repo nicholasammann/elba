@@ -5,14 +5,14 @@
 * \brief Member function definitions for Transform.
 */
 
-#include "Engine.hpp"
-#include "Core/Components/Transform.hpp"
-#include "Core/Object.hpp"
-#include "Core/CoreModule.hpp"
+#include "Elba/Engine.hpp"
+#include "Elba/Core/Components/Transform.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Core/CoreModule.hpp"
 
-#include "Physics/PhysicsModule.hpp"
-#include "Physics/PhysicsFactory.hpp"
-#include "Physics/PhysicsTransform.hpp"
+#include "Elba/Physics/PhysicsModule.hpp"
+#include "Elba/Physics/PhysicsFactory.hpp"
+#include "Elba/Physics/PhysicsTransform.hpp"
 
 namespace Elba
 {

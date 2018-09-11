@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Framework/Resource.hpp"
+#include "Elba/Framework/Resource.hpp"
 
 namespace Elba
 {

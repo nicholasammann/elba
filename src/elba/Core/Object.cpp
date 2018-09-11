@@ -5,8 +5,8 @@
 * \brief Member function definitions for Object.
 */
 
-#include "Core/Object.hpp"
-#include "Core/Component.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Core/Component.hpp"
 
 namespace Elba
 {
@@ -28,18 +28,6 @@ Object* Object::FindChild(const GlobalKey& guid) const
   auto it = mChildren.find(guid);
 
   if (it != mChildren.end())
-  {
-    return it->second.get();
-  }
-
-  return nullptr;
-}
-
-Component* Object::FindComponent(const GlobalKey& guid) const
-{
-  auto it = mComponents.find(guid);
-
-  if (it != mComponents.end())
   {
     return it->second.get();
   }
@@ -72,6 +60,21 @@ GlobalKey Object::GetGuid() const
 CoreModule* Object::GetCoreModule() const
 {
   return mCoreModule;
+}
+
+void Object::Update()
+{
+  // Update components on this object
+  for (std::pair<const std::type_index, UniquePtr<Component> >& component : mComponents)
+  {
+    component.second->Update();
+  }
+
+  // Update child objects
+  for (std::pair<const GlobalKey, UniquePtr<Object> >& child : mChildren)
+  {
+    child.second->Update();
+  }
 }
 
 } // End of Elba namespace

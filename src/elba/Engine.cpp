@@ -7,19 +7,20 @@
 
 #include <iostream>
 
-#include "Core/CoreModule.hpp"
-#include "Graphics/GraphicsModule.hpp"
-#include "Physics/PhysicsModule.hpp"
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
+#include "Elba/Physics/PhysicsModule.hpp"
 
-#include "Engine.hpp"
+#include "Elba/Engine.hpp"
 
 namespace Elba
 {
-Engine::Engine()
+Engine::Engine(bool inEditorMode)
   : mCoreModule(NewUnique<CoreModule>(this))
-  , mGraphicsModule(NewUnique<GraphicsModule>(this))
+  , mGraphicsModule(NewUnique<OpenGLModule>(this))
   , mPhysicsModule(NewUnique<PhysicsModule>(this))
   , mIsRunning(true)
+  , mInEditorMode(inEditorMode)
 {
 }
 
@@ -44,7 +45,6 @@ void Engine::Update()
 
 void Engine::Shutdown()
 {
-
 }
 
 bool Engine::IsRunning() const
@@ -65,6 +65,11 @@ GraphicsModule* Engine::GetGraphicsModule()
 PhysicsModule* Engine::GetPhysicsModule()
 {
   return mPhysicsModule.get();
+}
+
+bool Engine::InEditor() const
+{
+  return mInEditorMode;
 }
 
 } // End of Elba namespace

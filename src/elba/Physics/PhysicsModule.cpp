@@ -5,8 +5,8 @@
 * \brief Member function definitions for PhysicsModule.
 */
 
-#include "Engine.hpp"
-#include "Physics/PhysicsModule.hpp"
+#include "Elba/Engine.hpp"
+#include "Elba/Physics/PhysicsModule.hpp"
 
 namespace Elba
 {

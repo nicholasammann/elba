@@ -5,17 +5,17 @@
 * \brief Member function definitions for CoreModule.
 */
 
-#include "Core/CoreModule.hpp"
-#include "Core/Object.hpp"
-#include "Engine.hpp"
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Object.hpp"
+#include "Elba/Engine.hpp"
 
 namespace Elba
 {
 CoreModule::CoreModule(Engine* engine)
   : Module(engine)
-  , mGameWorld(NewUnique<Object>(nullptr))
+  , mGameLevel(NewUnique<Level>())
 {
-  mGameWorld->mCoreModule = this;
+  mGameLevel->mCoreModule = this;
 }
 
 void CoreModule::Initialize()
@@ -26,9 +26,9 @@ void CoreModule::Update()
 {
 }
 
-Object* CoreModule::GetGameWorld()
+Level* CoreModule::GetGameLevel()
 {
-  return mGameWorld.get();
+  return mGameLevel.get();
 }
 
 } // End of Elba namespace

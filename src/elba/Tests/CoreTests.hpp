@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "Core/CoreForwardDeclarations.hpp"
+#include "Elba/Core/CoreForwardDeclarations.hpp"
 
-#include "Core/Object.hpp"
-#include "Core/CoreModule.hpp"
+#include "Elba/Core/Level.hpp"
+#include "Elba/Core/CoreModule.hpp"
 
 namespace Elba
 {
