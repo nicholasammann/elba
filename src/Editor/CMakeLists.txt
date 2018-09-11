@@ -51,6 +51,7 @@ add_custom_command(TARGET editor POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/Qt5Gui.dll ${editor_out}/Qt5Gui.dll
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/Qt5Widgets.dll ${editor_out}/Qt5Widgets.dll
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/libEGL.dll ${editor_out}/libEGL.dll
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/qwindows.dll ${editor_out}/qwindows.dll
 )
 
 #if (${build_type} STREQUAL Debug)
