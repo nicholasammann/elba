@@ -1,8 +1,11 @@
+#include <gl/glew.h>
+
 #include <qpainter.h>
 #include <qopenglpaintdevice.h>
 
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Core/CoreModule.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
@@ -14,6 +17,8 @@ Editor::LevelWindow::LevelWindow(LevelEditor* editor, QWindow* parent)
 , mContext(nullptr)
 , mDevice(nullptr)
 {
+  glewExperimental = GL_TRUE;
+
   // Cache graphics module for easy use in render fn
   Elba::Engine* engine = mEditor->GetEngine();
   Elba::GraphicsModule* graphicsModule = engine->GetGraphicsModule();
@@ -39,11 +44,12 @@ void Editor::LevelWindow::Render()
     mDevice = new QOpenGLPaintDevice();
   }
 
+  const qreal retinaScale = devicePixelRatio();
+  glViewport(0, 0, width() * retinaScale, height() * retinaScale);
+
   mGraphicsModule->Render();
 
   mDevice->setSize(size());
-  QPainter painter(mDevice);
-  Render(&painter);
 }
 
 void Editor::LevelWindow::Initialize()
@@ -98,6 +104,22 @@ void Editor::LevelWindow::RenderNow()
   if (mAnimating)
   {
     RenderLater();
+  }
+
+  if (needsInitialize)
+  {
+    // Test Level
+    Elba::CoreModule* core = mEditor->GetEngine()->GetCoreModule();
+    Elba::Level* level = core->GetGameLevel();
+
+    Elba::Object* object = level->CreateChild();
+
+    Elba::Transform* transform = object->AddComponent<Elba::Transform>();
+
+    Elba::Model* model = object->AddComponent<Elba::Model>();
+    model->LoadMesh("crysis/nanosuit.obj");
+    model->LoadShader("simple");
+    ////////////////////////
   }
 }
 

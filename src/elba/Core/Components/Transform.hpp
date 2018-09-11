@@ -14,6 +14,7 @@
 
 #include "Elba/Core/Component.hpp"
 #include "Elba/Physics/PhysicsForwardDeclarations.hpp"
+#include "Elba/Physics/PhysicsTransform.hpp"
 
 namespace Elba
 {

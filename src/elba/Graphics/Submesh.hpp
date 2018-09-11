@@ -20,7 +20,6 @@ struct Vertex
 {
   glm::vec3 mPos;
   glm::vec3 mNormal;
-  glm::vec2 mTexCoords;
 
   Vertex() : mPos(glm::vec3()), mNormal(glm::vec3()) { }
 };

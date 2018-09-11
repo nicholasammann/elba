@@ -1,4 +1,5 @@
 #include <gl/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "OpenGLSubmesh.hpp"
 
@@ -83,6 +84,16 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   matLoc = glGetUniformLocation(shdrPrg, "Material.shininess");
   glUniform1f(matLoc, mMaterial.shininess);
   */
+  GLuint shdrPrg = mShader->GetShaderProgram();
+
+  unsigned int viewLoc = glGetUniformLocation(shdrPrg, "view");
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+  unsigned int projLoc = glGetUniformLocation(shdrPrg, "projection");
+  glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+
+  unsigned int modelLoc = glGetUniformLocation(shdrPrg, "model");
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
   glBindVertexArray(mVAO);
   glDrawElements(GL_TRIANGLES, mFaces.size() * 3, GL_UNSIGNED_INT, 0);

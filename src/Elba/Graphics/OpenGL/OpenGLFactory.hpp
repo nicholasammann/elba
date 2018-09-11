@@ -35,7 +35,7 @@ public:
   * \param name The name of the fbx file.
   * \return The Mesh that was just created.
   */
-  UniquePtr<Mesh> RequestMesh(std::string name) final;
+  UniquePtr<OpenGLMesh> RequestMesh(std::string name);
 
 private:
   Map<std::string, UniquePtr<OpenGLMesh> > mLoadedMeshes;

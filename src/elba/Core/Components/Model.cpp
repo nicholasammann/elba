@@ -5,6 +5,11 @@
 * \brief Member function definitions for Model.
 */
 
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "Elba/Engine.hpp"
 #include "Elba/Core/Object.hpp"
 #include "Elba/Core/CoreModule.hpp"
@@ -15,7 +20,6 @@ namespace Elba
 {
 Model::Model(Object* parent)
 : Component(parent)
-, mMesh()
 {
 }
 
@@ -32,6 +36,27 @@ void Model::LoadMesh(std::string name)
 
   // get mesh from graphics factory
   mMesh = graphicsModule->RequestMesh(name);
+  mMesh->Initialize();
+
+  graphicsModule->RegisterForDraw(GetGuid(), 
+    [this](const DrawEvent& drawEvent)
+    {
+      Transform* transform = this->GetParent()->GetComponent<Transform>();
+      
+      glm::mat4 scale = glm::scale(transform->GetWorldScale());
+      glm::mat4 rotate = glm::toMat4(transform->GetWorldRotation());
+      glm::mat4 translate = glm::translate(transform->GetWorldTranslation());
+
+      glm::mat4 modelMat = translate * rotate * scale;
+
+      mMesh->Draw(drawEvent.proj, drawEvent.view, modelMat);
+    }
+  );
+}
+
+void Model::LoadShader(std::string name)
+{
+  mMesh->LoadShader(name);
 }
 
 } // End of Elba namespace

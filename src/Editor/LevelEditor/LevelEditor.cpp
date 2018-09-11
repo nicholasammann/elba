@@ -1,5 +1,7 @@
 #include <qtimer.h>
 
+#include "Elba/Core/CoreModule.hpp"
+
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
 #include "Editor/LevelEditor/ObjectBrowser/ObjectBrowser.hpp"
@@ -13,13 +15,14 @@ LevelEditor::LevelEditor(Framework::MainWindow* mainWindow)
   mEngine = new Elba::Engine(true);
 
   mEngine->Initialize();
-  
+
+  mLevelWindow = new LevelWindow(this);
+  mLevelWindow->Initialize();
+
   QTimer::singleShot(0, [this]()
   {
     Update();
   });
-
-  mLevelWindow = new LevelWindow(this);
 }
 
 bool LevelEditor::Initialize()

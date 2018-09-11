@@ -15,7 +15,9 @@ void window_resize_callback(GLFWwindow* aWindow, int aWidth, int aHeight)
 }
 
 OpenGLModule::OpenGLModule(Engine* engine)
-: GraphicsModule(engine)
+  : GraphicsModule(engine)
+  , mFactory(NewUnique<OpenGLFactory>(this))
+  , mCamera(NewUnique<Camera>())
 {
 }
 
@@ -31,7 +33,7 @@ void OpenGLModule::Initialize()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    mWindow = glfwCreateWindow(800, 600, "Elba", nullptr, nullptr);
+    mWindow = glfwCreateWindow(g_width, g_height, "Elba", nullptr, nullptr);
     glfwMakeContextCurrent(mWindow);
 
     if (!mWindow)
@@ -50,6 +52,8 @@ void OpenGLModule::Initialize()
 
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(mWindow, window_resize_callback);
+
+    glEnable(GL_DEPTH_TEST);
   }
 }
 
@@ -60,6 +64,7 @@ void OpenGLModule::Update()
   if (!GetEngine()->InEditor())
   {
     Render();
+
     glfwSwapBuffers(mWindow);
     glfwPollEvents();
   }
@@ -69,11 +74,21 @@ void OpenGLModule::Render()
 {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  DrawEvent event;
+
+  event.proj = mCamera->ConstructProjMatrix(g_width, g_height);
+  event.view = mCamera->ConstructViewMatrix();
+
+  for (auto& pair : mDrawCallbacks)
+  {
+    pair.second(event);
+  }
 }
 
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
 {
-  return std::move(mFactory->RequestMesh(name));
+  return mFactory->RequestMesh(name);
 }
 
 } // End of Elba namespace

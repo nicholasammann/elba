@@ -35,18 +35,6 @@ Object* Object::FindChild(const GlobalKey& guid) const
   return nullptr;
 }
 
-Component* Object::FindComponent(const GlobalKey& guid) const
-{
-  auto it = mComponents.find(guid);
-
-  if (it != mComponents.end())
-  {
-    return it->second.get();
-  }
-
-  return nullptr;
-}
-
 Object* Object::CreateChild()
 {
   UniquePtr<Object> child = NewUnique<Object>(this);
@@ -77,7 +65,7 @@ CoreModule* Object::GetCoreModule() const
 void Object::Update()
 {
   // Update components on this object
-  for (std::pair<const GlobalKey, UniquePtr<Component> >& component : mComponents)
+  for (std::pair<const std::type_index, UniquePtr<Component> >& component : mComponents)
   {
     component.second->Update();
   }

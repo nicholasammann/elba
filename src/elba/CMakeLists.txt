@@ -1,4 +1,4 @@
-add_library(elba)
+add_library(elba STATIC)
 
 # Include all subdirectories
 add_subdirectory(Core)
@@ -42,7 +42,7 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(game
 PRIVATE
     elba
-    ${libs_root}/assimp.lib
+    ${libs_root}/assimp-vc140-mt.lib
     ${libs_root}/glew32.lib
     ${libs_root}/glew32s.lib
     ${libs_root}/glfw3.lib

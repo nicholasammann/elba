@@ -27,13 +27,6 @@ public:
   */
   GraphicsFactory(GraphicsModule* graphicsModule);
 
-  /**
-  * \brief Constructs a Mesh and adds it to the graphics module.
-  * \param name The name of the fbx file.
-  * \return The Mesh that was just created.
-  */
-  virtual UniquePtr<Mesh> RequestMesh(std::string name) = 0;
-
 private:
   GraphicsModule* mModule;
 };

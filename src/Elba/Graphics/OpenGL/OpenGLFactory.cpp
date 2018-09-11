@@ -14,14 +14,15 @@ namespace Elba
 OpenGLFactory::OpenGLFactory(OpenGLModule* graphicsModule)
   : GraphicsFactory(graphicsModule)
 {
+  mLoadedMeshes.clear();
 }
 
-UniquePtr<Mesh> OpenGLFactory::RequestMesh(std::string name)
+UniquePtr<OpenGLMesh> OpenGLFactory::RequestMesh(std::string name)
 {
   // check if mesh has already been loaded
   auto result = mLoadedMeshes.find(name);
 
-  Mesh* originalCopy = nullptr;
+  OpenGLMesh* originalCopy = nullptr;
 
   // if mesh hasn't been loaded
   if (result == mLoadedMeshes.end())
@@ -43,14 +44,19 @@ UniquePtr<Mesh> OpenGLFactory::RequestMesh(std::string name)
   }
 
   // make a copy of the loaded mesh
-  UniquePtr<OpenGLMesh> mesh = NewUnique<OpenGLMesh>();
+  UniquePtr<OpenGLMesh> mesh(new OpenGLMesh(*originalCopy));
 
   return std::move(mesh);
 }
 
 UniquePtr<OpenGLMesh> OpenGLFactory::LoadMesh(std::string name)
 {
-  return std::move(NewUnique<OpenGLMesh>());
+  std::string file = "G:/Projects/Repos/elba/assets/Models/" + name;
+
+  UniquePtr<OpenGLMesh> mesh = NewUnique<OpenGLMesh>();
+  mesh->LoadMesh(file);
+
+  return std::move(mesh);
 }
 
 } // End of Elba namespace

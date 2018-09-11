@@ -15,7 +15,6 @@ namespace Elba
 class OpenGLShader
 {
 public:
-
   /** 
   * \brief Constructor
   * \param name The arbitrary name we give this shader set.

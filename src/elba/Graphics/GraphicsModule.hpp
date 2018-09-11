@@ -8,6 +8,7 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 
 #include "Elba/Framework/Module.hpp"
 
@@ -16,6 +17,14 @@
 namespace Elba
 {
 class Engine;
+
+struct DrawEvent
+{
+  glm::mat4 proj;
+  glm::mat4 view;
+};
+
+typedef std::function<void(const DrawEvent&)> DrawCallback;
 
 /**
 * \brief Module for the graphics system. Manages rendering.
@@ -50,6 +59,14 @@ public:
   * \return The Mesh that was just created.
   */
   virtual UniquePtr<Mesh> RequestMesh(std::string name) = 0;
+
+  void RegisterForDraw(GlobalKey key, DrawCallback callback);
+
+  bool DeregisterForDraw(GlobalKey key);
+
+protected:
+  std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
+
 };
 
 } // End of Elba namespace

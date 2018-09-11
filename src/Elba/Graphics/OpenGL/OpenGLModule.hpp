@@ -6,9 +6,10 @@
 #include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
 
+#include "Elba/Graphics/Camera.hpp"
+
 namespace Elba
 {
-
 /**
 * \brief OpenGL implementation of graphics module.
 */
@@ -45,8 +46,8 @@ public:
 
 private:
   UniquePtr<OpenGLFactory> mFactory;
-  GLFWwindow * mWindow;
-
+  GLFWwindow* mWindow;
+  UniquePtr<Camera> mCamera;
 };
 
 } // End of Elba namespace

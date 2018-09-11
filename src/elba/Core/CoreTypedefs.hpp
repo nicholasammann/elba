@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <typeindex>
+
 #include "Elba/Utilities/StdTypedefs.hpp"
 #include "Elba/Utilities/GlobalKey.hpp"
 
@@ -16,6 +18,6 @@ namespace Elba
 {
 
 using ObjectMap = Map<GlobalKey, UniquePtr<Object>>;
-using ComponentMap = Map<GlobalKey, UniquePtr<Component>>;
+using ComponentMap = std::multimap<std::type_index, UniquePtr<Component>>;
 
 } // End of Elba namespace

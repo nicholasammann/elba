@@ -51,10 +51,12 @@ public:
   * \brief Loads the mesh file at the given path.
   * \param path The path to the model file.
   */
-  void LoadMesh(std::string path);
+  void LoadMesh(std::string path) final;
+
+  void LoadShader(std::string name) final;
 
 private:
-  std::vector<UniquePtr<OpenGLSubmesh>> mSubmeshes;
+  std::vector<OpenGLSubmesh> mSubmeshes;
 
   std::string mDirectory;
 

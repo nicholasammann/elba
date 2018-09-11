@@ -21,17 +21,29 @@ OpenGLMesh::OpenGLMesh()
 
 void OpenGLMesh::Initialize()
 {
-  for (UniquePtr<OpenGLSubmesh>& submesh : mSubmeshes)
+  for (OpenGLSubmesh& submesh : mSubmeshes)
   {
-    submesh->Initialize();
+    submesh.Initialize();
   }
 }
 
 void OpenGLMesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
 {
-  for (UniquePtr<OpenGLSubmesh>& submesh : mSubmeshes)
+  for (OpenGLSubmesh& submesh : mSubmeshes)
   {
-    submesh->Draw(proj, view, model);
+    submesh.Draw(proj, view, model);
+  }
+}
+
+void OpenGLMesh::LoadShader(std::string name)
+{
+  std::string vertPath = "G:/Projects/Repos/elba/assets/Shaders/" + name + ".vert";
+  std::string fragPath = "G:/Projects/Repos/elba/assets/Shaders/" + name + ".frag";
+  OpenGLShader* shader = new OpenGLShader(name.c_str(), vertPath.c_str(), fragPath.c_str());
+
+  for (OpenGLSubmesh& submesh : mSubmeshes)
+  {
+    submesh.SetShader(shader);
   }
 }
 
@@ -57,7 +69,8 @@ void OpenGLMesh::ProcessNode(aiNode* node, const aiScene* scene)
   for (unsigned int i = 0; i < node->mNumMeshes; ++i)
   {
     aiMesh *assimpSubmesh = scene->mMeshes[node->mMeshes[i]];
-    mSubmeshes.emplace_back(std::move(ProcessSubmesh(assimpSubmesh, scene)));
+    UniquePtr<OpenGLSubmesh> submesh = ProcessSubmesh(assimpSubmesh, scene);
+    mSubmeshes.emplace_back(*submesh);
   }
 
   for (unsigned int i = 0; i < node->mNumChildren; ++i)
@@ -86,16 +99,16 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
     vertex.mNormal.y = mesh->mNormals[i].y;
     vertex.mNormal.z = mesh->mNormals[i].z;
 
-    // texture coordinates
-    if (mesh->mTextureCoords[0])
-    {
-      vertex.mTexCoords.x = mesh->mTextureCoords[0][i].x;
-      vertex.mTexCoords.y = mesh->mTextureCoords[0][i].y;
-    }
-    else
-    {
-      vertex.mTexCoords = glm::vec2(0.0f, 0.0f);
-    }
+    //// texture coordinates
+    //if (mesh->mTextureCoords[0])
+    //{
+    //  vertex.mTexCoords.x = mesh->mTextureCoords[0][i].x;
+    //  vertex.mTexCoords.y = mesh->mTextureCoords[0][i].y;
+    //}
+    //else
+    //{
+    //  vertex.mTexCoords = glm::vec2(0.0f, 0.0f);
+    //}
 
     verts.push_back(vertex);
   }

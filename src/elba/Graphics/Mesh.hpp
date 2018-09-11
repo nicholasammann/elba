@@ -14,6 +14,7 @@
 #include <assimp/postprocess.h>
 
 #include "Elba/Utilities/StdTypedefs.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
 
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
@@ -46,8 +47,9 @@ public:
   */
   virtual void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) = 0;
 
-  virtual void LoadMesh(std::string aPath) = 0;
+  virtual void LoadMesh(std::string path) = 0;
 
+  virtual void LoadShader(std::string name) = 0;
 };
 
 } // End of Elba namespace

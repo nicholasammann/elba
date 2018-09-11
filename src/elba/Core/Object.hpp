@@ -11,6 +11,9 @@
 #include "Elba/Utilities/GlobalKey.hpp"
 #include "Elba/Core/Component.hpp"
 
+#include "Elba/Core/Components/Transform.hpp"
+#include "Elba/Core/Components/Model.hpp"
+
 namespace Elba
 {
 /**
@@ -39,13 +42,6 @@ public:
   Object* FindChild(const GlobalKey& guid) const;
 
   /**
-  * \brief Find a component on this object.
-  * \param guid Global key of desired component.
-  * \return The component with the given key. nullptr if not found.
-  */
-  Component* FindComponent(const GlobalKey& guid) const;
-
-  /**
   * \brief Creates a new child object.
   * \return The new child object. nullptr if insertion into map of children failed.
   */
@@ -68,6 +64,18 @@ public:
   */
   virtual void Update();
 
+  /**
+  * \brief Creates component of given type and adds it to the object.
+  */
+  template <typename T, typename... Args>
+  T* AddComponent(Args&&... args);
+
+  /**
+  * \brief Returns first pointer of given component type
+  */
+  template <typename T>
+  T* GetComponent() const;
+
 private:
   // so CoreModule can set the pointer to itself on the root object
   friend class CoreModule;
@@ -82,5 +90,25 @@ private:
   GlobalKey mGuid;
 
 };
+
+template <typename T, typename... Args>
+T* Object::AddComponent(Args&&... args)
+{
+  ComponentMap::iterator inserted = mComponents.emplace(std::type_index(typeid(T)), NewUnique<T>(this, std::forward<Args>(args)...));
+  return static_cast<T*>(inserted->second.get());
+}
+
+template <typename T>
+T* Object::GetComponent() const
+{
+  auto it = mComponents.find(std::type_index(typeid(T)));
+
+  if (it != mComponents.end())
+  {
+    return static_cast<T*>(it->second.get());
+  }
+
+  return nullptr;
+}
 
 } // End of Elba namespace

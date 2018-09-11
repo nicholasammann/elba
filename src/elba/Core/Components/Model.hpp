@@ -35,6 +35,8 @@ public:
   */
   void LoadMesh(std::string name);
 
+  void LoadShader(std::string name);
+
 private:
   // graphics mesh
   UniquePtr<Mesh> mMesh;

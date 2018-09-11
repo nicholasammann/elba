@@ -1,3 +1,4 @@
+#include "Mesh.hpp"
 /**
 * \file Mesh.cpp
 * \author Nicholas Ammann
@@ -8,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "Elba/Core/Object.hpp"
 #include "Elba/Graphics/Mesh.hpp"
 
 namespace Elba

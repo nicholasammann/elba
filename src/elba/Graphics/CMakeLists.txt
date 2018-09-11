@@ -2,6 +2,7 @@ add_subdirectory(OpenGL)
 
 target_sources(elba
 PRIVATE
+  ${CMAKE_CURRENT_LIST_DIR}/Camera.cpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsFactory.cpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsModule.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Mesh.cpp
@@ -9,6 +10,7 @@ PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/Texture.cpp
 
 PUBLIC
+  ${CMAKE_CURRENT_LIST_DIR}/Camera.hpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsFactory.hpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsForwardDeclarations.hpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsModule.hpp
