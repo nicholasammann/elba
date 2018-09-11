@@ -46,9 +46,10 @@ PRIVATE
 # Post-build step for copying dll's to same folder as exe
 add_custom_command(TARGET editor POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${bin_root}/glew32.dll ${editor_out}/glew32.dll
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/bin/Qt5Core.dll ${editor_out}/Qt5Core.dll
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/bin/Qt5Gui.dll ${editor_out}/Qt5Gui.dll
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/bin/Qt5Widgets.dll ${editor_out}/Qt5Widgets.dll
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${bin_root}/assimp-vc140-mt.dll ${editor_out}/assimp-vc140-mt.dll
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/Qt5Core.dll ${editor_out}/Qt5Core.dll
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/Qt5Gui.dll ${editor_out}/Qt5Gui.dll
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qt_root}/sadness/Qt5Widgets.dll ${editor_out}/Qt5Widgets.dll
 )
 
 #if (${build_type} STREQUAL Debug)
