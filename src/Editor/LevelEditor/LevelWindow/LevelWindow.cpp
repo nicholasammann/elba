@@ -54,6 +54,9 @@ void Editor::LevelWindow::Render()
 
 void Editor::LevelWindow::Initialize()
 {
+  glEnable(GL_DEPTH_TEST);
+
+  GLenum err = glewInit();
 }
 
 void Editor::LevelWindow::SetAnimating(bool animating)

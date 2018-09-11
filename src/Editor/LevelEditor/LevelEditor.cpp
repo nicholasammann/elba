@@ -17,7 +17,6 @@ LevelEditor::LevelEditor(Framework::MainWindow* mainWindow)
   mEngine->Initialize();
 
   mLevelWindow = new LevelWindow(this);
-  mLevelWindow->Initialize();
 
   QTimer::singleShot(0, [this]()
   {
