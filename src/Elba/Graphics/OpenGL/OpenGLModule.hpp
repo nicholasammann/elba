@@ -35,7 +35,7 @@ public:
   /**
   * \brief Window/context agnostic rendering calls.
   */
-  void Render() final;
+  void Render(int screenWidth, int screenHeight) final;
 
   /**
   * \brief Constructs a Mesh and adds it to the graphics module.

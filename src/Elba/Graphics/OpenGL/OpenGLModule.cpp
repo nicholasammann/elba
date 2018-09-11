@@ -63,21 +63,21 @@ void OpenGLModule::Update()
   // If running in editor, the Render function will be called explicitly
   if (!GetEngine()->InEditor())
   {
-    Render();
+    Render(g_width, g_height);
 
     glfwSwapBuffers(mWindow);
     glfwPollEvents();
   }
 }
 
-void OpenGLModule::Render()
+void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   DrawEvent event;
 
-  event.proj = mCamera->ConstructProjMatrix(g_width, g_height);
+  event.proj = mCamera->ConstructProjMatrix(screenWidth, screenHeight);
   event.view = mCamera->ConstructViewMatrix();
 
   for (auto& pair : mDrawCallbacks)

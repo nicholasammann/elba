@@ -1,17 +1,39 @@
 #pragma once
 
 #include <string>
-
-#include <assimp/Exporter.hpp>
+#include <GL/glew.h>
 
 namespace Elba
 {
 
-struct Texture
+class Texture
 {
-  unsigned int mID;
-  std::string mType;
-  aiString mPath;
+public:
+  Texture(std::string aPath);
+
+  void Bind(char aSlot);
+
+  void SetUniform(unsigned int aShaderPrg, std::string aUniform, char aSlot);
+
+  void Unbind();
+
+private:
+
+  // gl texture
+  unsigned int texture;
+  char slot;
+
+  // raw image
+  unsigned char *rawImage;
+
+  int width;
+  int height;
+  int channels;
+
+  unsigned char* GetImage()
+  {
+    return rawImage;
+  }
 };
 
-} // End of Elba namespace
+}
