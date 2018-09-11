@@ -5,7 +5,7 @@ project(elba CXX C)
 set(submodules_root ${CMAKE_CURRENT_LIST_DIR}/submodules)
 set(includes_root ${CMAKE_CURRENT_LIST_DIR}/includes)
 set(libs_root ${CMAKE_CURRENT_LIST_DIR}/libs)
-set(bin_root ${CMAKE_CURRENT_LIST_DIR}/bin)
+set(bin_root ${CMAKE_CURRENT_LIST_DIR}/sadness)
 set(cmake_dir ${CMAKE_CURRENT_LIST_DIR}/cmake)
 set(qt_root ${CMAKE_CURRENT_LIST_DIR}/qt)
 

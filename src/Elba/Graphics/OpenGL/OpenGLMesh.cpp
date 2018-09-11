@@ -37,8 +37,8 @@ void OpenGLMesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::m
 
 void OpenGLMesh::LoadShader(std::string name)
 {
-  std::string vertPath = "G:/Projects/Repos/elba/assets/Shaders/" + name + ".vert";
-  std::string fragPath = "G:/Projects/Repos/elba/assets/Shaders/" + name + ".frag";
+  std::string vertPath = "C:/Users/nicka/Documents/Projects/elba/assets/Shaders/" + name + ".vert";
+  std::string fragPath = "C:/Users/nicka/Documents/Projects/elba/assets/Shaders/" + name + ".frag";
   OpenGLShader* shader = new OpenGLShader(name.c_str(), vertPath.c_str(), fragPath.c_str());
 
   for (OpenGLSubmesh& submesh : mSubmeshes)

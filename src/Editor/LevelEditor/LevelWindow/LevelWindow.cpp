@@ -45,9 +45,12 @@ void Editor::LevelWindow::Render()
   }
 
   const qreal retinaScale = devicePixelRatio();
-  glViewport(0, 0, width() * retinaScale, height() * retinaScale);
+  int screenWidth = retinaScale * width();
+  int screenHeight = retinaScale * height();
 
-  mGraphicsModule->Render();
+  glViewport(0, 0, screenWidth, screenHeight);
+
+  mGraphicsModule->Render(screenWidth, screenHeight);
 
   mDevice->setSize(size());
 }
@@ -118,6 +121,7 @@ void Editor::LevelWindow::RenderNow()
     Elba::Object* object = level->CreateChild();
 
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
+    transform->SetWorldTranslation(glm::vec3(0.0f, -1.0f, 0.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");

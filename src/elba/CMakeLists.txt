@@ -52,4 +52,5 @@ PRIVATE
 # Post-build step for copying dll's to same folder as exe
 add_custom_command(TARGET game POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${bin_root}/glew32.dll ${elba_out}/glew32.dll
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${bin_root}/assimp-vc140-mt.dll ${elba_out}/assimp-vc140-mt.dll
 )
