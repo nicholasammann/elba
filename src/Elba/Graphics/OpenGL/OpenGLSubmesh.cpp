@@ -1,13 +1,16 @@
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "OpenGLSubmesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 namespace Elba
 {
 
 OpenGLSubmesh::OpenGLSubmesh()
   : Submesh()
+  , mShader(nullptr)
+  , mDiffuseTexture(nullptr)
 {
 }
 
@@ -54,16 +57,29 @@ void OpenGLSubmesh::Initialize()
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mNormal));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mColor));
+
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mTexCoords));
 
   glBindVertexArray(0);
 }
 
 void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
 {
-  if (mShader)
+  // Can't draw anything without a shader
+  if (!mShader)
   {
-    mShader->UseShaderProgram();
+    return;
+  }
+
+  mShader->UseShaderProgram();
+  GLuint shdrPrg = mShader->GetShaderProgram();
+
+  if (mDiffuseTexture)
+  {
+    mDiffuseTexture->SetUniform(shdrPrg, "diffuseTex", 0);
+    mDiffuseTexture->Bind(0);
   }
 
   /*
@@ -84,7 +100,6 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   matLoc = glGetUniformLocation(shdrPrg, "Material.shininess");
   glUniform1f(matLoc, mMaterial.shininess);
   */
-  GLuint shdrPrg = mShader->GetShaderProgram();
 
   unsigned int viewLoc = glGetUniformLocation(shdrPrg, "view");
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -98,11 +113,27 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   glBindVertexArray(mVAO);
   glDrawElements(GL_TRIANGLES, mFaces.size() * 3, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
+
+  if (mDiffuseTexture)
+  {
+    mDiffuseTexture->Unbind();
+  }
 }
 
 void OpenGLSubmesh::SetShader(OpenGLShader* shader)
 {
   mShader = shader;
+}
+
+void OpenGLSubmesh::LoadTexture(const std::string& path)
+{
+  if (mDiffuseTexture)
+  {
+    delete mDiffuseTexture;
+  }
+
+  // should validate path at some point
+  mDiffuseTexture = new OpenGLTexture(path);
 }
 
 } // End of Elba namespace

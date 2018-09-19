@@ -42,6 +42,12 @@ public:
   */
   void SetShader(OpenGLShader* shader);
 
+  /**
+  * \brief Loads the diffuse texture for this submesh
+  * \param path The texture file.
+  */
+  void LoadTexture(const std::string& path);
+
 private:
   unsigned int mVAO;
   unsigned int mVBO;
@@ -49,7 +55,7 @@ private:
 
   OpenGLShader* mShader;
 
-  OpenGLTexture* mTexture;
+  OpenGLTexture* mDiffuseTexture;
 };
 
 } // End of Elba namespace
