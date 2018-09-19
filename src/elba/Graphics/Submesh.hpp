@@ -19,9 +19,10 @@ namespace Elba
 struct Vertex
 {
   glm::vec3 mPos;
-  glm::vec3 mNormal;
+  glm::vec3 mColor;
+  glm::vec2 mTexCoords;
 
-  Vertex() : mPos(glm::vec3()), mNormal(glm::vec3()) { }
+  Vertex() : mPos(glm::vec3()), mColor(glm::vec3()), mTexCoords(glm::vec2()) { }
 };
 
 /**

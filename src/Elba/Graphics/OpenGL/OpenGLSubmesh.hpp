@@ -6,6 +6,8 @@
 namespace Elba
 {
 
+class OpenGLTexture;
+
 class OpenGLSubmesh : public Submesh
 {
 public:
@@ -46,6 +48,8 @@ private:
   unsigned int mEBO;
 
   OpenGLShader* mShader;
+
+  OpenGLTexture* mTexture;
 };
 
 } // End of Elba namespace
