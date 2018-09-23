@@ -6,38 +6,43 @@
 
 namespace Elba
 {
-  OpenGLTexture::OpenGLTexture(std::string aPath) : width(0), height(0), channels(0)
+  OpenGLTexture::OpenGLTexture(std::string path) : mWidth(0), mHeight(0), mChannels(0)
   {
-    rawImage = stbi_load(aPath.c_str(), &width, &height, &channels, 3);
+    mRawImage = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 3);
 
-    glGenTextures(1, &texture);
+    glGenTextures(1, &mTexture);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, rawImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
 
     // unbind the texture
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  void OpenGLTexture::Bind(char aSlot)
+  void OpenGLTexture::Bind(char slot)
   {
-    glActiveTexture(GL_TEXTURE0 + aSlot);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    slot = aSlot;
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+    mSlot = slot;
   }
 
-  void OpenGLTexture::SetUniform(unsigned int aShaderPrg, std::string aUniform, char aSlot)
+  void OpenGLTexture::SetUniform(unsigned int shaderPrg, std::string uniform, char slot)
   {
-    int loc = glGetUniformLocation(aShaderPrg, aUniform.c_str());
-    glUniform1i(loc, GL_TEXTURE0 + aSlot);
+    int loc = glGetUniformLocation(shaderPrg, uniform.c_str());
+    glUniform1i(loc, GL_TEXTURE0 + slot);
   }
 
   void OpenGLTexture::Unbind()
   {
-    glActiveTexture(GL_TEXTURE0 + slot);
+    glActiveTexture(GL_TEXTURE0 + mSlot);
     glBindTexture(GL_TEXTURE_2D, 0);
+  }
+
+  const std::string& OpenGLTexture::GetPath() const
+  {
+    return mPath;
   }
 
 } // End of Elba namespace

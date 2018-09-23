@@ -8,30 +8,34 @@ namespace Elba
   class OpenGLTexture
   {
   public:
-    OpenGLTexture(std::string aPath);
+    OpenGLTexture(std::string path);
 
-    void Bind(char aSlot);
+    void Bind(char slot);
 
-    void SetUniform(unsigned int aShaderPrg, std::string aUniform, char aSlot);
+    void SetUniform(unsigned int shaderPrg, std::string uniform, char slot);
 
     void Unbind();
 
+    const std::string& GetPath() const;
+
   private:
 
+    std::string mPath;
+
     // gl texture
-    unsigned int texture;
-    char slot;
+    unsigned int mTexture;
+    char mSlot;
 
     // raw image
-    unsigned char *rawImage;
+    unsigned char* mRawImage;
 
-    int width;
-    int height;
-    int channels;
+    int mWidth;
+    int mHeight;
+    int mChannels;
 
     unsigned char* GetImage()
     {
-      return rawImage;
+      return mRawImage;
     }
   };
 

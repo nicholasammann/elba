@@ -10,7 +10,10 @@
 
 #include <gl/glew.h>
 
+#include <stbi/stb_image.h>
+
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 namespace Elba
 {
@@ -88,7 +91,7 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
 {
   std::vector<Vertex> verts;
   std::vector<Face> faces;
-  std::vector<Texture> texs;
+  std::vector<OpenGLTexture> texs;
 
   for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
   {
@@ -100,20 +103,20 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
     vertex.mPos.z = mesh->mVertices[i].z;
 
     // normal
-    vertex.mNormal.x = mesh->mNormals[i].x;
-    vertex.mNormal.y = mesh->mNormals[i].y;
-    vertex.mNormal.z = mesh->mNormals[i].z;
+    //vertex.mNormal.x = mesh->mNormals[i].x;
+    //vertex.mNormal.y = mesh->mNormals[i].y;
+    //vertex.mNormal.z = mesh->mNormals[i].z;
 
-    //// texture coordinates
-    //if (mesh->mTextureCoords[0])
-    //{
-    //  vertex.mTexCoords.x = mesh->mTextureCoords[0][i].x;
-    //  vertex.mTexCoords.y = mesh->mTextureCoords[0][i].y;
-    //}
-    //else
-    //{
-    //  vertex.mTexCoords = glm::vec2(0.0f, 0.0f);
-    //}
+    // texture coordinates
+    if (mesh->mTextureCoords[0])
+    {
+      vertex.mTexCoords.x = mesh->mTextureCoords[0][i].x;
+      vertex.mTexCoords.y = mesh->mTextureCoords[0][i].y;
+    }
+    else
+    {
+      vertex.mTexCoords = glm::vec2(0.0f, 0.0f);
+    }
 
     verts.push_back(vertex);
   }
@@ -125,168 +128,156 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
     faces.emplace_back(assimpFace.mIndices[0], assimpFace.mIndices[1], assimpFace.mIndices[2]);
   }
 
-  /*
-  aiMaterial *material = aScene->mMaterials[aMesh->mMaterialIndex];
+  aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
   // store diffuse maps
-  std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+  std::vector<OpenGLTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
   texs.insert(texs.end(), diffuseMaps.begin(), diffuseMaps.end());
 
   // store specular maps
-  std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+  std::vector<OpenGLTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
   texs.insert(texs.end(), specularMaps.begin(), specularMaps.end());
 
   // store normal maps
-  std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+  std::vector<OpenGLTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
   texs.insert(texs.end(), normalMaps.begin(), normalMaps.end());
 
   // store height maps
-  std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+  std::vector<OpenGLTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
   texs.insert(texs.end(), heightMaps.begin(), heightMaps.end());
-  */
 
   return std::move(NewUnique<OpenGLSubmesh>(verts, faces));
 }
 
-
-/*
-std::vector<Texture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, aiTextureType aType, std::string aTypeName)
+std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, aiTextureType aType, std::string aTypeName)
 {
+  std::vector<OpenGLTexture> texs;
 
-std::vector<Texture> texs;
+  for (unsigned int i = 0; i < aMat->GetTextureCount(aType); ++i)
+  {
+    aiString str;
+    aMat->GetTexture(aType, i, &str);
 
-for (unsigned int i = 0; i < aMat->GetTextureCount(aType); ++i)
-{
-aiString str;
-aMat->GetTexture(aType, i, &str);
+    bool alreadyLoaded = false;
 
-bool alreadyLoaded = false;
+    for (unsigned int j = 0; j < mLoadedTextures.size(); ++j)
+    {
+      if (std::strcmp(mLoadedTextures[j].GetPath().c_str(), str.C_Str()) == 0)
+      {
+        texs.push_back(mLoadedTextures[j]);
+        alreadyLoaded = true;
+        break;
+      }
+    }
 
-for (unsigned int j = 0; j < mLoadedTextures.size(); ++j)
-{
-if (std::strcmp(mLoadedTextures[j].mPath.C_Str(), str.C_Str()) == 0)
-{
-texs.push_back(mLoadedTextures[j]);
-alreadyLoaded = true;
-break;
-}
-}
-
-if (!alreadyLoaded)
-{
-Texture texture;
-
-texture.mID = LoadTexture(str.C_Str(), mDirectory);
-texture.mType = aTypeName;
-texture.mPath = str;
-texs.push_back(texture);
-mLoadedTextures.push_back(texture);
-}
-}
-return texs;
+    if (!alreadyLoaded)
+    {
+      OpenGLTexture texture(str.C_Str());
+      texs.push_back(texture);
+      mLoadedTextures.push_back(texture);
+    }
+  }
+  return texs;
 }
 
 unsigned int OpenGLMesh::LoadBMP(const char* aFile, std::string aDir)
 {
-std::string fullPath = aDir + "/" + aFile;
+  std::string fullPath = aDir + "/" + aFile;
 
-char header[54] = { '\0' };
-unsigned int dataPos = 0;
-unsigned int width, height = 0;
-unsigned int imageSize = 0;
-char *data = nullptr;
+  char header[54] = { '\0' };
+  unsigned int dataPos = 0;
+  unsigned int width, height = 0;
+  unsigned int imageSize = 0;
+  char *data = nullptr;
 
-std::ifstream file(fullPath);
+  std::ifstream file(fullPath);
 
-if (file.is_open())
+  if (file.is_open())
+  {
+    file.read(header, 54);
+
+    if (header[0] != 'B' || header[1] != 'M')
+    {
+      std::cout << "Not a BMP File" << std::endl;
+      return 0;
+    }
+
+    dataPos = *(int*)&(header[0x0A]);
+    width = *(int*)&(header[0x12]);
+    height = *(int*)&(header[0x16]);
+    imageSize = *(int*)&(header[0x22]);
+
+    if (imageSize == 0)
+    {
+      imageSize = width * height * 3;
+    }
+
+    if (dataPos == 0)
+    {
+      dataPos = 54;
+    }
+
+    data = new char[imageSize];
+
+    file.read(data, imageSize - 54);
+    file.close();
+
+    unsigned int texID;
+    glGenTextures(1, &texID);
+
+    glBindTexture(GL_TEXTURE_2D, texID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    return texID;
+  }
+  else
+  {
+    std::cout << "BMP Texture could not be loaded." << std::endl;
+  }
+}
+
+unsigned int OpenGLMesh::LoadTexture(const char* aFile, std::string aDir)
 {
-file.read(header, 54);
+  std::string fullPath = aDir + "/" + aFile;
 
-if (header[0] != 'B' || header[1] != 'M')
-{
-std::cout << "Not a BMP File" << std::endl;
-return 0;
+  unsigned int textureID;
+  glGenTextures(1, &textureID);
+
+  int width, height, nrComponents;
+  unsigned char *data = stbi_load(fullPath.c_str(), &width, &height, &nrComponents, 0);
+
+  if (data)
+  {
+    GLenum format;
+    if (nrComponents == 1)
+      format = GL_RED;
+    else if (nrComponents == 3)
+      format = GL_RGB;
+    else if (nrComponents == 4)
+      format = GL_RGBA;
+
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+  }
+  else
+  {
+    std::cout << "Texture failed to load at path: " << fullPath << std::endl;
+    stbi_image_free(data);
+  }
+
+  return textureID;
 }
-
-dataPos = *(int*)&(header[0x0A]);
-width = *(int*)&(header[0x12]);
-height = *(int*)&(header[0x16]);
-imageSize = *(int*)&(header[0x22]);
-
-if (imageSize == 0)
-{
-imageSize = width * height * 3;
-}
-
-if (dataPos == 0)
-{
-dataPos = 54;
-}
-
-data = new char[imageSize];
-
-file.read(data, imageSize - 54);
-file.close();
-
-
-unsigned int texID;
-glGenTextures(1, &texID);
-
-glBindTexture(GL_TEXTURE_2D, texID);
-
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-return texID;
-}
-else
-{
-std::cout << "BMP Texture could not be loaded." << std::endl;
-}
-
-}
-
-unsigned int OpenGLMesh::LoadTexture(const char * aFile, std::string aDir)
-{
-std::string fullPath = aDir + "/" + aFile;
-
-unsigned int textureID;
-glGenTextures(1, &textureID);
-
-int width, height, nrComponents;
-unsigned char *data = stbi_load(fullPath.c_str(), &width, &height, &nrComponents, 0);
-
-if (data)
-{
-GLenum format;
-if (nrComponents == 1)
-format = GL_RED;
-else if (nrComponents == 3)
-format = GL_RGB;
-else if (nrComponents == 4)
-format = GL_RGBA;
-
-glBindTexture(GL_TEXTURE_2D, textureID);
-glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-glGenerateMipmap(GL_TEXTURE_2D);
-
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-stbi_image_free(data);
-}
-else
-{
-std::cout << "Texture failed to load at path: " << fullPath << std::endl;
-stbi_image_free(data);
-}
-
-return textureID;
-}
-*/
 
 } // End of Elba namespace

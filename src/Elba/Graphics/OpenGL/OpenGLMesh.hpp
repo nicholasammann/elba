@@ -76,12 +76,10 @@ private:
   */
   UniquePtr<OpenGLSubmesh> ProcessSubmesh(aiMesh *mesh, const aiScene *scene);
 
-  /*
-  std::vector<Texture> LoadMaterialTextures(aiMaterial *aMat, aiTextureType aType, std::string aTypeName);
+  std::vector<OpenGLTexture> LoadMaterialTextures(aiMaterial *aMat, aiTextureType aType, std::string aTypeName);
   unsigned int LoadBMP(const char *aFile, std::string aDir);
   unsigned int LoadTexture(const char *aFile, std::string aDir);
-  std::vector<Texture> mLoadedTextures;
-  */
+  std::vector<OpenGLTexture> mLoadedTextures;
 };
 
 } // End of Elba namespace
