@@ -47,6 +47,11 @@ void OpenGLMesh::LoadShader(std::string name)
   }
 }
 
+std::vector<OpenGLSubmesh>& OpenGLMesh::GetSubmeshes()
+{
+  return mSubmeshes;
+}
+
 void OpenGLMesh::LoadMesh(std::string path)
 {
   Assimp::Importer import;

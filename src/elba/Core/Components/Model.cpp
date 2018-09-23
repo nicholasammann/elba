@@ -59,4 +59,9 @@ void Model::LoadShader(std::string name)
   mMesh->LoadShader(name);
 }
 
+Mesh* Model::GetMesh() const
+{
+  return mMesh.get();
+}
+
 } // End of Elba namespace

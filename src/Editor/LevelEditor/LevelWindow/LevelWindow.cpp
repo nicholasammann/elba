@@ -3,12 +3,19 @@
 #include <qpainter.h>
 #include <qopenglpaintdevice.h>
 
-#include "Elba/Engine.hpp"
-#include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Core/CoreModule.hpp"
+
+#include "Elba/Engine.hpp"
+
+#include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
+
+#include "Elba/Utilities/Utils.hpp"
+
 
 Editor::LevelWindow::LevelWindow(LevelEditor* editor, QWindow* parent)
 : QWindow(parent)
@@ -126,6 +133,11 @@ void Editor::LevelWindow::RenderNow()
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");
     model->LoadShader("simple");
+
+    Elba::OpenGLMesh* mesh = static_cast<Elba::OpenGLMesh*>(model->GetMesh());
+    std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();
+    std::string assetsDir = Elba::Utils::GetAssetsDirectory();
+    submeshes.begin()->LoadTexture("");
     ////////////////////////
   }
 }

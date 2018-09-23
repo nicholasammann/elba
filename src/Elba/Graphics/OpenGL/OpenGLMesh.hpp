@@ -55,6 +55,8 @@ public:
 
   void LoadShader(std::string name) final;
 
+  std::vector<OpenGLSubmesh>& GetSubmeshes();
+
 private:
   std::vector<OpenGLSubmesh> mSubmeshes;
 
