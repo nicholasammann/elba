@@ -139,4 +139,22 @@ void OpenGLSubmesh::LoadTexture(const std::string& path)
   mDiffuseTexture = new OpenGLTexture(path);
 }
 
+void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture)
+{
+  // make sure the new texture exists before we...
+  if (!texture)
+  {
+    return;
+  }
+
+  // DELETE OUR CURRENT GOOD BOI
+  if (mDiffuseTexture)
+  {
+    delete mDiffuseTexture;
+  }
+
+  // fine, we'll take the new doggo
+  mDiffuseTexture = texture;
+}
+
 } // End of Elba namespace

@@ -8,8 +8,14 @@ namespace Elba
 class OpenGLTexture
 {
 public:
+  enum FileType
+  {
+    ppm,
+    other
+  };
+
   OpenGLTexture();
-  OpenGLTexture(std::string path);
+  OpenGLTexture(std::string path, FileType fileType = FileType::other);
 
   void Bind(char slot);
 
@@ -20,7 +26,6 @@ public:
   const std::string& GetPath() const;
 
 private:
-
   std::string mPath;
 
   // gl texture
@@ -34,10 +39,9 @@ private:
   int mHeight;
   int mChannels;
 
-  unsigned char* GetImage()
-  {
-    return mRawImage;
-  }
+  unsigned char* GetImage();
+
+  void LoadPPM(std::string path);
 };
 
 } // End of Elba namespace

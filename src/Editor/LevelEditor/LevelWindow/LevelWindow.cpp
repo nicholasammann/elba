@@ -10,6 +10,7 @@
 #include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
@@ -129,19 +130,23 @@ void Editor::LevelWindow::RenderNow()
 
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
     transform->SetWorldTranslation(glm::vec3(0.0f, -1.0f, 0.0f));
+    transform->SetWorldRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f)));
+    transform->SetWorldScale(glm::vec3(25.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
-    model->LoadMesh("crysis/nanosuit.obj");
+    model->LoadMesh("quad.fbx");
     model->LoadShader("textured");
 
     Elba::OpenGLMesh* mesh = static_cast<Elba::OpenGLMesh*>(model->GetMesh());
     std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();
     std::string assetsDir = Elba::Utils::GetAssetsDirectory();
 
-    std::string texture = assetsDir + "Models/crysis/glass_dif.png";
+    std::string texturePath = assetsDir + "Textures/Test_images/peppers_gray.ppm";
     
     for (auto it = submeshes.begin(); it != submeshes.end(); it++)
     {
+      Elba::OpenGLTexture* texture = new Elba::OpenGLTexture(texturePath, Elba::OpenGLTexture::FileType::ppm);
+
       it->LoadTexture(texture);
     }
 

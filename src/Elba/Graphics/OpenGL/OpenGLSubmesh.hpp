@@ -47,6 +47,8 @@ public:
   * \param path The texture file.
   */
   void LoadTexture(const std::string& path);
+  
+  void LoadTexture(OpenGLTexture* texture);
 
 private:
   unsigned int mVAO;
