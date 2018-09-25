@@ -1,7 +1,7 @@
 target_sources(editor
 PRIVATE
-  ${CMAKE_CURRENT_LIST_DIR}/LevelWindow.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/FileMenu.cpp
 
 PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR}/LevelWindow.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/FileMenu.hpp
 )
