@@ -9,6 +9,8 @@
 #include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 
+#include "Elba/Utilities/Utils.hpp"
+
 namespace Elba
 {
 OpenGLFactory::OpenGLFactory(OpenGLModule* graphicsModule)
@@ -51,10 +53,11 @@ UniquePtr<OpenGLMesh> OpenGLFactory::RequestMesh(std::string name)
 
 UniquePtr<OpenGLMesh> OpenGLFactory::LoadMesh(std::string name)
 {
-  std::string file = "C:/Users/nicka/Documents/Projects/elba/assets/Models/" + name;
+  std::string assetsDir = Utils::GetAssetsDirectory();
+  std::string asset = assetsDir + "/Models/" + name;
 
   UniquePtr<OpenGLMesh> mesh = NewUnique<OpenGLMesh>();
-  mesh->LoadMesh(file);
+  mesh->LoadMesh(asset);
 
   return std::move(mesh);
 }

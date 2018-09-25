@@ -6,43 +6,49 @@
 
 namespace Elba
 {
-  OpenGLTexture::OpenGLTexture(std::string path) : mWidth(0), mHeight(0), mChannels(0)
-  {
-    mRawImage = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 3);
+OpenGLTexture::OpenGLTexture()
+  : mWidth(0), mHeight(0), mChannels(0)
+{
+}
 
-    glGenTextures(1, &mTexture);
+OpenGLTexture::OpenGLTexture(std::string path)
+  : mWidth(0), mHeight(0), mChannels(0)
+{
+  mRawImage = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 3);
 
-    glBindTexture(GL_TEXTURE_2D, mTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
+  glGenTextures(1, &mTexture);
 
-    // unbind the texture
-    glBindTexture(GL_TEXTURE_2D, 0);
-  }
+  glBindTexture(GL_TEXTURE_2D, mTexture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
 
-  void OpenGLTexture::Bind(char slot)
-  {
-    glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_2D, mTexture);
-    mSlot = slot;
-  }
+  // unbind the texture
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
 
-  void OpenGLTexture::SetUniform(unsigned int shaderPrg, std::string uniform, char slot)
-  {
-    int loc = glGetUniformLocation(shaderPrg, uniform.c_str());
-    glUniform1i(loc, GL_TEXTURE0 + slot);
-  }
+void OpenGLTexture::Bind(char slot)
+{
+  glActiveTexture(GL_TEXTURE0 + slot);
+  glBindTexture(GL_TEXTURE_2D, mTexture);
+  mSlot = slot;
+}
 
-  void OpenGLTexture::Unbind()
-  {
-    glActiveTexture(GL_TEXTURE0 + mSlot);
-    glBindTexture(GL_TEXTURE_2D, 0);
-  }
+void OpenGLTexture::SetUniform(unsigned int shaderPrg, std::string uniform, char slot)
+{
+  int loc = glGetUniformLocation(shaderPrg, uniform.c_str());
+  glUniform1i(loc, GL_TEXTURE0 + slot);
+}
 
-  const std::string& OpenGLTexture::GetPath() const
-  {
-    return mPath;
-  }
+void OpenGLTexture::Unbind()
+{
+  glActiveTexture(GL_TEXTURE0 + mSlot);
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+const std::string& OpenGLTexture::GetPath() const
+{
+  return mPath;
+}
 
 } // End of Elba namespace

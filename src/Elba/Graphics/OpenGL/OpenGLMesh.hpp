@@ -19,7 +19,7 @@
 
 #include "Elba/Graphics/Mesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
-#include "Elba/Graphics/Texture.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 namespace Elba
 {
