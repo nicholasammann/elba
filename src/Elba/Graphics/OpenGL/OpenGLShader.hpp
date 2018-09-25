@@ -6,6 +6,7 @@
 */
 
 #include <string>
+#include <gl/glew.h>
 
 namespace Elba
 {

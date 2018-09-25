@@ -12,13 +12,13 @@
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
-#include "Editor/LevelEditor/LevelEditor.hpp"
-#include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
+#include "Editor/ImageEditor/ImageEditor.hpp"
+#include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
 
 #include "Elba/Utilities/Utils.hpp"
 
 
-Editor::LevelWindow::LevelWindow(LevelEditor* editor, QWindow* parent)
+Editor::ImageWindow::ImageWindow(ImageEditor* editor, QWindow* parent)
 : QWindow(parent)
 , mEditor(editor)
 , mAnimating(false)
@@ -36,16 +36,16 @@ Editor::LevelWindow::LevelWindow(LevelEditor* editor, QWindow* parent)
   setSurfaceType(QWindow::OpenGLSurface);
 }
 
-Editor::LevelWindow::~LevelWindow()
+Editor::ImageWindow::~ImageWindow()
 {
 }
 
-void Editor::LevelWindow::Render(QPainter* painter)
+void Editor::ImageWindow::Render(QPainter* painter)
 {
   Q_UNUSED(painter);
 }
 
-void Editor::LevelWindow::Render()
+void Editor::ImageWindow::Render()
 {
   if (!mDevice)
   {
@@ -63,14 +63,14 @@ void Editor::LevelWindow::Render()
   mDevice->setSize(size());
 }
 
-void Editor::LevelWindow::Initialize()
+void Editor::ImageWindow::Initialize()
 {
   glEnable(GL_DEPTH_TEST);
 
   GLenum err = glewInit();
 }
 
-void Editor::LevelWindow::SetAnimating(bool animating)
+void Editor::ImageWindow::SetAnimating(bool animating)
 {
   mAnimating = animating;
 
@@ -80,12 +80,12 @@ void Editor::LevelWindow::SetAnimating(bool animating)
   }
 }
 
-void Editor::LevelWindow::RenderLater()
+void Editor::ImageWindow::RenderLater()
 {
   requestUpdate();
 }
 
-void Editor::LevelWindow::RenderNow()
+void Editor::ImageWindow::RenderNow()
 {
   if (!isExposed())
   {
@@ -154,17 +154,11 @@ void Editor::LevelWindow::RenderNow()
   }
 }
 
-bool Editor::LevelWindow::event(QEvent* event)
+bool Editor::ImageWindow::event(QEvent* event)
 {
   switch (event->type())
   {
     case QEvent::UpdateRequest:
-    {
-      RenderNow();
-      return true;
-    }
-
-    case QEvent::Paint:
     {
       RenderNow();
       return true;
@@ -177,7 +171,7 @@ bool Editor::LevelWindow::event(QEvent* event)
   }
 }
 
-void Editor::LevelWindow::exposeEvent(QExposeEvent* event)
+void Editor::ImageWindow::exposeEvent(QExposeEvent* event)
 {
   Q_UNUSED(event);
 

@@ -3,6 +3,7 @@ add_executable(editor)
 # Include all subdirectories
 add_subdirectory(Framework)
 add_subdirectory(LevelEditor)
+add_subdirectory(ImageEditor)
 
 # Add main source file
 target_sources(editor
