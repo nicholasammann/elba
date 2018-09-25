@@ -15,6 +15,8 @@
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
+#include "Elba/Utilities/Utils.hpp"
+
 namespace Elba
 {
 
@@ -40,8 +42,10 @@ void OpenGLMesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::m
 
 void OpenGLMesh::LoadShader(std::string name)
 {
-  std::string vertPath = "C:/Users/nicka/Documents/Projects/elba/assets/Shaders/" + name + ".vert";
-  std::string fragPath = "C:/Users/nicka/Documents/Projects/elba/assets/Shaders/" + name + ".frag";
+  std::string assetsDir = Utils::GetAssetsDirectory();
+
+  std::string vertPath = assetsDir + "Shaders/" + name + ".vert";
+  std::string fragPath = assetsDir + "Shaders/" + name + ".frag";
   OpenGLShader* shader = new OpenGLShader(name.c_str(), vertPath.c_str(), fragPath.c_str());
 
   for (OpenGLSubmesh& submesh : mSubmeshes)
@@ -238,6 +242,8 @@ unsigned int OpenGLMesh::LoadBMP(const char* aFile, std::string aDir)
   {
     std::cout << "BMP Texture could not be loaded." << std::endl;
   }
+
+  return 0;
 }
 
 unsigned int OpenGLMesh::LoadTexture(const char* aFile, std::string aDir)

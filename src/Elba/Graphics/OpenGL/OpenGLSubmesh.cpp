@@ -15,6 +15,9 @@ OpenGLSubmesh::OpenGLSubmesh()
 }
 
 OpenGLSubmesh::OpenGLSubmesh(const std::vector<Vertex>& verts, const std::vector<Face>& faces)
+  : Submesh()
+  , mShader(nullptr)
+  , mDiffuseTexture(nullptr)
 {
   mVertices = verts;
   mFaces = faces;
@@ -111,7 +114,7 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
   glBindVertexArray(mVAO);
-  glDrawElements(GL_TRIANGLES, mFaces.size() * 3, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, static_cast<int>(mFaces.size()) * 3, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
 
   if (mDiffuseTexture)

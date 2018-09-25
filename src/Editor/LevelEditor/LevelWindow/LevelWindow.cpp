@@ -132,12 +132,19 @@ void Editor::LevelWindow::RenderNow()
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");
-    model->LoadShader("simple");
+    model->LoadShader("textured");
 
     Elba::OpenGLMesh* mesh = static_cast<Elba::OpenGLMesh*>(model->GetMesh());
     std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();
     std::string assetsDir = Elba::Utils::GetAssetsDirectory();
-    submeshes.begin()->LoadTexture("");
+
+    std::string texture = assetsDir + "Models/crysis/glass_dif.png";
+    
+    for (auto it = submeshes.begin(); it != submeshes.end(); it++)
+    {
+      it->LoadTexture(texture);
+    }
+
     ////////////////////////
   }
 }
