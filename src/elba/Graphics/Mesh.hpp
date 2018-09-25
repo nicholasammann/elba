@@ -19,7 +19,6 @@
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
 #include "Elba/Graphics/Submesh.hpp"
-#include "Elba/Graphics/Texture.hpp"
 
 namespace Elba
 {

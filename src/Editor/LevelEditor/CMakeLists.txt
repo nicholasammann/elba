@@ -1,4 +1,5 @@
 add_subdirectory(LevelWindow)
+add_subdirectory(Menus)
 add_subdirectory(ObjectBrowser)
 
 target_sources(editor
