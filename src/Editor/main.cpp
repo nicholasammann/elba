@@ -3,6 +3,7 @@
 
 #include "Editor/Framework/MainWindow.hpp"
 #include "Editor/LevelEditor/LevelEditor.hpp"
+#include "Editor/ImageEditor/ImageEditor.hpp"
 
 #define EDITOR_MODE
 
@@ -39,7 +40,7 @@ int main(int argc, char** argv)
   SetDarkTheme(app);
 
   Framework::MainWindow* mainWindow = new Editor::Framework::MainWindow();
-  LevelEditor* editor = mainWindow->LoadWorkspace<LevelEditor>(mainWindow);
+  ImageEditor* editor = mainWindow->LoadWorkspace<ImageEditor>(mainWindow);
 
   if (!editor->Initialize())
   {

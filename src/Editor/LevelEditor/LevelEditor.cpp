@@ -20,7 +20,7 @@ LevelEditor::LevelEditor(Framework::MainWindow* mainWindow)
 
   QTimer::singleShot(0, [this]()
   {
-    Update();
+    this->Update();
   });
 }
 
@@ -37,7 +37,7 @@ bool LevelEditor::Initialize()
   QWidget* container = mainWindow->createWindowContainer(mLevelWindow);
   tabs->addTab(container, "Level Window");
 
-  LoadWidget<ObjectBrowser>(this);
+  AddWidget<ObjectBrowser>(this);
 
   return true;
 }
@@ -52,7 +52,7 @@ void LevelEditor::Update()
 
   QTimer::singleShot(0, [this]()
   {
-    Update();
+    this->Update();
   });
 }
 

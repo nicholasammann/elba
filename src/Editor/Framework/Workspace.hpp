@@ -5,11 +5,12 @@
 #include <memory>
 
 #include <qdockwidget.h>
+#include <qmenubar.h>
 
-#include "Framework/MainWindow.hpp"
-#include "Framework/Menu.hpp"
-#include "Framework/ToolBar.hpp"
-#include "Framework/Widget.hpp"
+#include "Editor/Framework/MainWindow.hpp"
+#include "Editor/Framework/Menu.hpp"
+#include "Editor/Framework/ToolBar.hpp"
+#include "Editor/Framework/Widget.hpp"
 
 namespace Editor
 {
@@ -52,56 +53,56 @@ protected:
   * Returns pointer to created widget
   */
   template <typename T, typename... Args>
-  T* LoadWidget(Args&&... args);
+  T* AddWidget(Args&&... args);
 
   /**
   * Unloads one instance of a type of widget
   * Returns true if an instance is unloaded, false if no instance of given type is found
   */
   template <typename T>
-  bool UnloadWidget(T* widget);
+  bool RemoveWidget(T* widget);
 
   /**
   * Unload all instances of a type of widget
   * Returns number of instances unloaded
   */
   template <typename T>
-  size_t UnloadWidgets();
+  size_t RemoveWidgets();
 
   /**
   * Creates a toolbar of given type
   * Returns pointer to created toolbar
   */
   template <typename T, typename... Args>
-  T* LoadToolBar(Args&&... args);
+  T* AddToolBar(Args&&... args);
 
   /**
   * Unloads one instance of a type of toolbar
   * Returns true if an instance is unloaded, false if no instance of given type is found
   */
   template <typename T>
-  bool UnloadToolBar(T* widget);
+  bool RemoveToolBar(T* widget);
 
   /**
   * Unload all instances of a type of toolbar
   * Returns number of instances unloaded
   */
   template <typename T>
-  size_t UnloadToolBars();
+  size_t RemoveToolBars();
 
   /**
   * Creates a menu of given type
   * Returns pointer to created menu
   */
   template <typename T, typename... Args>
-  T* LoadMenu(Args&&... args);
+  T* AddMenu(Args&&... args);
 
   /**
   * Unloads the menu specified by type
   * Returns true if menu is unloaded, false if menu is not found
   */
   template <typename T>
-  bool UnloadMenu(T* menu);
+  bool RemoveMenu(T* menu);
 
 private:
   friend class MainWindow;
@@ -149,7 +150,7 @@ std::vector<T*> Workspace::GetAllWidgets() const
 }
 
 template <typename T, typename... Args>
-T* Workspace::LoadWidget(Args&&... args)
+T* Workspace::AddWidget(Args&&... args)
 {
   // Create Widget
   std::multimap<std::type_index, std::unique_ptr<Widget> >::iterator inserted = mWidgets.emplace(std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...));
@@ -169,7 +170,7 @@ T* Workspace::LoadWidget(Args&&... args)
 }
 
 template <typename T>
-bool Workspace::UnloadWidget(T* widget)
+bool Workspace::RemoveWidget(T* widget)
 {
   auto range = mWidgets.equal_range(std::type_index(typeid(T)));
 
@@ -186,13 +187,13 @@ bool Workspace::UnloadWidget(T* widget)
 }
 
 template <typename T>
-size_t Workspace::UnloadWidgets()
+size_t Workspace::RemoveWidgets()
 {
   return mWidgets.erase(std::type_index(typeid(T)));
 }
 
 template <typename T, typename... Args>
-T* Workspace::LoadToolBar(Args&&... args)
+T* Workspace::AddToolBar(Args&&... args)
 {
   // Create ToolBar
   auto inserted = mToolBars.emplace({ std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...) });
@@ -203,7 +204,7 @@ T* Workspace::LoadToolBar(Args&&... args)
 }
 
 template <typename T>
-bool Workspace::UnloadToolBar(T* toolbar)
+bool Workspace::RemoveToolBar(T* toolbar)
 {
   auto range = mToolBars.equal_range(std::type_index(typeid(T)));
 
@@ -220,26 +221,26 @@ bool Workspace::UnloadToolBar(T* toolbar)
 }
 
 template <typename T>
-size_t Workspace::UnloadToolBars()
+size_t Workspace::RemoveToolBars()
 {
   return mToolBars.erase(std::type_index(typeid(T)));
 }
 
 template <typename T, typename... Args>
-T* Workspace::LoadMenu(Args&&... args)
+T* Workspace::AddMenu(Args&&... args)
 {
   // Create Menu
-  auto inserted = mMenus.emplace({ std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...) });
+  auto inserted = mMenus.emplace(std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...));
 
   // Add ToolBar to MainWindow
   QMenuBar* menuBar = mMainWindow->menuBar();
-  menuBar->addMenu(inserted->get());
+  menuBar->addMenu(inserted.first->second.get());
 
-  return inserted->get();
+  return static_cast<T*>(inserted.first->second.get());
 }
 
 template <typename T>
-bool Workspace::UnloadMenu(T* menu)
+bool Workspace::RemoveMenu(T* menu)
 {
   return mMenus.erase(std::type_index(typeid(T))) > 0;
 }

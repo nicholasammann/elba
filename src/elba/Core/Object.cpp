@@ -23,6 +23,11 @@ Object* Object::GetParent() const
   return mParent;
 }
 
+ObjectMap const& Object::GetChildren() const
+{
+  return mChildren;
+}
+
 Object* Object::FindChild(const GlobalKey& guid) const
 {
   auto it = mChildren.find(guid);

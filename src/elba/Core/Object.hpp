@@ -35,6 +35,12 @@ public:
   Object* GetParent() const;
 
   /**
+  * \brief Getter for all children.
+  * \return Map of all child objects.
+  */
+  ObjectMap const& GetChildren() const;
+
+  /**
   * \brief Find a direct child of this object.
   * \param guid Global key of desired object.
   * \return The child object with the given key. nullptr if not found.
