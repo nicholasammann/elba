@@ -74,6 +74,33 @@ const std::string& OpenGLTexture::GetPath() const
   return mPath;
 }
 
+void OpenGLTexture::SaveAsPPM(const std::string& path)
+{
+  std::ofstream file(path);
+
+  if (file.is_open())
+  {
+    // header
+    file << "P3 \n" << mWidth << " " << mHeight << "\n 255 \n";
+
+    unsigned currentLine = 1;
+
+    // image
+    for (unsigned int i = 0; i < mWidth * mHeight * 3; ++i)
+    {
+      file << static_cast<int>(mRawImage[i]) << " ";
+
+      if (i - 70 * currentLine > 70)
+      {
+        file << "\n";
+        ++currentLine;
+      }
+    }
+  }
+
+  file.close();
+}
+
 unsigned char* OpenGLTexture::GetImage()
 {
   return mRawImage;
@@ -119,6 +146,8 @@ void OpenGLTexture::LoadPPM(std::string path)
       mRawImage[i] = static_cast<unsigned char>(std::stoi(tokens[i]));
     }
   }
+
+  file.close();
 }
 
 } // End of Elba namespace

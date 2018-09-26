@@ -18,13 +18,21 @@ namespace Elba
 {
 class Engine;
 
+
 struct DrawEvent
 {
   glm::mat4 proj;
   glm::mat4 view;
 };
-
 typedef std::function<void(const DrawEvent&)> DrawCallback;
+
+
+struct ResizeEvent
+{
+  glm::vec2 oldSize;
+  glm::vec2 newSize;
+};
+typedef std::function<void(const ResizeEvent&)> ResizeCallback;
 
 /**
 * \brief Module for the graphics system. Manages rendering.
@@ -61,11 +69,14 @@ public:
   virtual UniquePtr<Mesh> RequestMesh(std::string name) = 0;
 
   void RegisterForDraw(GlobalKey key, DrawCallback callback);
-
   bool DeregisterForDraw(GlobalKey key);
+
+  void RegisterForResize(GlobalKey key, ResizeCallback callback);
+  bool DeregisterForResize(GlobalKey key);
 
 protected:
   std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
+  std::vector<std::pair<GlobalKey, ResizeCallback> > mResizeCallbacks;
 
 };
 

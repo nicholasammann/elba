@@ -47,6 +47,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  mainWindow->resize(1280, 800);
   mainWindow->show();
 
   app.setActiveWindow(mainWindow);

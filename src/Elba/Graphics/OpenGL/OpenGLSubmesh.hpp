@@ -50,6 +50,8 @@ public:
   
   void LoadTexture(OpenGLTexture* texture);
 
+  OpenGLTexture* GetDiffuseTexture() const;
+
 private:
   unsigned int mVAO;
   unsigned int mVBO;

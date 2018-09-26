@@ -25,6 +25,8 @@ public:
 
   const std::string& GetPath() const;
 
+  void SaveAsPPM(const std::string& path);
+
 private:
   std::string mPath;
 
