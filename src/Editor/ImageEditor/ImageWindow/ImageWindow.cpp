@@ -164,6 +164,12 @@ bool Editor::ImageWindow::event(QEvent* event)
       return true;
     }
 
+    case QEvent::Resize:
+    {
+
+      return QWindow::event(event);
+    }
+
     default:
     {
       return QWindow::event(event);

@@ -22,8 +22,9 @@ public:
 
 private:
   Elba::Engine* mEngine;
-
   ImageWindow* mImageWindow;
+
+  std::vector<std::function<void(ResizeEvent)
 };
 
 } // End of Editor namespace

@@ -157,4 +157,9 @@ void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture)
   mDiffuseTexture = texture;
 }
 
+OpenGLTexture* OpenGLSubmesh::GetDiffuseTexture() const
+{
+  return mDiffuseTexture;
+}
+
 } // End of Elba namespace
