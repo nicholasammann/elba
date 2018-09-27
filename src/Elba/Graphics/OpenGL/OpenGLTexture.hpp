@@ -32,6 +32,9 @@ public:
   unsigned char* GetImage();
   void SetImage(unsigned char* image, int width, int height);
 
+  int GetWidth() const;
+  int GetHeight() const;
+
 private:
   std::string mPath;
 
