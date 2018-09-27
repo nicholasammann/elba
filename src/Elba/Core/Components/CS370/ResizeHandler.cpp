@@ -123,6 +123,9 @@ unsigned char* ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* textur
     for (int x = 0; x < stride; ++x)
     {
       // nearest neighbor interpolation
+      
+      // find the nearest point and make it that color
+      
     }
   }
 
