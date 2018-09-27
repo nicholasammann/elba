@@ -18,6 +18,8 @@ public:
   OpenGLTexture(std::string path, FileType fileType = FileType::other);
 
   void GenerateTexture();
+  void DeleteTexture();
+  void RebindTexture();
 
   void Bind(char slot);
 
@@ -39,7 +41,7 @@ private:
   std::string mPath;
 
   // gl texture
-  unsigned int mTexture;
+  GLuint mTexture;
   char mSlot;
 
   // raw image

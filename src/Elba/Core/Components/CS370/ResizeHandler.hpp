@@ -43,8 +43,10 @@ private:
   void OnTextureChange(const TextureChangeEvent& event);
   
   void Interpolate(int screenWidth, int screenHeight);
-  void NearestNeighborInterpolation(OpenGLTexture* texture);
-  void BilinearInterpolation(OpenGLTexture* texture);
+  unsigned char* NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight);
+
+  unsigned char* BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight);
+  int BilinearValue(int x, int y, float widthRatio, float heightRatio);
 
   int mScreenWidth;
   int mScreenHeight;
