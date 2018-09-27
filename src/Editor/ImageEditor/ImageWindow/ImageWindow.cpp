@@ -2,6 +2,7 @@
 
 #include <qpainter.h>
 #include <qopenglpaintdevice.h>
+#include <qevent.h>
 
 #include "Elba/Core/CoreModule.hpp"
 
@@ -18,12 +19,15 @@
 #include "Elba/Utilities/Utils.hpp"
 
 
-Editor::ImageWindow::ImageWindow(ImageEditor* editor, QWindow* parent)
-: QWindow(parent)
-, mEditor(editor)
-, mAnimating(false)
-, mContext(nullptr)
-, mDevice(nullptr)
+namespace Editor
+{
+
+ImageWindow::ImageWindow(ImageEditor* editor, QWindow* parent)
+  : QWindow(parent)
+  , mEditor(editor)
+  , mAnimating(false)
+  , mContext(nullptr)
+  , mDevice(nullptr)
 {
   glewExperimental = GL_TRUE;
 
@@ -36,16 +40,16 @@ Editor::ImageWindow::ImageWindow(ImageEditor* editor, QWindow* parent)
   setSurfaceType(QWindow::OpenGLSurface);
 }
 
-Editor::ImageWindow::~ImageWindow()
+ImageWindow::~ImageWindow()
 {
 }
 
-void Editor::ImageWindow::Render(QPainter* painter)
+void ImageWindow::Render(QPainter* painter)
 {
   Q_UNUSED(painter);
 }
 
-void Editor::ImageWindow::Render()
+void ImageWindow::Render()
 {
   if (!mDevice)
   {
@@ -63,14 +67,14 @@ void Editor::ImageWindow::Render()
   mDevice->setSize(size());
 }
 
-void Editor::ImageWindow::Initialize()
+void ImageWindow::Initialize()
 {
   glEnable(GL_DEPTH_TEST);
 
   GLenum err = glewInit();
 }
 
-void Editor::ImageWindow::SetAnimating(bool animating)
+void ImageWindow::SetAnimating(bool animating)
 {
   mAnimating = animating;
 
@@ -80,12 +84,38 @@ void Editor::ImageWindow::SetAnimating(bool animating)
   }
 }
 
-void Editor::ImageWindow::RenderLater()
+void ImageWindow::RegisterForResize(Elba::GlobalKey key, ResizeCallback callback)
+{
+  mResizeCallbacks.emplace_back(std::make_pair(key, callback));
+}
+
+bool ImageWindow::DeregisterForResize(Elba::GlobalKey key)
+{
+  auto result = std::find_if(mResizeCallbacks.begin(), mResizeCallbacks.end(),
+    [key](const std::pair<Elba::GlobalKey, ResizeCallback>& pair)
+  {
+    if (key.ToStdString() == pair.first.ToStdString())
+    {
+      return true;
+    }
+    return false;
+  });
+
+  if (result != mResizeCallbacks.end())
+  {
+    mResizeCallbacks.erase(result);
+    return true;
+  }
+
+  return false;
+}
+
+void ImageWindow::RenderLater()
 {
   requestUpdate();
 }
 
-void Editor::ImageWindow::RenderNow()
+void ImageWindow::RenderNow()
 {
   if (!isExposed())
   {
@@ -93,7 +123,7 @@ void Editor::ImageWindow::RenderNow()
   }
 
   bool needsInitialize = false;
-  
+
   if (!mContext)
   {
     mContext = new QOpenGLContext(this);
@@ -104,7 +134,7 @@ void Editor::ImageWindow::RenderNow()
   }
 
   mContext->makeCurrent(this);
-  
+
   if (needsInitialize)
   {
     initializeOpenGLFunctions();
@@ -142,7 +172,7 @@ void Editor::ImageWindow::RenderNow()
     std::string assetsDir = Elba::Utils::GetAssetsDirectory();
 
     std::string texturePath = assetsDir + "Textures/Test_images/peppers_gray.ppm";
-    
+
     for (auto it = submeshes.begin(); it != submeshes.end(); it++)
     {
       Elba::OpenGLTexture* texture = new Elba::OpenGLTexture(texturePath, Elba::OpenGLTexture::FileType::ppm);
@@ -154,7 +184,7 @@ void Editor::ImageWindow::RenderNow()
   }
 }
 
-bool Editor::ImageWindow::event(QEvent* event)
+bool ImageWindow::event(QEvent* event)
 {
   switch (event->type())
   {
@@ -166,6 +196,16 @@ bool Editor::ImageWindow::event(QEvent* event)
 
     case QEvent::Resize:
     {
+      QResizeEvent* realEvent = static_cast<QResizeEvent*>(event);
+
+      ResizeEvent resize;
+      resize.oldSize = glm::vec2(realEvent->oldSize().width(), realEvent->oldSize().height());
+      resize.newSize = glm::vec2(realEvent->size().width(), realEvent->size().height());
+
+      for (auto cb : mResizeCallbacks)
+      {
+        cb.second(resize);
+      }
 
       return QWindow::event(event);
     }
@@ -177,7 +217,7 @@ bool Editor::ImageWindow::event(QEvent* event)
   }
 }
 
-void Editor::ImageWindow::exposeEvent(QExposeEvent* event)
+void ImageWindow::exposeEvent(QExposeEvent* event)
 {
   Q_UNUSED(event);
 
@@ -186,3 +226,5 @@ void Editor::ImageWindow::exposeEvent(QExposeEvent* event)
     RenderNow();
   }
 }
+
+} // End of Editor namespace

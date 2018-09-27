@@ -4,6 +4,8 @@
 
 #include "Editor/Framework/Workspace.hpp"
 
+#include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
+
 namespace Editor
 {
 class ImageWindow;
@@ -24,7 +26,8 @@ private:
   Elba::Engine* mEngine;
   ImageWindow* mImageWindow;
 
-  std::vector<std::function<void(ResizeEvent)
+  Elba::GlobalKey mResizeCallbackKey;
+  void OnResize(const ResizeEvent& event);
 };
 
 } // End of Editor namespace
