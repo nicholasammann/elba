@@ -174,6 +174,11 @@ void ImageWindow::RenderNow()
 
     std::string texturePath = assetsDir + "Textures/Test_images/apple-20.ppm";
 
+    // add and init ResizeHandler so it receives the TextureChange event
+    Elba::ResizeHandler* resizeHandler = object->AddComponent<Elba::ResizeHandler>();
+    resizeHandler->Initialize();
+
+    // Load the texture
     for (auto it = submeshes.begin(); it != submeshes.end(); it++)
     {
       Elba::OpenGLTexture* texture = new Elba::OpenGLTexture(texturePath, Elba::OpenGLTexture::FileType::ppm);
@@ -181,9 +186,6 @@ void ImageWindow::RenderNow()
       it->LoadTexture(texture);
     }
 
-    Elba::ResizeHandler* resizeHandler = object->AddComponent<Elba::ResizeHandler>();
-
-    resizeHandler->Initialize();
     ////////////////////////
   }
 }

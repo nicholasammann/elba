@@ -12,12 +12,18 @@
 namespace Elba
 {
 OpenGLTexture::OpenGLTexture()
-  : mWidth(0), mHeight(0), mChannels(0)
+  : mRawImage(nullptr)
+  , mWidth(0)
+  , mHeight(0)
+  , mChannels(0)
 {
 }
 
 OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
-  : mWidth(0), mHeight(0), mChannels(0)
+  : mRawImage(nullptr)
+  , mWidth(0)
+  , mHeight(0)
+  , mChannels(0)
 {
   switch (fileType)
   {
@@ -40,16 +46,35 @@ OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
   }
 
   GenerateTexture();
+  RebindTexture();
 }
 
 void OpenGLTexture::GenerateTexture()
 {
   glGenTextures(1, &mTexture);
+}
 
+void OpenGLTexture::DeleteTexture()
+{
+  glDeleteTextures(1, &mTexture);
+}
+
+void OpenGLTexture::RebindTexture()
+{
+  // bind
   glBindTexture(GL_TEXTURE_2D, mTexture);
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
+  
+  try
+  {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
+  }
+  catch (std::exception e)
+  {
+    GLenum error = glGetError();
+  }
 
   // unbind the texture
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -113,13 +138,9 @@ unsigned char* OpenGLTexture::GetImage()
 
 void OpenGLTexture::SetImage(unsigned char *image, int width, int height)
 {
-  delete mRawImage;
-
   mRawImage = image;
   mWidth = width;
   mHeight = height;
-
-  GenerateTexture();
 }
 
 int OpenGLTexture::GetWidth() const

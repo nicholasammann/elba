@@ -1,3 +1,4 @@
+#include <cmath>
 
 #include "Elba/Core/Object.hpp"
 #include "Elba/Core/Components/CS370/ResizeHandler.hpp"
@@ -16,6 +17,9 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mTransform(nullptr)
   , mModel(nullptr)
   , mInterpolationMode(InterpolationMode::None)
+  , mMasterImage(nullptr)
+  , mMasterWidth(800)
+  , mMasterHeight(600)
   , mScreenWidth(800)
   , mScreenHeight(600)
 {
@@ -76,75 +80,107 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
   if (it != mesh->GetSubmeshes().end())
   {
     OpenGLTexture* texture = it->GetDiffuseTexture();
+    unsigned char* image = nullptr;
 
     // do some form of interpolation
     switch (mInterpolationMode)
     {
       case InterpolationMode::NearestNeighbor:
       {
-        NearestNeighborInterpolation(texture);
+        image = NearestNeighborInterpolation(texture, screenWidth, screenHeight);
         break;
       }
 
       case InterpolationMode::Bilinear:
       {
-        BilinearInterpolation(texture);
+        image = BilinearInterpolation(texture, screenWidth, screenHeight);
         break;
       }
 
       case InterpolationMode::None:
       {
         // EVERYTHING IS AWFUL NO INTERPOLATION OH MY GOD
-        break;
+        return;
       }
     }
+
+    // recreate the opengl texture
+    texture->DeleteTexture();
+    texture->SetImage(image, screenWidth, screenHeight);
+    texture->GenerateTexture();
+    texture->RebindTexture();
   }
 }
 
-void ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture)
+unsigned char* ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight)
 {
-  int newWidth = texture->GetWidth();
-  int newHeight = texture->GetHeight();
-  int stride = newWidth * 3;
+  int stride = screenWidth * 3;
 
-  unsigned char* newImage = new unsigned char[stride * newHeight];
+  unsigned char* newImage = new unsigned char[stride * screenHeight];
 
-  for (int y = 0; y < newHeight; ++y)
+  for (int y = 0; y < screenHeight; ++y)
   {
     for (int x = 0; x < stride; ++x)
     {
       // nearest neighbor interpolation
     }
   }
+
+  return newImage;
 }
 
-void ResizeHandler::BilinearInterpolation(OpenGLTexture* texture)
+unsigned char* ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight)
 {
-  int newWidth = texture->GetWidth();
-  int newHeight = texture->GetHeight();
-  int stride = newWidth * 3;
+  int stride = screenWidth * 3;
 
-  unsigned char* newImage = new unsigned char[stride * newHeight];
+  float widthRatio = static_cast<float>(mMasterWidth) / static_cast<float>(screenWidth);
+  float heightRatio = static_cast<float>(mMasterHeight) / static_cast<float>(screenHeight);
 
-  for (int y = 0; y < newHeight; ++y)
+  unsigned char* newImage = new unsigned char[stride * screenHeight];
+
+  for (int y = 0; y < screenHeight; ++y)
   {
-    for (int x = 0; x < stride; x += 3)
+    for (int x = 0; x < stride; ++x)
     {
       // bilinear interpolation
-      
-      // alpha = (x - x1) / (x2 - x1)
-      float alpha = ()
+      unsigned char value = BilinearValue(x, y, widthRatio, heightRatio);
 
-      // beta = (y - y1) / (y2 - y1)
-
-      // f(x, y1) = (1 - alpha) * f(x1, y1) + alpha * f(x2, y1)
-      // f(x, y2) = (1 - alpha) * f(x1, y2) + alpha * f(x2, y2)
-
-      // f(x,y) = (1 - beta) * f(x, y1) + beta * f(x, y2)
-
-
+      unsigned int index = y * stride + x;
+      newImage[index] = value;
     }
   }
+
+  return newImage;
+  texture->SetImage(newImage, screenWidth, screenHeight);
+}
+
+int ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightRatio)
+{
+  float tX = x * widthRatio;
+  float tY = y * heightRatio;
+
+  int x1 = floor(tX);
+  int x2 = floor(tX + 1);
+
+  int y1 = floor(tY);
+  int y2 = floor(tY + 1);
+
+  // alpha = (x - x1) / (x2 - x1)
+  float alpha = (tX - x1) / (x2 - x1);
+
+  // beta = (y - y1) / (y2 - y1)
+  float beta = (tY - y1) / (y2 - y1);
+
+  // f(x, y1) = (1 - alpha) * f(x1, y1) + alpha * f(x2, y1)
+  float fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth * 3 + x1] + alpha * mMasterImage[y1 * mMasterWidth * 3 + x2];
+
+  // f(x, y2) = (1 - alpha) * f(x1, y2) + alpha * f(x2, y2)
+  float fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth * 3 + x1] + alpha * mMasterImage[y2 * mMasterWidth * 3 + x2];
+
+  // f(x,y) = (1 - beta) * f(x, y1) + beta * f(x, y2)
+  float fxy = (1.0f - beta) * fxy1 + beta * fxy2;
+
+  return static_cast<int>(fxy);
 }
 
 } // End of Elba namespace
