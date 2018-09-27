@@ -18,6 +18,12 @@ ImageEditor::ImageEditor(Framework::MainWindow* mainWindow)
 
   mImageWindow = new ImageWindow(this);
 
+  mResizeCallbackKey = Elba::GlobalKey();
+  mImageWindow->RegisterForResize(mResizeCallbackKey, [this](const Editor::ResizeEvent& event)
+  {
+    this->OnResize(event);
+  });
+
   QTimer::singleShot(30, [this]()
   {
     Update();
@@ -62,6 +68,22 @@ void ImageEditor::Update()
 Elba::Engine* ImageEditor::GetEngine()
 {
   return mEngine;
+}
+
+void ImageEditor::OnResize(const ResizeEvent& event)
+{
+  Elba::CoreModule* core = mEngine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  Elba::ObjectMap const& children = level->GetChildren();
+  auto first = children.begin();
+
+  if (first != children.end())
+  {
+    Elba::Object* object = first->second.get();
+
+    Elba::Transform* transform = object->GetComponent<Elba::Transform>();
+    transform->SetWorldScale(glm::vec3(event.newSize.x, 1.0f, event.newSize.y));
+  }
 }
 
 } // End of Editor namespace

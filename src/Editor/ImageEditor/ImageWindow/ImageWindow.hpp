@@ -4,11 +4,19 @@
 #include <qopenglfunctions.h>
 
 #include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Utilities/GlobalKey.hpp"
 
 namespace Editor
 {
 
 class ImageEditor;
+
+struct ResizeEvent
+{
+  glm::vec2 oldSize;
+  glm::vec2 newSize;
+};
+typedef std::function<void(const ResizeEvent&)> ResizeCallback;
 
 class ImageWindow : public QWindow, protected QOpenGLFunctions
 {
@@ -23,6 +31,9 @@ public:
 
   void SetAnimating(bool animating);
 
+  void RegisterForResize(Elba::GlobalKey key, ResizeCallback callback);
+  bool DeregisterForResize(Elba::GlobalKey key);
+  
 public slots:
   void RenderLater();
   void RenderNow();
@@ -39,6 +50,8 @@ private:
 
   QOpenGLContext* mContext;
   QOpenGLPaintDevice* mDevice;
+
+  std::vector<std::pair<Elba::GlobalKey, ResizeCallback> > mResizeCallbacks;
 };
 
 } // End of Editor namespace

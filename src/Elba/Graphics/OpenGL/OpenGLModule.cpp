@@ -4,14 +4,23 @@
 namespace Elba
 {
 
+int oldWidth = 800;
+int oldHeight = 600;
 int g_width = 800;
 int g_height = 600;
+bool resizeFlag = false;
 
 void window_resize_callback(GLFWwindow* aWindow, int aWidth, int aHeight)
 {
   glViewport(0, 0, aWidth, aHeight);
+  
+  oldWidth = g_width;
+  oldHeight = g_height;
+
   g_width = aWidth;
   g_height = aHeight;
+
+  resizeFlag = true;
 }
 
 OpenGLModule::OpenGLModule(Engine* engine)
@@ -59,6 +68,20 @@ void OpenGLModule::Initialize()
 
 void OpenGLModule::Update()
 {
+  if (resizeFlag)
+  {
+    ResizeEvent event;
+    event.oldSize = glm::vec2(oldWidth, oldHeight);
+    event.newSize = glm::vec2(g_width, g_height);
+
+    for (auto cb : mResizeCallbacks)
+    {
+      cb.second(event);
+    }
+
+    resizeFlag = false;
+  }
+
   // Run update if engine is NOT running in editor
   // If running in editor, the Render function will be called explicitly
   if (!GetEngine()->InEditor())

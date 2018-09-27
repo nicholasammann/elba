@@ -44,4 +44,30 @@ bool GraphicsModule::DeregisterForDraw(GlobalKey key)
   return false;
 }
 
+void GraphicsModule::RegisterForResize(GlobalKey key, ResizeCallback callback)
+{
+  mResizeCallbacks.emplace_back(std::make_pair(key, callback));
+}
+
+bool GraphicsModule::DeregisterForResize(GlobalKey key)
+{
+  auto result = std::find_if(mResizeCallbacks.begin(), mResizeCallbacks.end(),
+    [key](const std::pair<GlobalKey, ResizeCallback>& pair)
+  {
+    if (key.ToStdString() == pair.first.ToStdString())
+    {
+      return true;
+    }
+    return false;
+  });
+
+  if (result != mResizeCallbacks.end())
+  {
+    mResizeCallbacks.erase(result);
+    return true;
+  }
+
+  return false;
+}
+
 } // End of Elba namespace
