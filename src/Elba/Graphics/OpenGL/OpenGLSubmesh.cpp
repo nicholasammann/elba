@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -137,6 +139,14 @@ void OpenGLSubmesh::LoadTexture(const std::string& path)
 
   // should validate path at some point
   mDiffuseTexture = new OpenGLTexture(path);
+
+  // dispatch event to all listeners
+  TextureChangeEvent event;
+  event.newTexture = mDiffuseTexture;
+  for (auto cb : mTextureChangeCallbacks)
+  {
+    cb.second(event);
+  }
 }
 
 void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture)
@@ -155,11 +165,45 @@ void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture)
 
   // fine, we'll take the new doggo
   mDiffuseTexture = texture;
+  
+  // dispatch event to all listeners
+  TextureChangeEvent event;
+  event.newTexture = mDiffuseTexture;
+  for (auto cb : mTextureChangeCallbacks)
+  {
+    cb.second(event);
+  }
 }
 
 OpenGLTexture* OpenGLSubmesh::GetDiffuseTexture() const
 {
   return mDiffuseTexture;
+}
+
+void OpenGLSubmesh::RegisterForTextureChange(Elba::GlobalKey key, TextureChangeCallback callback)
+{
+  mTextureChangeCallbacks.emplace_back(std::make_pair(key, callback));
+}
+
+bool OpenGLSubmesh::DeregisterForTextureChange(Elba::GlobalKey key)
+{
+  auto result = std::find_if(mTextureChangeCallbacks.begin(), mTextureChangeCallbacks.end(),
+    [key](const std::pair<Elba::GlobalKey, TextureChangeCallback>& pair)
+  {
+    if (key.ToStdString() == pair.first.ToStdString())
+    {
+      return true;
+    }
+    return false;
+  });
+
+  if (result != mTextureChangeCallbacks.end())
+  {
+    mTextureChangeCallbacks.erase(result);
+    return true;
+  }
+
+  return false;
 }
 
 } // End of Elba namespace

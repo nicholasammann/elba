@@ -39,11 +39,16 @@ OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
     }
   }
 
+  GenerateTexture();
+}
+
+void OpenGLTexture::GenerateTexture()
+{
   glGenTextures(1, &mTexture);
 
   glBindTexture(GL_TEXTURE_2D, mTexture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
 
   // unbind the texture
@@ -104,6 +109,17 @@ void OpenGLTexture::SaveAsPPM(const std::string& path)
 unsigned char* OpenGLTexture::GetImage()
 {
   return mRawImage;
+}
+
+void OpenGLTexture::SetImage(unsigned char *image, int width, int height)
+{
+  delete mRawImage;
+
+  mRawImage = image;
+  mWidth = width;
+  mHeight = height;
+
+  GenerateTexture();
 }
 
 void OpenGLTexture::LoadPPM(std::string path)

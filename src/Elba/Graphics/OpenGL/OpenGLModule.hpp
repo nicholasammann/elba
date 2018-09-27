@@ -44,10 +44,16 @@ public:
   */
   UniquePtr<Mesh> RequestMesh(std::string name) final;
 
+  std::pair<int, int> GetScreenDimensions() const;
+
+  void SetClearColor(glm::vec4 color);
+
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
+
+  glm::vec4 mClearColor;
 };
 
 } // End of Elba namespace

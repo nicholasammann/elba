@@ -80,7 +80,13 @@ glm::mat4 Camera::ConstructProjMatrix(int aWidth, int aHeight)
   return proj;
   */
 
-  return glm::perspective<float>(90.0f, static_cast<float>(aWidth) / static_cast<float>(aHeight), 0.1f, 50.0f);
+  //return glm::perspective<float>(90.0f, static_cast<float>(aWidth) / static_cast<float>(aHeight), 0.1f, 50.0f);
+
+  
+  float w = static_cast<float>(aWidth) / 2.0f;
+  float h = static_cast<float>(aHeight) / 2.0f;
+
+  return glm::ortho(-w, w, -h, h, 0.01f, 100.0f);
 }
 
 void Camera::SetPosition(glm::vec3 aPos)
