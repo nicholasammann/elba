@@ -37,12 +37,17 @@ private:
   InterpolationMode mInterpolationMode;
 
   unsigned char* mMasterImage;
+  int mMasterWidth;
+  int mMasterHeight;
 
   void OnTextureChange(const TextureChangeEvent& event);
   
   void Interpolate(int screenWidth, int screenHeight);
   void NearestNeighborInterpolation(OpenGLTexture* texture);
   void BilinearInterpolation(OpenGLTexture* texture);
+
+  int mScreenWidth;
+  int mScreenHeight;
 };
 
 } // End of Elba namespace
