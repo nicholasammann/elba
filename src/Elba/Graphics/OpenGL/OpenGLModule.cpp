@@ -27,6 +27,7 @@ OpenGLModule::OpenGLModule(Engine* engine)
   : GraphicsModule(engine)
   , mFactory(NewUnique<OpenGLFactory>(this))
   , mCamera(NewUnique<Camera>())
+  , mClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f))
 {
 }
 
@@ -95,7 +96,7 @@ void OpenGLModule::Update()
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   DrawEvent event;
@@ -112,6 +113,16 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
 {
   return mFactory->RequestMesh(name);
+}
+
+std::pair<int, int> OpenGLModule::GetScreenDimensions() const
+{
+  return std::pair<int, int>(g_width, g_height);
+}
+
+void OpenGLModule::SetClearColor(glm::vec4 color)
+{
+  mClearColor = color;
 }
 
 } // End of Elba namespace

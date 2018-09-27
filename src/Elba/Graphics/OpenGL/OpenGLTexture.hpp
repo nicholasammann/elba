@@ -17,6 +17,8 @@ public:
   OpenGLTexture();
   OpenGLTexture(std::string path, FileType fileType = FileType::other);
 
+  void GenerateTexture();
+
   void Bind(char slot);
 
   void SetUniform(unsigned int shaderPrg, std::string uniform, char slot);
@@ -26,6 +28,9 @@ public:
   const std::string& GetPath() const;
 
   void SaveAsPPM(const std::string& path);
+
+  unsigned char* GetImage();
+  void SetImage(unsigned char* image, int width, int height);
 
 private:
   std::string mPath;
@@ -40,8 +45,6 @@ private:
   int mWidth;
   int mHeight;
   int mChannels;
-
-  unsigned char* GetImage();
 
   void LoadPPM(std::string path);
 };

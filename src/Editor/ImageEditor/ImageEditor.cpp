@@ -1,10 +1,12 @@
 #include <qtimer.h>
 
 #include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
 
 #include "Editor/ImageEditor/ImageEditor.hpp"
 #include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
 #include "Editor/ImageEditor/Menus/FileMenu.hpp"
+#include "Editor/ImageEditor/OptionsPanel/OptionsPanel.hpp"
 
 namespace Editor
 {
@@ -46,6 +48,9 @@ bool ImageEditor::Initialize()
   // Add menus
   AddMenu<FileMenu>(this);
 
+  // Add widgets
+  AddWidget<OptionsPanel>(this);
+
   return true;
 }
 
@@ -81,8 +86,8 @@ void ImageEditor::OnResize(const ResizeEvent& event)
   {
     Elba::Object* object = first->second.get();
 
-    Elba::Transform* transform = object->GetComponent<Elba::Transform>();
-    transform->SetWorldScale(glm::vec3(event.newSize.x, 1.0f, event.newSize.y));
+    Elba::ResizeHandler* resizeHandler = object->GetComponent<Elba::ResizeHandler>();
+    resizeHandler->Resize(static_cast<int>(event.newSize.x), static_cast<int>(event.newSize.y));
   }
 }
 

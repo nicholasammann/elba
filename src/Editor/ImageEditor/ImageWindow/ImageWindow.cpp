@@ -5,6 +5,7 @@
 #include <qevent.h>
 
 #include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
 
 #include "Elba/Engine.hpp"
 
@@ -159,9 +160,9 @@ void ImageWindow::RenderNow()
     Elba::Object* object = level->CreateChild();
 
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, -1.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, -10.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f)));
-    transform->SetWorldScale(glm::vec3(25.0f));
+    transform->SetWorldScale(glm::vec3(size().width(), 1.0f, size().height()));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("quad.fbx");
@@ -171,7 +172,7 @@ void ImageWindow::RenderNow()
     std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();
     std::string assetsDir = Elba::Utils::GetAssetsDirectory();
 
-    std::string texturePath = assetsDir + "Textures/Test_images/peppers_gray.ppm";
+    std::string texturePath = assetsDir + "Textures/Test_images/apple-20.ppm";
 
     for (auto it = submeshes.begin(); it != submeshes.end(); it++)
     {
@@ -180,6 +181,9 @@ void ImageWindow::RenderNow()
       it->LoadTexture(texture);
     }
 
+    Elba::ResizeHandler* resizeHandler = object->AddComponent<Elba::ResizeHandler>();
+
+    resizeHandler->Initialize();
     ////////////////////////
   }
 }

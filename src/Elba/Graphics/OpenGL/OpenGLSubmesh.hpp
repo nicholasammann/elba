@@ -1,12 +1,22 @@
 #pragma once
 
+#include <functional>
+
 #include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
 #include "Elba/Graphics/Submesh.hpp"
+
+#include "Elba/Utilities/GlobalKey.hpp"
 
 namespace Elba
 {
 
 class OpenGLTexture;
+
+struct TextureChangeEvent
+{
+  OpenGLTexture* newTexture;
+};
+typedef std::function<void(const TextureChangeEvent&)> TextureChangeCallback;
 
 class OpenGLSubmesh : public Submesh
 {
@@ -52,14 +62,18 @@ public:
 
   OpenGLTexture* GetDiffuseTexture() const;
 
+  void RegisterForTextureChange(Elba::GlobalKey key, TextureChangeCallback callback);
+  bool DeregisterForTextureChange(Elba::GlobalKey key);
+
 private:
   unsigned int mVAO;
   unsigned int mVBO;
   unsigned int mEBO;
 
   OpenGLShader* mShader;
-
   OpenGLTexture* mDiffuseTexture;
+
+  std::vector<std::pair<Elba::GlobalKey, TextureChangeCallback> > mTextureChangeCallbacks;
 };
 
 } // End of Elba namespace

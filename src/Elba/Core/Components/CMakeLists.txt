@@ -1,3 +1,5 @@
+add_subdirectory(CS370)
+
 target_sources(elba
 PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Model.cpp
