@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 
 project(elba CXX C)
 
@@ -18,7 +18,7 @@ set(elba_out ${CMAKE_CURRENT_LIST_DIR}/build/src/elba/${build_type})
 set(editor_out ${CMAKE_CURRENT_LIST_DIR}/build/src/editor/${build_type})
 
 # Include funtion for mimicking folder structure
-include(${cmake_dir}/YTE_Source_Group.cmake)
+#include(${cmake_dir}/YTE_Source_Group.cmake)
 
 add_subdirectory(submodules)
 add_subdirectory(src)
