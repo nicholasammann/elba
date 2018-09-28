@@ -66,9 +66,26 @@ void ResizeHandler::SetInterpolationMode(InterpolationMode mode)
 
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
 {
-  mMasterImage = event.newTexture->GetImage();
   mMasterWidth = event.newTexture->GetWidth();
   mMasterHeight = event.newTexture->GetHeight();
+
+  // delete old master image
+  if (mMasterImage)
+  {
+    delete [] mMasterImage;
+  }
+
+  // allocate new master image
+  mMasterImage = new unsigned char[mMasterHeight * mMasterWidth * 3];
+
+  for (int y = 0; y < mMasterHeight; ++y)
+  {
+    for (int x = 0; x < mMasterWidth * 3; ++x)
+    {
+      int ind = y * mMasterWidth + x;
+      mMasterImage[ind] = event.newTexture->GetImage()[ind];
+    }
+  }
 }
 
 void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
@@ -105,9 +122,7 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
     }
 
     // recreate the opengl texture
-    texture->DeleteTexture();
     texture->SetImage(image, screenWidth, screenHeight);
-    texture->GenerateTexture();
     texture->RebindTexture();
   }
 }
@@ -117,6 +132,8 @@ unsigned char* ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* textur
   int stride = screenWidth * 3;
 
   unsigned char* newImage = new unsigned char[stride * screenHeight];
+
+  
 
   for (int y = 0; y < screenHeight; ++y)
   {
@@ -139,16 +156,27 @@ unsigned char* ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int 
   float widthRatio = static_cast<float>(mMasterWidth) / static_cast<float>(screenWidth);
   float heightRatio = static_cast<float>(mMasterHeight) / static_cast<float>(screenHeight);
 
-  unsigned char* newImage = new unsigned char[stride * screenHeight];
+  unsigned char* newImage = new (std::nothrow) unsigned char[stride * screenHeight];
+
+  if (newImage == nullptr)
+  {
+    throw std::exception("WHAT THE FUCK");
+  }
 
   for (int y = 0; y < screenHeight; ++y)
   {
     for (int x = 0; x < stride; ++x)
     {
       // bilinear interpolation
-      unsigned char value = BilinearValue(x, y, widthRatio, heightRatio);
+      int value = BilinearValue(x, y, widthRatio, heightRatio);
 
       unsigned int index = y * stride + x;
+
+      if (value < 1)
+      {
+        value = 1;
+      }
+
       newImage[index] = value;
     }
   }
