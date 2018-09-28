@@ -12,16 +12,14 @@
 namespace Elba
 {
 OpenGLTexture::OpenGLTexture()
-  : mRawImage(nullptr)
-  , mWidth(0)
+  : mWidth(0)
   , mHeight(0)
   , mChannels(0)
 {
 }
 
 OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
-  : mRawImage(nullptr)
-  , mWidth(0)
+  : mWidth(0)
   , mHeight(0)
   , mChannels(0)
 {
@@ -35,7 +33,24 @@ OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
 
     case FileType::other:
     {
-      mRawImage = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 3);
+      unsigned char* image = stbi_load(path.c_str(), &mWidth, &mHeight, &mChannels, 3);
+
+      for (int y = 0; y < mHeight; ++y)
+      {
+        for (int x = 0; x < mWidth; ++x)
+        {
+          int ind = y * mWidth * 3 + x * 3;
+
+          Pixel pixel;
+          pixel.r = image[ind];
+          pixel.g = image[ind + 1];
+          pixel.b = image[ind + 2];
+          pixel.a = 255;
+
+          mRawImage.emplace_back(pixel);
+        }
+      }
+
       break;
     }
 
@@ -57,7 +72,7 @@ void OpenGLTexture::GenerateTexture()
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, reinterpret_cast<unsigned char*>(mRawImage.data()));
 
   // unbind the texture
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -73,7 +88,9 @@ void OpenGLTexture::RebindTexture()
   // bind
   glBindTexture(GL_TEXTURE_2D, mTexture);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, reinterpret_cast<unsigned char*>(mRawImage.data()));
 
   // unbind the texture
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -114,28 +131,25 @@ void OpenGLTexture::SaveAsPPM(const std::string& path)
 
     unsigned currentLine = 1;
 
-    // image
-    for (unsigned int i = 0; i < mWidth * mHeight * 3; ++i)
-    {
-      file << static_cast<int>(mRawImage[i]) << " ";
+    int tokenCount = 0;
 
-      if (i - 70 * currentLine > 70)
-      {
-        file << "\n";
-        ++currentLine;
-      }
+    for (Pixel pixel : mRawImage)
+    {
+      InsertPPMToken(file, pixel.r, tokenCount);
+      InsertPPMToken(file, pixel.g, tokenCount);
+      InsertPPMToken(file, pixel.b, tokenCount);
     }
   }
 
   file.close();
 }
 
-unsigned char* OpenGLTexture::GetImage()
+std::vector<Pixel>& OpenGLTexture::GetImage()
 {
   return mRawImage;
 }
 
-void OpenGLTexture::SetImage(unsigned char *image, int width, int height)
+void OpenGLTexture::SetImage(const std::vector<Pixel>& image, int width, int height)
 {
   mRawImage = image;
   mWidth = width;
@@ -185,15 +199,32 @@ void OpenGLTexture::LoadPPM(std::string path)
     mHeight = std::stoi(tokens[2]);
     mChannels = 3;
 
-    mRawImage = new unsigned char[mWidth * mHeight * 3];
-
-    for (unsigned int i = 4; i < tokens.size(); ++i)
+    for (unsigned int i = 4; i < tokens.size() - 2; i += 3)
     {
-      mRawImage[i] = static_cast<unsigned char>(std::stoi(tokens[i]));
+      Pixel pixel;
+
+      pixel.r = std::stoi(tokens[i]);
+      pixel.g = std::stoi(tokens[i + 1]);
+      pixel.b = std::stoi(tokens[i + 2]);
+      pixel.a = 255;
+
+      mRawImage.emplace_back(pixel);
     }
   }
 
   file.close();
+}
+
+void OpenGLTexture::InsertPPMToken(std::ofstream& file, int token, int tokenCount)
+{
+  file << token << " ";
+
+  ++tokenCount;
+  
+  if (tokenCount % 70)
+  {
+    file << "\n";
+  }
 }
 
 } // End of Elba namespace

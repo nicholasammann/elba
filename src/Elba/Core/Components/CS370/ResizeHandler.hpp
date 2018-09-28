@@ -5,16 +5,10 @@
 #include "Elba/Core/Component.hpp"
 
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 namespace Elba
 {
-
-struct Pixel
-{
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-};
 
 class Transform;
 class Model;
@@ -50,9 +44,10 @@ private:
   void OnTextureChange(const TextureChangeEvent& event);
   
   void Interpolate(int screenWidth, int screenHeight);
-  unsigned char* NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight);
+  void NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result);
+  Pixel NearestNeighborValue(int x, int y, float widthRatio, float heightRatio);
 
-  unsigned char* BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight);
+  void BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result);
   Pixel BilinearValue(int x, int y, float widthRatio, float heightRatio);
 
   int mScreenWidth;
