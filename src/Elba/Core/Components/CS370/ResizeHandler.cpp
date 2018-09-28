@@ -17,7 +17,6 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mTransform(nullptr)
   , mModel(nullptr)
   , mInterpolationMode(InterpolationMode::None)
-  , mMasterImage(nullptr)
   , mMasterWidth(800)
   , mMasterHeight(600)
   , mScreenWidth(800)
@@ -70,20 +69,21 @@ void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
   mMasterHeight = event.newTexture->GetHeight();
 
   // delete old master image
-  if (mMasterImage)
-  {
-    delete [] mMasterImage;
-  }
+  mMasterImage.clear();
 
   // allocate new master image
-  mMasterImage = new unsigned char[mMasterHeight * mMasterWidth * 3];
 
   for (int y = 0; y < mMasterHeight; ++y)
   {
-    for (int x = 0; x < mMasterWidth * 3; ++x)
+    for (int x = 0; x < mMasterWidth; ++x)
     {
-      int ind = y * mMasterWidth + x;
-      mMasterImage[ind] = event.newTexture->GetImage()[ind];
+      int ind = y * mMasterWidth * 3 + x * 3;
+      
+      Pixel pixel;
+      pixel.r = event.newTexture->GetImage()[ind];
+      pixel.g = event.newTexture->GetImage()[ind + 1];
+      pixel.b = event.newTexture->GetImage()[ind + 2];
+      mMasterImage.emplace_back(pixel);
     }
   }
 }
@@ -97,7 +97,7 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
   if (it != mesh->GetSubmeshes().end())
   {
     OpenGLTexture* texture = it->GetDiffuseTexture();
-    unsigned char* image = nullptr;
+    unsigned char* image = texture->GetImage();
 
     // do some form of interpolation
     switch (mInterpolationMode)
@@ -122,8 +122,9 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
     }
 
     // recreate the opengl texture
+    //texture->DeleteTexture();
     texture->SetImage(image, screenWidth, screenHeight);
-    texture->RebindTexture();
+    texture->GenerateTexture();
   }
 }
 
@@ -132,8 +133,6 @@ unsigned char* ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* textur
   int stride = screenWidth * 3;
 
   unsigned char* newImage = new unsigned char[stride * screenHeight];
-
-  
 
   for (int y = 0; y < screenHeight; ++y)
   {
@@ -156,62 +155,70 @@ unsigned char* ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int 
   float widthRatio = static_cast<float>(mMasterWidth) / static_cast<float>(screenWidth);
   float heightRatio = static_cast<float>(mMasterHeight) / static_cast<float>(screenHeight);
 
-  unsigned char* newImage = new (std::nothrow) unsigned char[stride * screenHeight];
-
-  if (newImage == nullptr)
-  {
-    throw std::exception("WHAT THE FUCK");
-  }
+  unsigned char* newImage = new unsigned char[stride * (screenHeight + 1)];
 
   for (int y = 0; y < screenHeight; ++y)
   {
-    for (int x = 0; x < stride; ++x)
+    for (int x = 0; x < screenWidth; ++x)
     {
       // bilinear interpolation
-      int value = BilinearValue(x, y, widthRatio, heightRatio);
+      Pixel pixel = BilinearValue(x, y, widthRatio, heightRatio);
 
-      unsigned int index = y * stride + x;
+      unsigned int index = y * stride + x * 3;
 
-      if (value < 1)
-      {
-        value = 1;
-      }
-
-      newImage[index] = value;
+      newImage[index] = pixel.r;
+      newImage[index + 1] = pixel.g;
+      newImage[index + 2] = pixel.b;
     }
   }
 
   return newImage;
-  texture->SetImage(newImage, screenWidth, screenHeight);
 }
 
-int ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightRatio)
+Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightRatio)
 {
+  Pixel result;
+
   float tX = x * widthRatio;
   float tY = y * heightRatio;
 
   int x1 = floor(tX);
   int x2 = floor(tX + 1);
+  
+  if (x2 >= mMasterWidth)
+  {
+    x2 = 0;
+  }
 
   int y1 = floor(tY);
   int y2 = floor(tY + 1);
 
+  if (y2 >= mMasterHeight)
+  {
+    y2 = 0;
+  }
+
   // alpha = (x - x1) / (x2 - x1)
-  float alpha = (tX - x1) / (x2 - x1);
-
   // beta = (y - y1) / (y2 - y1)
-  float beta = (tY - y1) / (y2 - y1);
-
   // f(x, y1) = (1 - alpha) * f(x1, y1) + alpha * f(x2, y1)
-  float fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth * 3 + x1] + alpha * mMasterImage[y1 * mMasterWidth * 3 + x2];
-
   // f(x, y2) = (1 - alpha) * f(x1, y2) + alpha * f(x2, y2)
-  float fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth * 3 + x1] + alpha * mMasterImage[y2 * mMasterWidth * 3 + x2];
-
   // f(x,y) = (1 - beta) * f(x, y1) + beta * f(x, y2)
-  float fxy = (1.0f - beta) * fxy1 + beta * fxy2;
 
-  return static_cast<int>(fxy);
+  float alpha = (tX - x1) / (x2 - x1);
+  float beta = (tY - y1) / (y2 - y1);
+  float fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].r + alpha * mMasterImage[y1 * mMasterWidth + x2].r;
+  float fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].r + alpha * mMasterImage[y2 * mMasterWidth + x2].r;
+  result.r = (1.0f - beta) * fxy1 + beta * fxy2;
+
+  fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].g + alpha * mMasterImage[y1 * mMasterWidth + x2].g;
+  fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].g + alpha * mMasterImage[y2 * mMasterWidth + x2].g;
+  result.g = (1.0f - beta) * fxy1 + beta * fxy2;
+
+  fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].b + alpha * mMasterImage[y1 * mMasterWidth + x2].b;
+  fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].b + alpha * mMasterImage[y2 * mMasterWidth + x2].b;
+  result.b = (1.0f - beta) * fxy1 + beta * fxy2;
+
+  return result;
 }
 
 } // End of Elba namespace
