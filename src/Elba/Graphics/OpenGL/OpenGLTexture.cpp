@@ -46,12 +46,21 @@ OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
   }
 
   GenerateTexture();
-  RebindTexture();
 }
 
 void OpenGLTexture::GenerateTexture()
 {
   glGenTextures(1, &mTexture);
+
+  // bind
+  glBindTexture(GL_TEXTURE_2D, mTexture);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
+
+  // unbind the texture
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void OpenGLTexture::DeleteTexture()
@@ -64,17 +73,7 @@ void OpenGLTexture::RebindTexture()
   // bind
   glBindTexture(GL_TEXTURE_2D, mTexture);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  
-  try
-  {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
-  }
-  catch (std::exception e)
-  {
-    GLenum error = glGetError();
-  }
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, mRawImage);
 
   // unbind the texture
   glBindTexture(GL_TEXTURE_2D, 0);
