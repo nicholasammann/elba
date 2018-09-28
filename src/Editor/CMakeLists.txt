@@ -14,7 +14,7 @@ PRIVATE
 )
 
 # Joshua T. Fisher's function for mimicking directories in VS solution
-#YTE_Source_Group(CMAKE_CURRENT_LIST_DIR editor)
+YTE_Source_Group(CMAKE_CURRENT_LIST_DIR editor)
 
 # Add directories to include path
 target_include_directories(editor

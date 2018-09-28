@@ -18,7 +18,7 @@ PUBLIC
 )
 
 # Joshua T. Fisher's function for mimicking directories in VS solution
-#YTE_Source_Group(CMAKE_CURRENT_LIST_DIR elba)
+YTE_Source_Group(CMAKE_CURRENT_LIST_DIR elba)
 
 # Add necessary dirs to include path
 target_include_directories(elba
