@@ -1,2 +1,2 @@
-add_subdirectory(elba)
-add_subdirectory(editor)
+add_subdirectory(Elba)
+add_subdirectory(Editor)
