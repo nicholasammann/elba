@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
 
 project(elba CXX C)
 
