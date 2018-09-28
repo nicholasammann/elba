@@ -62,7 +62,7 @@ private:
 
   void LoadPPM(std::string path);
 
-  void InsertPPMToken(std::ofstream& file, int token, int tokenCount);
+  void InsertPPMToken(std::ofstream& file, int token, int& tokenCount);
 };
 
 } // End of Elba namespace

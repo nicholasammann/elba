@@ -127,7 +127,7 @@ void OpenGLTexture::SaveAsPPM(const std::string& path)
   if (file.is_open())
   {
     // header
-    file << "P3 \n" << mWidth << " " << mHeight << "\n 255 \n";
+    file << "P3 \n" << mWidth << " " << mHeight << "\n255 \n";
 
     unsigned currentLine = 1;
 
@@ -215,13 +215,13 @@ void OpenGLTexture::LoadPPM(std::string path)
   file.close();
 }
 
-void OpenGLTexture::InsertPPMToken(std::ofstream& file, int token, int tokenCount)
+void OpenGLTexture::InsertPPMToken(std::ofstream& file, int token, int& tokenCount)
 {
   file << token << " ";
 
   ++tokenCount;
-  
-  if (tokenCount % 70)
+
+  if (tokenCount % 18 == 0)
   {
     file << "\n";
   }
