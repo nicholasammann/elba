@@ -7,7 +7,6 @@
 #include "Elba/Core/Components/Transform.hpp"
 
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 namespace Elba
 {
@@ -72,20 +71,7 @@ void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
   mMasterImage.clear();
 
   // allocate new master image
-
-  for (int y = 0; y < mMasterHeight; ++y)
-  {
-    for (int x = 0; x < mMasterWidth; ++x)
-    {
-      int ind = y * mMasterWidth * 3 + x * 3;
-      
-      Pixel pixel;
-      pixel.r = event.newTexture->GetImage()[ind];
-      pixel.g = event.newTexture->GetImage()[ind + 1];
-      pixel.b = event.newTexture->GetImage()[ind + 2];
-      mMasterImage.emplace_back(pixel);
-    }
-  }
+  mMasterImage = event.newTexture->GetImage();
 }
 
 void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
@@ -97,82 +83,92 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
   if (it != mesh->GetSubmeshes().end())
   {
     OpenGLTexture* texture = it->GetDiffuseTexture();
-    unsigned char* image = texture->GetImage();
 
     // do some form of interpolation
     switch (mInterpolationMode)
     {
       case InterpolationMode::NearestNeighbor:
       {
-        image = NearestNeighborInterpolation(texture, screenWidth, screenHeight);
+        std::vector<Pixel> image;
+        NearestNeighborInterpolation(texture, screenWidth, screenHeight, image);
+        texture->SetImage(image, screenWidth, screenHeight);
         break;
       }
 
       case InterpolationMode::Bilinear:
       {
-        image = BilinearInterpolation(texture, screenWidth, screenHeight);
+        std::vector<Pixel> image;
+        BilinearInterpolation(texture, screenWidth, screenHeight, image);
+        texture->SetImage(image, screenWidth, screenHeight);
         break;
       }
 
       case InterpolationMode::None:
       {
         // EVERYTHING IS AWFUL NO INTERPOLATION OH MY GOD
+        texture->SetImage(mMasterImage, mMasterWidth, mMasterHeight);
         return;
       }
     }
 
     // recreate the opengl texture
-    //texture->DeleteTexture();
-    texture->SetImage(image, screenWidth, screenHeight);
-    texture->GenerateTexture();
+    texture->RebindTexture();
   }
 }
 
-unsigned char* ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight)
+void ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result)
 {
-  int stride = screenWidth * 3;
-
-  unsigned char* newImage = new unsigned char[stride * screenHeight];
-
-  for (int y = 0; y < screenHeight; ++y)
-  {
-    for (int x = 0; x < stride; ++x)
-    {
-      // nearest neighbor interpolation
-      
-      // find the nearest point and make it that color
-      
-    }
-  }
-
-  return newImage;
-}
-
-unsigned char* ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight)
-{
-  int stride = screenWidth * 3;
+  int stride = screenWidth * 4;
 
   float widthRatio = static_cast<float>(mMasterWidth) / static_cast<float>(screenWidth);
   float heightRatio = static_cast<float>(mMasterHeight) / static_cast<float>(screenHeight);
-
-  unsigned char* newImage = new unsigned char[stride * (screenHeight + 1)];
 
   for (int y = 0; y < screenHeight; ++y)
   {
     for (int x = 0; x < screenWidth; ++x)
     {
       // bilinear interpolation
-      Pixel pixel = BilinearValue(x, y, widthRatio, heightRatio);
-
-      unsigned int index = y * stride + x * 3;
-
-      newImage[index] = pixel.r;
-      newImage[index + 1] = pixel.g;
-      newImage[index + 2] = pixel.b;
+      result.emplace_back(NearestNeighborValue(x, y, widthRatio, heightRatio));
     }
   }
+}
 
-  return newImage;
+Pixel ResizeHandler::NearestNeighborValue(int x, int y, float widthRatio, float heightRatio)
+{
+  float tX = x * widthRatio;
+  float tY = y * heightRatio;
+
+  float sX = roundf(tX);
+  float sY = roundf(tY);
+
+  while (sX >= mMasterWidth)
+  {
+    sX -= mMasterWidth;
+  }
+
+  while (sY >= mMasterHeight)
+  {
+    sY -= mMasterHeight;
+  }
+
+  return mMasterImage[sY * mMasterWidth + sX];
+}
+
+void ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result)
+{
+  int stride = screenWidth * 4;
+
+  float widthRatio = static_cast<float>(mMasterWidth) / static_cast<float>(screenWidth);
+  float heightRatio = static_cast<float>(mMasterHeight) / static_cast<float>(screenHeight);
+
+  for (int y = 0; y < screenHeight; ++y)
+  {
+    for (int x = 0; x < screenWidth; ++x)
+    {
+      // bilinear interpolation
+      result.emplace_back(BilinearValue(x, y, widthRatio, heightRatio));
+    }
+  }
 }
 
 Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightRatio)
@@ -217,6 +213,8 @@ Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightR
   fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].b + alpha * mMasterImage[y1 * mMasterWidth + x2].b;
   fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].b + alpha * mMasterImage[y2 * mMasterWidth + x2].b;
   result.b = (1.0f - beta) * fxy1 + beta * fxy2;
+
+  result.a = 255;
 
   return result;
 }

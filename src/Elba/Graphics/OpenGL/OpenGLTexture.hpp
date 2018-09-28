@@ -5,6 +5,15 @@
 
 namespace Elba
 {
+
+struct Pixel
+{
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+  unsigned char a;
+};
+
 class OpenGLTexture
 {
 public:
@@ -31,8 +40,8 @@ public:
 
   void SaveAsPPM(const std::string& path);
 
-  unsigned char* GetImage();
-  void SetImage(unsigned char* image, int width, int height);
+  std::vector<Pixel>& GetImage();
+  void SetImage(const std::vector<Pixel>& image, int width, int height);
 
   int GetWidth() const;
   int GetHeight() const;
@@ -45,13 +54,15 @@ private:
   char mSlot;
 
   // raw image
-  unsigned char* mRawImage;
+  std::vector<Pixel> mRawImage;
 
   int mWidth;
   int mHeight;
   int mChannels;
 
   void LoadPPM(std::string path);
+
+  void InsertPPMToken(std::ofstream& file, int token, int tokenCount);
 };
 
 } // End of Elba namespace
