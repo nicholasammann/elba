@@ -9,6 +9,13 @@
 namespace Elba
 {
 
+struct Pixel
+{
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+};
+
 class Transform;
 class Model;
 
@@ -36,7 +43,7 @@ private:
 
   InterpolationMode mInterpolationMode;
 
-  unsigned char* mMasterImage;
+  std::vector<Pixel> mMasterImage;
   int mMasterWidth;
   int mMasterHeight;
 
@@ -46,7 +53,7 @@ private:
   unsigned char* NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight);
 
   unsigned char* BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight);
-  int BilinearValue(int x, int y, float widthRatio, float heightRatio);
+  Pixel BilinearValue(int x, int y, float widthRatio, float heightRatio);
 
   int mScreenWidth;
   int mScreenHeight;
