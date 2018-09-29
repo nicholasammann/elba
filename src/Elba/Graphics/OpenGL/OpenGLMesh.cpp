@@ -134,26 +134,43 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
 
   aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
+  UniquePtr<OpenGLSubmesh> submesh = NewUnique<OpenGLSubmesh>(verts, faces);
+
   // store diffuse maps
-  std::vector<OpenGLTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-  texs.insert(texs.end(), diffuseMaps.begin(), diffuseMaps.end());
+  std::vector<OpenGLTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE);
+  if (!diffuseMaps.empty())
+  {
+    OpenGLTexture* diffuse = new OpenGLTexture(*diffuseMaps.begin());
+    submesh->LoadTexture(diffuse, TextureType::Diffuse);
+  }
 
   // store specular maps
-  std::vector<OpenGLTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-  texs.insert(texs.end(), specularMaps.begin(), specularMaps.end());
+  std::vector<OpenGLTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR);
+  if (!specularMaps.empty())
+  {
+    OpenGLTexture* specular = new OpenGLTexture(*specularMaps.begin());
+    submesh->LoadTexture(specular, TextureType::Specular);
+  }
 
-  // store normal maps
-  std::vector<OpenGLTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-  texs.insert(texs.end(), normalMaps.begin(), normalMaps.end());
+  std::vector<OpenGLTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT);
+  if (!normalMaps.empty())
+  {
+    OpenGLTexture* normal = new OpenGLTexture(*normalMaps.begin());
+    submesh->LoadTexture(normal, TextureType::Normal);
+  }
 
   // store height maps
-  std::vector<OpenGLTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-  texs.insert(texs.end(), heightMaps.begin(), heightMaps.end());
+  std::vector<OpenGLTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT);
+  if (!heightMaps.empty())
+  {
+    OpenGLTexture* height = new OpenGLTexture(*heightMaps.begin());
+    submesh->LoadTexture(height, TextureType::Height);
+  }
 
-  return std::move(NewUnique<OpenGLSubmesh>(verts, faces));
+  return std::move(submesh);
 }
 
-std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, aiTextureType aType, std::string aTypeName)
+std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, aiTextureType aType)
 {
   std::vector<OpenGLTexture> texs;
 
@@ -176,7 +193,8 @@ std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, ai
 
     if (!alreadyLoaded)
     {
-      OpenGLTexture texture(str.C_Str());
+      std::string textureDir = Utils::GetAssetsDirectory() + "Textures/";
+      OpenGLTexture texture((textureDir + std::string(str.C_Str())).c_str());
       texs.push_back(texture);
       mLoadedTextures.push_back(texture);
     }

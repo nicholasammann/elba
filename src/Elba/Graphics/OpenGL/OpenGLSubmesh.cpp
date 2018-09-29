@@ -9,17 +9,19 @@
 namespace Elba
 {
 
+static std::string uniformNames[4] = { "diffuseTex", "specularTex", "normalTex", "heightTex" };
+
 OpenGLSubmesh::OpenGLSubmesh()
   : Submesh()
   , mShader(nullptr)
-  , mDiffuseTexture(nullptr)
+  , mTextures{ nullptr }
 {
 }
 
 OpenGLSubmesh::OpenGLSubmesh(const std::vector<Vertex>& verts, const std::vector<Face>& faces)
   : Submesh()
   , mShader(nullptr)
-  , mDiffuseTexture(nullptr)
+  , mTextures{ nullptr }
 {
   mVertices = verts;
   mFaces = faces;
@@ -81,10 +83,13 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   mShader->UseShaderProgram();
   GLuint shdrPrg = mShader->GetShaderProgram();
 
-  if (mDiffuseTexture)
+  for (int i = 0; i < TextureType::TypeCount; ++i)
   {
-    mDiffuseTexture->SetUniform(shdrPrg, "diffuseTex", 0);
-    mDiffuseTexture->Bind(0);
+    if (mTextures[i])
+    {
+      mTextures[i]->SetUniform(shdrPrg, uniformNames[i], i);
+      mTextures[i]->Bind(i);
+    }
   }
 
   /*
@@ -119,9 +124,12 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   glDrawElements(GL_TRIANGLES, static_cast<int>(mFaces.size()) * 3, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
 
-  if (mDiffuseTexture)
+  for (int i = 0; i < TextureType::TypeCount; ++i)
   {
-    mDiffuseTexture->Unbind();
+    if (mTextures[i])
+    {
+      mTextures[i]->Unbind();
+    }
   }
 }
 
@@ -130,26 +138,28 @@ void OpenGLSubmesh::SetShader(OpenGLShader* shader)
   mShader = shader;
 }
 
-void OpenGLSubmesh::LoadTexture(const std::string& path)
+void OpenGLSubmesh::LoadTexture(const std::string& path, TextureType type)
 {
-  if (mDiffuseTexture)
+  if (mTextures[type])
   {
-    delete mDiffuseTexture;
+    delete mTextures[type];
   }
 
   // should validate path at some point
-  mDiffuseTexture = new OpenGLTexture(path);
+  mTextures[type] = new OpenGLTexture(path);
 
   // dispatch event to all listeners
   TextureChangeEvent event;
-  event.newTexture = mDiffuseTexture;
+  event.newTexture = mTextures[type];
+  event.type = type;
+
   for (auto cb : mTextureChangeCallbacks)
   {
     cb.second(event);
   }
 }
 
-void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture)
+void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture, TextureType type)
 {
   // make sure the new texture exists before we...
   if (!texture)
@@ -158,26 +168,28 @@ void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture)
   }
 
   // DELETE OUR CURRENT GOOD BOI
-  if (mDiffuseTexture)
+  if (mTextures[type])
   {
-    delete mDiffuseTexture;
+    delete mTextures[type];
   }
 
   // fine, we'll take the new doggo
-  mDiffuseTexture = texture;
-  
+  mTextures[type] = texture;
+
   // dispatch event to all listeners
   TextureChangeEvent event;
-  event.newTexture = mDiffuseTexture;
+  event.newTexture = mTextures[type];
+  event.type = type;
+
   for (auto cb : mTextureChangeCallbacks)
   {
     cb.second(event);
   }
 }
 
-OpenGLTexture* OpenGLSubmesh::GetDiffuseTexture() const
+OpenGLTexture* OpenGLSubmesh::GetTexture(TextureType type) const
 {
-  return mDiffuseTexture;
+  return mTextures[type];
 }
 
 void OpenGLSubmesh::RegisterForTextureChange(Elba::GlobalKey key, TextureChangeCallback callback)

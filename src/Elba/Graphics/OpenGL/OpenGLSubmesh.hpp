@@ -12,9 +12,19 @@ namespace Elba
 
 class OpenGLTexture;
 
+enum TextureType
+{
+  Diffuse,
+  Specular,
+  Normal,
+  Height,
+  TypeCount
+};
+
 struct TextureChangeEvent
 {
   OpenGLTexture* newTexture;
+  TextureType type;
 };
 typedef std::function<void(const TextureChangeEvent&)> TextureChangeCallback;
 
@@ -56,11 +66,10 @@ public:
   * \brief Loads the diffuse texture for this submesh
   * \param path The texture file.
   */
-  void LoadTexture(const std::string& path);
-  
-  void LoadTexture(OpenGLTexture* texture);
+  void LoadTexture(const std::string& path, TextureType type = TextureType::Diffuse);
+  void LoadTexture(OpenGLTexture* texture, TextureType type = TextureType::Diffuse);
 
-  OpenGLTexture* GetDiffuseTexture() const;
+  OpenGLTexture* GetTexture(TextureType type) const;
 
   void RegisterForTextureChange(Elba::GlobalKey key, TextureChangeCallback callback);
   bool DeregisterForTextureChange(Elba::GlobalKey key);
@@ -71,7 +80,9 @@ private:
   unsigned int mEBO;
 
   OpenGLShader* mShader;
-  OpenGLTexture* mDiffuseTexture;
+
+  // Diffuse, Specular, Normal, Height - same order as enum
+  OpenGLTexture* mTextures[4];
 
   std::vector<std::pair<Elba::GlobalKey, TextureChangeCallback> > mTextureChangeCallbacks;
 };
