@@ -76,7 +76,7 @@ private:
   */
   UniquePtr<OpenGLSubmesh> ProcessSubmesh(aiMesh *mesh, const aiScene *scene);
 
-  std::vector<OpenGLTexture> LoadMaterialTextures(aiMaterial *aMat, aiTextureType aType, std::string aTypeName);
+  std::vector<OpenGLTexture> LoadMaterialTextures(aiMaterial *aMat, aiTextureType aType);
   unsigned int LoadBMP(const char *aFile, std::string aDir);
   unsigned int LoadTexture(const char *aFile, std::string aDir);
   std::vector<OpenGLTexture> mLoadedTextures;

@@ -82,7 +82,7 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
 
   if (it != mesh->GetSubmeshes().end())
   {
-    OpenGLTexture* texture = it->GetDiffuseTexture();
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
 
     // do some form of interpolation
     switch (mInterpolationMode)

@@ -81,7 +81,7 @@ void FileMenu::SaveTextureAs()
 
   std::string path = fileName.toLocal8Bit().constData();
 
-  Elba::OpenGLTexture* texture = submeshes.begin()->GetDiffuseTexture();
+  Elba::OpenGLTexture* texture = submeshes.begin()->GetTexture(Elba::TextureType::Diffuse);
   texture->SaveAsPPM(path);
 }
 

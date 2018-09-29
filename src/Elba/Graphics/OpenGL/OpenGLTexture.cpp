@@ -60,6 +60,8 @@ OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
     }
   }
 
+  mPath = path;
+
   GenerateTexture();
 }
 

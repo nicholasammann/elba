@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   SetDarkTheme(app);
 
   Framework::MainWindow* mainWindow = new Editor::Framework::MainWindow();
-  ImageEditor* editor = mainWindow->LoadWorkspace<ImageEditor>(mainWindow);
+  LevelEditor* editor = mainWindow->LoadWorkspace<LevelEditor>(mainWindow);
 
   if (!editor->Initialize())
   {

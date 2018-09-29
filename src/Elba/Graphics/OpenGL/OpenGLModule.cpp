@@ -27,7 +27,7 @@ OpenGLModule::OpenGLModule(Engine* engine)
   : GraphicsModule(engine)
   , mFactory(NewUnique<OpenGLFactory>(this))
   , mCamera(NewUnique<Camera>())
-  , mClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f))
+  , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
 {
 }
 

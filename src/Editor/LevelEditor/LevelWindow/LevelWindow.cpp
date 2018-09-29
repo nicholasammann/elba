@@ -134,22 +134,8 @@ void Editor::LevelWindow::RenderNow()
     transform->SetWorldScale(glm::vec3(25.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
-    model->LoadMesh("quad.fbx");
+    model->LoadMesh("crysis/nanosuit.obj");
     model->LoadShader("textured");
-
-    Elba::OpenGLMesh* mesh = static_cast<Elba::OpenGLMesh*>(model->GetMesh());
-    std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();
-    std::string assetsDir = Elba::Utils::GetAssetsDirectory();
-
-    std::string texturePath = assetsDir + "Textures/Test_images/peppers_gray.ppm";
-    
-    for (auto it = submeshes.begin(); it != submeshes.end(); it++)
-    {
-      Elba::OpenGLTexture* texture = new Elba::OpenGLTexture(texturePath, Elba::OpenGLTexture::FileType::ppm);
-
-      it->LoadTexture(texture);
-    }
-
     ////////////////////////
   }
 }
