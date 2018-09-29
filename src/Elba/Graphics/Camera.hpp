@@ -20,6 +20,17 @@ public:
 
   void SetTargetPoint(glm::vec3 aPoint);
 
+  enum ProjectionMode
+  {
+    Perspective,
+    Orthographic
+  };
+
+  void SetProjectionMode(ProjectionMode mode);
+
+private:
+  ProjectionMode mProjectionMode;
+
   glm::vec3 mPosition;
   glm::vec3 mTarget;
   glm::vec3 mDirection;

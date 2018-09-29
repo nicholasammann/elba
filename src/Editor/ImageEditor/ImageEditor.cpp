@@ -15,8 +15,10 @@ ImageEditor::ImageEditor(Framework::MainWindow* mainWindow)
 : Workspace(mainWindow)
 {
   mEngine = new Elba::Engine(true);
-
   mEngine->Initialize();
+
+  Elba::OpenGLModule* graphics = static_cast<Elba::OpenGLModule*>(mEngine->GetGraphicsModule());
+  graphics->GetCamera()->SetProjectionMode(Elba::Camera::ProjectionMode::Orthographic);
 
   mImageWindow = new ImageWindow(this);
 

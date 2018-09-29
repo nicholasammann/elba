@@ -125,5 +125,10 @@ void OpenGLModule::SetClearColor(glm::vec4 color)
   mClearColor = color;
 }
 
+Camera* OpenGLModule::GetCamera()
+{
+  return mCamera.get();
+}
+
 } // End of Elba namespace
 
