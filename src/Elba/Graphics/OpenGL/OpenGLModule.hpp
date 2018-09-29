@@ -30,7 +30,7 @@ public:
   /**
   * \brief Update function called by Engine. Updates graphics.
   */
-  void Update() final;
+  void Update(double dt) final;
 
   /**
   * \brief Window/context agnostic rendering calls.

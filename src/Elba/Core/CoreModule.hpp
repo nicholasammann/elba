@@ -39,7 +39,7 @@ public:
   /**
   * \brief Update function called by Engine. Updates all game objects.
   */
-  void Update() override;
+  void Update(double dt) override;
 
   /**
   * \brief Getter for game world object.

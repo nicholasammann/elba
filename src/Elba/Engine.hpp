@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <chrono>
+
 #include "Elba/Utilities/StdTypedefs.hpp"
 #include "Elba/Core/CoreForwardDeclarations.hpp"
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
@@ -86,6 +88,8 @@ private:
   // Running status
   bool mIsRunning;
   bool mInEditorMode;
+
+  std::chrono::high_resolution_clock::time_point mPreviousTime;
 };
 
 } // End of Elba namespace

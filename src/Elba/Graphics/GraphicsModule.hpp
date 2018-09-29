@@ -54,7 +54,7 @@ public:
   /**
   * \brief Update function called by Engine. Updates graphics.
   */
-  virtual void Update() override = 0;
+  virtual void Update(double dt) override = 0;
   
   /**
   * \brief Window/context agnostic rendering calls.

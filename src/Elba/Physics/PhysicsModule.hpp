@@ -40,7 +40,7 @@ public:
   /**
   * \brief Update function called by Engine. Updates physics.
   */
-  void Update() override;
+  void Update(double dt) override;
 
   /**
   * \brief Getter for the PhysicsFactory.

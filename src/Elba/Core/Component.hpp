@@ -44,7 +44,7 @@ public:
   /**
   * \brief Updates this component.
   */
-  virtual void Update();
+  virtual void Update(double dt);
 
 private:
   Object* mParent;

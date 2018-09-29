@@ -68,7 +68,7 @@ public:
   /**
   * \brief Updates all child objects and components on this object.
   */
-  virtual void Update();
+  virtual void Update(double dt);
 
   /**
   * \brief Creates component of given type and adds it to the object.

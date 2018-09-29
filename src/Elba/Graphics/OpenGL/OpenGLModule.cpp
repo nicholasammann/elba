@@ -67,7 +67,7 @@ void OpenGLModule::Initialize()
   }
 }
 
-void OpenGLModule::Update()
+void OpenGLModule::Update(double dt)
 {
   if (resizeFlag)
   {

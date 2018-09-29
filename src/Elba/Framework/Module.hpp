@@ -31,7 +31,7 @@ public:
   /**
   * \brief Update function that Engine will call on each module.
   */
-  virtual void Update() = 0;
+  virtual void Update(double dt) = 0;
 
   /**
   * \brief Getter for the engine.
