@@ -26,7 +26,7 @@ Object* Component::GetParent() const
   return mParent;
 }
 
-void Component::Update()
+void Component::Update(double dt)
 {
 }
 

@@ -67,18 +67,18 @@ CoreModule* Object::GetCoreModule() const
   return mCoreModule;
 }
 
-void Object::Update()
+void Object::Update(double dt)
 {
   // Update components on this object
   for (std::pair<const std::type_index, UniquePtr<Component> >& component : mComponents)
   {
-    component.second->Update();
+    component.second->Update(dt);
   }
 
   // Update child objects
   for (std::pair<const GlobalKey, UniquePtr<Object> >& child : mChildren)
   {
-    child.second->Update();
+    child.second->Update(dt);
   }
 }
 

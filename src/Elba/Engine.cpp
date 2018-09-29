@@ -21,6 +21,7 @@ Engine::Engine(bool inEditorMode)
   , mPhysicsModule(NewUnique<PhysicsModule>(this))
   , mIsRunning(true)
   , mInEditorMode(inEditorMode)
+  , mPreviousTime(std::chrono::high_resolution_clock::now())
 {
 }
 
@@ -34,13 +35,21 @@ void Engine::Initialize()
   mCoreModule->Initialize();
   mGraphicsModule->Initialize();
   mPhysicsModule->Initialize();
+
+  mPreviousTime = std::chrono::high_resolution_clock::now();
 }
 
 void Engine::Update()
 {
-  mCoreModule->Update();
-  mGraphicsModule->Update();
-  mPhysicsModule->Update();
+  std::chrono::high_resolution_clock::time_point time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> delta = std::chrono::duration_cast<std::chrono::duration<double> >(time - mPreviousTime);
+  double dt = delta.count();
+
+  mPreviousTime = time;
+
+  mCoreModule->Update(dt);
+  mGraphicsModule->Update(dt);
+  mPhysicsModule->Update(dt);
 }
 
 void Engine::Shutdown()

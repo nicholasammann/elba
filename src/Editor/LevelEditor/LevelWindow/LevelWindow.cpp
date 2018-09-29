@@ -4,6 +4,7 @@
 #include <qopenglpaintdevice.h>
 
 #include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/Rotate.hpp"
 
 #include "Elba/Engine.hpp"
 
@@ -122,21 +123,28 @@ void Editor::LevelWindow::RenderNow()
 
   if (needsInitialize)
   {
-    // Test Level
+    // Create objects in level
     Elba::CoreModule* core = mEditor->GetEngine()->GetCoreModule();
     Elba::Level* level = core->GetGameLevel();
 
     Elba::Object* object = level->CreateChild();
 
+    // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, -1.0f, 0.0f));
-    transform->SetWorldRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f)));
-    transform->SetWorldScale(glm::vec3(25.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 0.0f));
+    transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    transform->SetWorldScale(glm::vec3(1.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");
     model->LoadShader("textured");
-    ////////////////////////
+
+    Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
+
+    // Initialize components
+    transform->Initialize();
+    model->Initialize();
+    rotate->Initialize();
   }
 }
 

@@ -22,8 +22,9 @@ void CoreModule::Initialize()
 {
 }
 
-void CoreModule::Update()
+void CoreModule::Update(double dt)
 {
+  mGameLevel->Update(dt);
 }
 
 Level* CoreModule::GetGameLevel()

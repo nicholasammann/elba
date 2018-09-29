@@ -50,6 +50,8 @@ void LevelEditor::Update()
 {
   mEngine->Update();
 
+  mLevelWindow->RenderNow();
+
   QTimer::singleShot(0, [this]()
   {
     this->Update();
