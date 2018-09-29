@@ -48,6 +48,8 @@ public:
 
   void SetClearColor(glm::vec4 color);
 
+  Camera* GetCamera();
+
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
