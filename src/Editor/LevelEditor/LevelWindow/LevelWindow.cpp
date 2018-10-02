@@ -9,6 +9,7 @@
 #include "Elba/Engine.hpp"
 
 #include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
@@ -69,9 +70,15 @@ void Editor::LevelWindow::Initialize()
   glEnable(GL_DEPTH_TEST);
 
   GLenum err = glewInit();
+
+  Elba::OpenGLModule* glModule = dynamic_cast<Elba::OpenGLModule*>(mGraphicsModule);
+  if (glModule)
+  {
+    glModule->InitializePostProcessBuffer();
+  }
 }
 
-void Editor::LevelWindow::SetAnimating(bool animating)
+void Editor::LevelWindow::SetAnimating(bool animating)  
 {
   mAnimating = animating;
 

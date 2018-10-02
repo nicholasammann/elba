@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
@@ -91,9 +92,8 @@ void OpenGLPostProcessBuffer::InitializeQuad()
 
 void OpenGLPostProcessBuffer::InitializeProgram()
 {
-  LoadShader("postprocess");
-
   mProgram = glCreateProgram();
+  LoadShader("postprocess");
   glAttachShader(mProgram, mShader->GetVertShader());
   glAttachShader(mProgram, mShader->GetFragShader());
   glLinkProgram(mProgram);
@@ -149,13 +149,22 @@ void OpenGLPostProcessBuffer::Unbind()
 void OpenGLPostProcessBuffer::Draw()
 {
   glUseProgram(mProgram);
+
   glBindTexture(GL_TEXTURE_2D, mFboTexture);
   glUniform1i(mUniformFboTexture, GL_TEXTURE0 + mFboTextureSlot);
-  glEnableVertexAttribArray(mAttributeVcoord);
+  
+  // bind dt for temp shader
+  Engine* engine = mGraphicsModule->GetEngine();
+  double dt = engine->GetDt();
+  GLint loc = glGetUniformLocation(mProgram, "offset");
+  glUniform1f(loc, static_cast<float>(dt));
 
+  glEnableVertexAttribArray(mAttributeVcoord);
+  
   glBindBuffer(GL_ARRAY_BUFFER, mFboVertices);
   glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  
   glDisableVertexAttribArray(mAttributeVcoord);
 }
 

@@ -43,13 +43,13 @@ void Engine::Update()
 {
   std::chrono::high_resolution_clock::time_point time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> delta = std::chrono::duration_cast<std::chrono::duration<double> >(time - mPreviousTime);
-  double dt = delta.count();
+  mDt = delta.count();
 
   mPreviousTime = time;
 
-  mCoreModule->Update(dt);
-  mGraphicsModule->Update(dt);
-  mPhysicsModule->Update(dt);
+  mCoreModule->Update(mDt);
+  mGraphicsModule->Update(mDt);
+  mPhysicsModule->Update(mDt);
 }
 
 void Engine::Shutdown()
@@ -79,6 +79,11 @@ PhysicsModule* Engine::GetPhysicsModule()
 bool Engine::InEditor() const
 {
   return mInEditorMode;
+}
+
+double Engine::GetDt() const
+{
+  return mDt;
 }
 
 } // End of Elba namespace
