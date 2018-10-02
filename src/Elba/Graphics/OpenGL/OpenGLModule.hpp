@@ -5,6 +5,7 @@
 
 #include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
 
 #include "Elba/Graphics/Camera.hpp"
 
@@ -54,6 +55,8 @@ private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
+
+  OpenGLPostProcessBuffer* mPostProcessBuffer;
 
   glm::vec4 mClearColor;
 };

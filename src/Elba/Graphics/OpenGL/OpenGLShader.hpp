@@ -5,6 +5,8 @@
 * \brief Class definition for Shader.
 */
 
+#pragma once
+
 #include <string>
 #include <gl/glew.h>
 

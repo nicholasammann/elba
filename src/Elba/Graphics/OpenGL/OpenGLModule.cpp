@@ -28,6 +28,7 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mFactory(NewUnique<OpenGLFactory>(this))
   , mCamera(NewUnique<Camera>())
   , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
+  , mPostProcessBuffer(nullptr)
 {
 }
 
@@ -65,6 +66,8 @@ void OpenGLModule::Initialize()
 
     glEnable(GL_DEPTH_TEST);
   }
+
+  mPostProcessBuffer = new OpenGLPostProcessBuffer(this);
 }
 
 void OpenGLModule::Update(double dt)
@@ -99,6 +102,8 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  mPostProcessBuffer->Bind();
+
   DrawEvent event;
 
   event.proj = mCamera->ConstructProjMatrix(screenWidth, screenHeight);
@@ -108,6 +113,10 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   {
     pair.second(event);
   }
+
+  mPostProcessBuffer->Unbind();
+
+  mPostProcessBuffer->Draw();
 }
 
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
