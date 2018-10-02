@@ -79,6 +79,12 @@ public:
   */
   bool InEditor() const;
 
+  /**
+  * \brief Get most recently calculated delta time.
+  * \return Time between frames.
+  */
+  double GetDt() const;
+
 private:
   // Modules
   UniquePtr<CoreModule> mCoreModule;
@@ -90,6 +96,7 @@ private:
   bool mInEditorMode;
 
   std::chrono::high_resolution_clock::time_point mPreviousTime;
+  double mDt;
 };
 
 } // End of Elba namespace

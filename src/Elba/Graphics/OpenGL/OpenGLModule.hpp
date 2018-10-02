@@ -29,6 +29,11 @@ public:
   void Initialize() final;
 
   /**
+  * \brief Initializes buffers for post processing.
+  */
+  void InitializePostProcessBuffer();
+
+  /**
   * \brief Update function called by Engine. Updates graphics.
   */
   void Update(double dt) final;

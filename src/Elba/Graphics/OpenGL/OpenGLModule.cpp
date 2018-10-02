@@ -64,10 +64,18 @@ void OpenGLModule::Initialize()
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(mWindow, window_resize_callback);
 
+    InitializePostProcessBuffer();
+
     glEnable(GL_DEPTH_TEST);
   }
+}
 
+void OpenGLModule::InitializePostProcessBuffer()
+{
   mPostProcessBuffer = new OpenGLPostProcessBuffer(this);
+  mPostProcessBuffer->InitializeProgram();
+  mPostProcessBuffer->InitializeBuffers(0);
+  mPostProcessBuffer->InitializeQuad();
 }
 
 void OpenGLModule::Update(double dt)
