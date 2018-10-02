@@ -12,54 +12,55 @@
 
 #include <stbi/stb_image.h>
 
-#include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Mesh.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 #include "Elba/Utilities/Utils.hpp"
 
 namespace Elba
 {
-
-OpenGLMesh::OpenGLMesh()
+namespace OpenGL
+{
+Mesh::Mesh() : Elba::Mesh()
 {
 }
 
-void OpenGLMesh::Initialize()
+void Mesh::Initialize()
 {
-  for (OpenGLSubmesh& submesh : mSubmeshes)
+  for (Submesh& submesh : mSubmeshes)
   {
     submesh.Initialize();
   }
 }
 
-void OpenGLMesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void Mesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
 {
-  for (OpenGLSubmesh& submesh : mSubmeshes)
+  for (Submesh& submesh : mSubmeshes)
   {
     submesh.Draw(proj, view, model);
   }
 }
 
-void OpenGLMesh::LoadShader(std::string name)
+void Mesh::LoadShader(std::string name)
 {
   std::string assetsDir = Utils::GetAssetsDirectory();
 
   std::string vertPath = assetsDir + "Shaders/" + name + ".vert";
   std::string fragPath = assetsDir + "Shaders/" + name + ".frag";
-  OpenGLShader* shader = new OpenGLShader(name.c_str(), vertPath.c_str(), fragPath.c_str());
+  Shader* shader = new Shader(name.c_str(), vertPath.c_str(), fragPath.c_str());
 
-  for (OpenGLSubmesh& submesh : mSubmeshes)
+  for (Submesh& submesh : mSubmeshes)
   {
     submesh.SetShader(shader);
   }
 }
 
-std::vector<OpenGLSubmesh>& OpenGLMesh::GetSubmeshes()
+std::vector<Submesh>& Mesh::GetSubmeshes()
 {
   return mSubmeshes;
 }
 
-void OpenGLMesh::LoadMesh(std::string path)
+void Mesh::LoadMesh(std::string path)
 {
   Assimp::Importer import;
 
@@ -76,12 +77,12 @@ void OpenGLMesh::LoadMesh(std::string path)
   ProcessNode(scene->mRootNode, scene);
 }
 
-void OpenGLMesh::ProcessNode(aiNode* node, const aiScene* scene)
+void Mesh::ProcessNode(aiNode* node, const aiScene* scene)
 {
   for (unsigned int i = 0; i < node->mNumMeshes; ++i)
   {
     aiMesh *assimpSubmesh = scene->mMeshes[node->mMeshes[i]];
-    UniquePtr<OpenGLSubmesh> submesh = ProcessSubmesh(assimpSubmesh, scene);
+    UniquePtr<Submesh> submesh = ProcessSubmesh(assimpSubmesh, scene);
     mSubmeshes.emplace_back(*submesh);
   }
 
@@ -91,11 +92,11 @@ void OpenGLMesh::ProcessNode(aiNode* node, const aiScene* scene)
   }
 }
 
-UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene* scene)
+UniquePtr<Submesh> Mesh::ProcessSubmesh(aiMesh* mesh, const aiScene* scene)
 {
   std::vector<Vertex> verts;
   std::vector<Face> faces;
-  std::vector<OpenGLTexture> texs;
+  std::vector<Texture> texs;
 
   for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
   {
@@ -134,45 +135,45 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
 
   aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-  UniquePtr<OpenGLSubmesh> submesh = NewUnique<OpenGLSubmesh>(verts, faces);
+  UniquePtr<Submesh> submesh = NewUnique<Submesh>(verts, faces);
 
   // store diffuse maps
-  std::vector<OpenGLTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE);
+  std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE);
   if (!diffuseMaps.empty())
   {
-    OpenGLTexture* diffuse = new OpenGLTexture(*diffuseMaps.begin());
+    Texture* diffuse = new Texture(*diffuseMaps.begin());
     submesh->LoadTexture(diffuse, TextureType::Diffuse);
   }
 
   // store specular maps
-  std::vector<OpenGLTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR);
+  std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR);
   if (!specularMaps.empty())
   {
-    OpenGLTexture* specular = new OpenGLTexture(*specularMaps.begin());
+    Texture* specular = new Texture(*specularMaps.begin());
     submesh->LoadTexture(specular, TextureType::Specular);
   }
 
-  std::vector<OpenGLTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT);
+  std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT);
   if (!normalMaps.empty())
   {
-    OpenGLTexture* normal = new OpenGLTexture(*normalMaps.begin());
+    Texture* normal = new Texture(*normalMaps.begin());
     submesh->LoadTexture(normal, TextureType::Normal);
   }
 
   // store height maps
-  std::vector<OpenGLTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT);
+  std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT);
   if (!heightMaps.empty())
   {
-    OpenGLTexture* height = new OpenGLTexture(*heightMaps.begin());
+    Texture* height = new Texture(*heightMaps.begin());
     submesh->LoadTexture(height, TextureType::Height);
   }
 
   return std::move(submesh);
 }
 
-std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, aiTextureType aType)
+std::vector<Texture> Mesh::LoadMaterialTextures(aiMaterial* aMat, aiTextureType aType)
 {
-  std::vector<OpenGLTexture> texs;
+  std::vector<Texture> texs;
 
   for (unsigned int i = 0; i < aMat->GetTextureCount(aType); ++i)
   {
@@ -194,7 +195,7 @@ std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, ai
     if (!alreadyLoaded)
     {
       std::string textureDir = Utils::GetAssetsDirectory() + "Textures/";
-      OpenGLTexture texture((textureDir + std::string(str.C_Str())).c_str());
+      Texture texture((textureDir + std::string(str.C_Str())).c_str());
       texs.push_back(texture);
       mLoadedTextures.push_back(texture);
     }
@@ -202,7 +203,7 @@ std::vector<OpenGLTexture> OpenGLMesh::LoadMaterialTextures(aiMaterial* aMat, ai
   return texs;
 }
 
-unsigned int OpenGLMesh::LoadBMP(const char* aFile, std::string aDir)
+unsigned int Mesh::LoadBMP(const char* aFile, std::string aDir)
 {
   std::string fullPath = aDir + "/" + aFile;
 
@@ -264,7 +265,7 @@ unsigned int OpenGLMesh::LoadBMP(const char* aFile, std::string aDir)
   return 0;
 }
 
-unsigned int OpenGLMesh::LoadTexture(const char* aFile, std::string aDir)
+unsigned int Mesh::LoadTexture(const char* aFile, std::string aDir)
 {
   std::string fullPath = aDir + "/" + aFile;
 
@@ -303,5 +304,5 @@ unsigned int OpenGLMesh::LoadTexture(const char* aFile, std::string aDir)
 
   return textureID;
 }
-
+} // End of OpenGL namespace
 } // End of Elba namespace

@@ -5,7 +5,8 @@
 
 namespace Elba
 {
-
+namespace OpenGL
+{
 struct Pixel
 {
   unsigned char r;
@@ -14,7 +15,7 @@ struct Pixel
   unsigned char a;
 };
 
-class OpenGLTexture
+class Texture
 {
 public:
   enum FileType
@@ -23,8 +24,8 @@ public:
     other
   };
 
-  OpenGLTexture();
-  OpenGLTexture(std::string path, FileType fileType = FileType::other);
+  Texture();
+  Texture(std::string path, FileType fileType = FileType::other);
 
   void GenerateTexture();
   void DeleteTexture();
@@ -64,5 +65,5 @@ private:
 
   void InsertPPMToken(std::ofstream& file, int token, int& tokenCount);
 };
-
+} // End of OpenGL namespace
 } // End of Elba namespace

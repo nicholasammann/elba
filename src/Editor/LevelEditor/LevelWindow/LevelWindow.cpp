@@ -9,9 +9,9 @@
 #include "Elba/Engine.hpp"
 
 #include "Elba/Graphics/GraphicsModule.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Mesh.hpp"
+#include "Elba/Graphics/OpenGL/Submesh.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"

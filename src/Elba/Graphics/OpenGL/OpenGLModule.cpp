@@ -1,9 +1,10 @@
 #include "Elba/Engine.hpp"
-#include "OpenGLModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
 namespace Elba
 {
-
+namespace OpenGL
+{
 int oldWidth = 800;
 int oldHeight = 600;
 int g_width = 800;
@@ -13,7 +14,7 @@ bool resizeFlag = false;
 void window_resize_callback(GLFWwindow* aWindow, int aWidth, int aHeight)
 {
   glViewport(0, 0, aWidth, aHeight);
-  
+
   oldWidth = g_width;
   oldHeight = g_height;
 
@@ -25,7 +26,7 @@ void window_resize_callback(GLFWwindow* aWindow, int aWidth, int aHeight)
 
 OpenGLModule::OpenGLModule(Engine* engine)
   : GraphicsModule(engine)
-  , mFactory(NewUnique<OpenGLFactory>(this))
+  , mFactory(NewUnique<Factory>(this))
   , mCamera(NewUnique<Camera>())
   , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
 {
@@ -110,7 +111,7 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   }
 }
 
-UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
+UniquePtr<Elba::Mesh> OpenGLModule::RequestMesh(std::string name)
 {
   return mFactory->RequestMesh(name);
 }
@@ -129,6 +130,5 @@ Camera* OpenGLModule::GetCamera()
 {
   return mCamera.get();
 }
-
+} // End of OpenGL namespace
 } // End of Elba namespace
-

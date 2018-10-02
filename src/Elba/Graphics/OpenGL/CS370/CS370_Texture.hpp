@@ -1,4 +1,4 @@
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 /*
 namespace Elba

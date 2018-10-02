@@ -11,42 +11,44 @@
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
 #include "Elba/Graphics/GraphicsFactory.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
+#include "Elba/Graphics/OpenGL/Mesh.hpp"
 
 #include "Elba/Utilities/GlobalKey.hpp"
 
 namespace Elba
+{
+namespace OpenGL
 {
 class OpenGLModule;
 
 /**
 * \brief Handles creation of objects in GraphicsModule.
 */
-class OpenGLFactory : public GraphicsFactory
+class Factory : public GraphicsFactory
 {
 public:
   /**
   * \brief Constructor
   */
-  OpenGLFactory(OpenGLModule* glModule);
+  Factory(OpenGLModule* glModule);
 
   /**
   * \brief Constructs a Mesh and adds it to the graphics module.
   * \param name The name of the fbx file.
   * \return The Mesh that was just created.
   */
-  UniquePtr<OpenGLMesh> RequestMesh(std::string name);
+  UniquePtr<Mesh> RequestMesh(std::string name);
 
 private:
-  Map<std::string, UniquePtr<OpenGLMesh> > mLoadedMeshes;
+  Map<std::string, UniquePtr<Mesh> > mLoadedMeshes;
 
   /**
   * \brief Loads a mesh from file.
   * \param name The name of the fbx file.
   * \return The newly loaded Mesh.
   */
-  UniquePtr<OpenGLMesh> LoadMesh(std::string name);
+  UniquePtr<Mesh> LoadMesh(std::string name);
 
 };
-
+} // End of OpenGL namespace
 } // End of Elba namespace

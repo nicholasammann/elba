@@ -9,13 +9,15 @@
 
 #include <gl/glew.h>
 
-#include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
+#include "Elba/Graphics/OpenGL/Shader.hpp"
 
 namespace Elba
 {
-OpenGLShader::OpenGLShader(const char* aName, const char* vertPath, const char* fragPath)
-: mName(aName), mShaderProgram(0), mVertShader(0), mFragShader(0),
-mVertPath(vertPath), mFragPath(fragPath)
+namespace OpenGL
+{
+Shader::Shader(const char* aName, const char* vertPath, const char* fragPath)
+  : mName(aName), mShaderProgram(0), mVertShader(0), mFragShader(0),
+  mVertPath(vertPath), mFragPath(fragPath)
 {
   // read in vertex shader
   const GLchar* vertexShaderSource = ReadShader(vertPath);
@@ -96,57 +98,57 @@ mVertPath(vertPath), mFragPath(fragPath)
   //glDeleteShader(mFragShader);
 }
 
-void OpenGLShader::UseShaderProgram()
+void Shader::UseShaderProgram()
 {
   glUseProgram(mShaderProgram);
 }
 
-void OpenGLShader::SetBool(const std::string& name, bool value)
+void Shader::SetBool(const std::string& name, bool value)
 {
   glUniform1i(glGetUniformLocation(mShaderProgram, name.c_str()), static_cast<int>(value));
 }
 
-void OpenGLShader::SetInt(const std::string& name, int value)
+void Shader::SetInt(const std::string& name, int value)
 {
   glUniform1i(glGetUniformLocation(mShaderProgram, name.c_str()), value);
 }
 
-void OpenGLShader::SetFloat(const std::string& name, float value)
+void Shader::SetFloat(const std::string& name, float value)
 {
   glUniform1f(glGetUniformLocation(mShaderProgram, name.c_str()), value);
 }
 
-unsigned int OpenGLShader::GetShaderProgram() const
+unsigned int Shader::GetShaderProgram() const
 {
   return mShaderProgram;
 }
 
-unsigned int OpenGLShader::GetVertShader() const
+unsigned int Shader::GetVertShader() const
 {
   return mVertShader;
 }
 
-unsigned int OpenGLShader::GetFragShader() const
+unsigned int Shader::GetFragShader() const
 {
   return mFragShader;
 }
 
-std::string OpenGLShader::GetName()
+std::string Shader::GetName()
 {
   return mName;
 }
 
-std::string OpenGLShader::GetVertPath()
+std::string Shader::GetVertPath()
 {
   return mVertPath;
 }
 
-std::string OpenGLShader::GetFragPath()
+std::string Shader::GetFragPath()
 {
   return mFragPath;
 }
 
-const GLchar* OpenGLShader::ReadShader(const std::string& filename)
+const GLchar* Shader::ReadShader(const std::string& filename)
 {
   std::string source;
   std::string line;
@@ -172,5 +174,5 @@ const GLchar* OpenGLShader::ReadShader(const std::string& filename)
 
   return sourceChar;
 }
-
+} // End of OpenGL namespace
 } // End of Elba namespace

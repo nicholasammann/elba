@@ -18,21 +18,23 @@
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
 #include "Elba/Graphics/Mesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Submesh.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 namespace Elba
+{
+namespace OpenGL
 {
 /**
 * \brief Mesh that contains Submeshes.
 */
-class OpenGLMesh : public Mesh
+class Mesh : public Elba::Mesh
 {
 public:
   /**
   * \brief Constructor
   */
-  OpenGLMesh();
+  Mesh();
 
   /**
   * \brief Initializes all contained submeshes.
@@ -55,10 +57,10 @@ public:
 
   void LoadShader(std::string name) final;
 
-  std::vector<OpenGLSubmesh>& GetSubmeshes();
+  std::vector<Submesh>& GetSubmeshes();
 
 private:
-  std::vector<OpenGLSubmesh> mSubmeshes;
+  std::vector<Submesh> mSubmeshes;
 
   std::string mDirectory;
 
@@ -74,12 +76,12 @@ private:
   * \param node The mesh that will be processed.
   * \param scene The scene that the node is in? Honestly can't remember. It contains materials.
   */
-  UniquePtr<OpenGLSubmesh> ProcessSubmesh(aiMesh *mesh, const aiScene *scene);
+  UniquePtr<Submesh> ProcessSubmesh(aiMesh *mesh, const aiScene *scene);
 
-  std::vector<OpenGLTexture> LoadMaterialTextures(aiMaterial *aMat, aiTextureType aType);
+  std::vector<Texture> LoadMaterialTextures(aiMaterial *aMat, aiTextureType aType);
   unsigned int LoadBMP(const char *aFile, std::string aDir);
   unsigned int LoadTexture(const char *aFile, std::string aDir);
-  std::vector<OpenGLTexture> mLoadedTextures;
+  std::vector<Texture> mLoadedTextures;
 };
-
+} // End of OpenGL namespace
 } // End of Elba namespace

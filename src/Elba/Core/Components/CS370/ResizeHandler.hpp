@@ -4,8 +4,8 @@
 
 #include "Elba/Core/Component.hpp"
 
-#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Submesh.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 namespace Elba
 {
@@ -37,18 +37,18 @@ private:
 
   InterpolationMode mInterpolationMode;
 
-  std::vector<Pixel> mMasterImage;
+  std::vector<OpenGL::Pixel> mMasterImage;
   int mMasterWidth;
   int mMasterHeight;
 
-  void OnTextureChange(const TextureChangeEvent& event);
+  void OnTextureChange(const OpenGL::TextureChangeEvent& event);
   
   void Interpolate(int screenWidth, int screenHeight);
-  void NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result);
-  Pixel NearestNeighborValue(int x, int y, float widthRatio, float heightRatio);
+  void NearestNeighborInterpolation(OpenGL::Texture* texture, int screenWidth, int screenHeight, std::vector<OpenGL::Pixel>& result);
+  OpenGL::Pixel NearestNeighborValue(int x, int y, float widthRatio, float heightRatio);
 
-  void BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result);
-  Pixel BilinearValue(int x, int y, float widthRatio, float heightRatio);
+  void BilinearInterpolation(OpenGL::Texture* texture, int screenWidth, int screenHeight, std::vector<OpenGL::Pixel>& result);
+  OpenGL::Pixel BilinearValue(int x, int y, float widthRatio, float heightRatio);
 
   int mScreenWidth;
   int mScreenHeight;

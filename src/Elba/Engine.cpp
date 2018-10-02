@@ -17,7 +17,7 @@ namespace Elba
 {
 Engine::Engine(bool inEditorMode)
   : mCoreModule(NewUnique<CoreModule>(this))
-  , mGraphicsModule(NewUnique<OpenGLModule>(this))
+  , mGraphicsModule(NewUnique<OpenGL::OpenGLModule>(this))
   , mPhysicsModule(NewUnique<PhysicsModule>(this))
   , mIsRunning(true)
   , mInEditorMode(inEditorMode)

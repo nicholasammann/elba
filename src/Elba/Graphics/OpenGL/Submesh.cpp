@@ -3,8 +3,8 @@
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Submesh.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 namespace Elba
 {
@@ -134,7 +134,7 @@ void Submesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4
   }
 }
 
-void Submesh::SetShader(Shader* shader)
+void Submesh::SetShader(OpenGL::Shader* shader)
 {
   mShader = shader;
 }

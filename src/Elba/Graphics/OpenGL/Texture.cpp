@@ -7,18 +7,20 @@
 #include <stbi/stb_image.h>
 #undef STB_IMAGE_IMPLEMENTATION
 
-#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Texture.hpp"
 
 namespace Elba
 {
-OpenGLTexture::OpenGLTexture()
+namespace OpenGL
+{
+Texture::Texture()
   : mWidth(0)
   , mHeight(0)
   , mChannels(0)
 {
 }
 
-OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
+Texture::Texture(std::string path, FileType fileType)
   : mWidth(0)
   , mHeight(0)
   , mChannels(0)
@@ -65,7 +67,7 @@ OpenGLTexture::OpenGLTexture(std::string path, FileType fileType)
   GenerateTexture();
 }
 
-void OpenGLTexture::GenerateTexture()
+void Texture::GenerateTexture()
 {
   glGenTextures(1, &mTexture);
 
@@ -80,12 +82,12 @@ void OpenGLTexture::GenerateTexture()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void OpenGLTexture::DeleteTexture()
+void Texture::DeleteTexture()
 {
   glDeleteTextures(1, &mTexture);
 }
 
-void OpenGLTexture::RebindTexture()
+void Texture::RebindTexture()
 {
   // bind
   glBindTexture(GL_TEXTURE_2D, mTexture);
@@ -98,31 +100,31 @@ void OpenGLTexture::RebindTexture()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void OpenGLTexture::Bind(char slot)
+void Texture::Bind(char slot)
 {
   glActiveTexture(GL_TEXTURE0 + slot);
   glBindTexture(GL_TEXTURE_2D, mTexture);
   mSlot = slot;
 }
 
-void OpenGLTexture::SetUniform(unsigned int shaderPrg, std::string uniform, char slot)
+void Texture::SetUniform(unsigned int shaderPrg, std::string uniform, char slot)
 {
   int loc = glGetUniformLocation(shaderPrg, uniform.c_str());
   glUniform1i(loc, GL_TEXTURE0 + slot);
 }
 
-void OpenGLTexture::Unbind()
+void Texture::Unbind()
 {
   glActiveTexture(GL_TEXTURE0 + mSlot);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-const std::string& OpenGLTexture::GetPath() const
+const std::string& Texture::GetPath() const
 {
   return mPath;
 }
 
-void OpenGLTexture::SaveAsPPM(const std::string& path)
+void Texture::SaveAsPPM(const std::string& path)
 {
   std::ofstream file(path);
 
@@ -146,29 +148,29 @@ void OpenGLTexture::SaveAsPPM(const std::string& path)
   file.close();
 }
 
-std::vector<Pixel>& OpenGLTexture::GetImage()
+std::vector<Pixel>& Texture::GetImage()
 {
   return mRawImage;
 }
 
-void OpenGLTexture::SetImage(const std::vector<Pixel>& image, int width, int height)
+void Texture::SetImage(const std::vector<Pixel>& image, int width, int height)
 {
   mRawImage = image;
   mWidth = width;
   mHeight = height;
 }
 
-int OpenGLTexture::GetWidth() const
+int Texture::GetWidth() const
 {
   return mWidth;
 }
 
-int OpenGLTexture::GetHeight() const
+int Texture::GetHeight() const
 {
   return mHeight;
 }
 
-void OpenGLTexture::LoadPPM(std::string path)
+void Texture::LoadPPM(std::string path)
 {
   // GONNA DO ALL THE PPM LOADING YEEEEEEAAAHHH!!!!
   std::ifstream file(path);
@@ -217,7 +219,7 @@ void OpenGLTexture::LoadPPM(std::string path)
   file.close();
 }
 
-void OpenGLTexture::InsertPPMToken(std::ofstream& file, int token, int& tokenCount)
+void Texture::InsertPPMToken(std::ofstream& file, int token, int& tokenCount)
 {
   file << token << " ";
 
@@ -228,5 +230,5 @@ void OpenGLTexture::InsertPPMToken(std::ofstream& file, int token, int& tokenCou
     file << "\n";
   }
 }
-
+} // End of OpenGL namespace
 } // End of Elba namespace
