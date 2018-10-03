@@ -78,10 +78,10 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
 void OpenGLPostProcessBuffer::InitializeQuad()
 {
   GLfloat verts[] = {
-    -1, -1,
-     1, -1,
-    -1,  1,
-     1,  1
+    -1.0f, -1.0f,
+     1.0f, -1.0f,
+    -1.0f,  1.0f,
+     1.0f,  1.0f
   };
 
   glGenBuffers(1, &mFboVertices);
@@ -159,12 +159,17 @@ void OpenGLPostProcessBuffer::Draw()
   GLint loc = glGetUniformLocation(mProgram, "offset");
   glUniform1f(loc, static_cast<float>(dt));
 
+  GLfloat verts[] = {
+    -1.0f, -1.0f,
+    1.0f, -1.0f,
+    -1.0f,  1.0f,
+    1.0f,  1.0f
+  };
+
   glEnableVertexAttribArray(mAttributeVcoord);
-  
   glBindBuffer(GL_ARRAY_BUFFER, mFboVertices);
-  glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+  glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, verts);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  
   glDisableVertexAttribArray(mAttributeVcoord);
 }
 

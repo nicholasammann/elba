@@ -65,17 +65,15 @@ void OpenGLModule::Initialize()
     glfwSetFramebufferSizeCallback(mWindow, window_resize_callback);
 
     InitializePostProcessBuffer();
-
-    glEnable(GL_DEPTH_TEST);
   }
 }
 
 void OpenGLModule::InitializePostProcessBuffer()
 {
   mPostProcessBuffer = new OpenGLPostProcessBuffer(this);
-  mPostProcessBuffer->InitializeProgram();
   mPostProcessBuffer->InitializeBuffers(0);
   mPostProcessBuffer->InitializeQuad();
+  mPostProcessBuffer->InitializeProgram();
 }
 
 void OpenGLModule::Update(double dt)
@@ -107,10 +105,10 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
+  mPostProcessBuffer->Bind();
+  
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  mPostProcessBuffer->Bind();
 
   DrawEvent event;
 
@@ -123,6 +121,9 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   }
 
   mPostProcessBuffer->Unbind();
+
+  glClearColor(0.5, 0.2, 0.8, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   mPostProcessBuffer->Draw();
 }
