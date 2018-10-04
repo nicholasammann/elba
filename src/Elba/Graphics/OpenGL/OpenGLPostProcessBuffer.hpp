@@ -28,11 +28,15 @@ public:
 
 private:
   OpenGLModule* mGraphicsModule;
+
+  // buffers
+  GLuint mMSFbo;
   GLuint mFbo;
+  GLuint mRbo;
+
   GLuint mFboTexture;
   GLuint mFboTextureSlot;
   GLuint mFboVertices;
-  GLuint mRboDepth;
 
   GLuint mProgram;
   GLuint mAttributeVcoord;
@@ -41,6 +45,9 @@ private:
   void OnResize(const ResizeEvent& event);
 
   OpenGLShader* mShader;
+
+  int mWidth;
+  int mHeight;
 };
 
 } // End of Elba namespace

@@ -16,7 +16,7 @@ OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
 
 OpenGLPostProcessBuffer::~OpenGLPostProcessBuffer()
 {
-  glDeleteRenderbuffers(1, &mRboDepth);
+  glDeleteRenderbuffers(1, &mRbo);
   glDeleteTextures(1, &mFboTexture);
   glDeleteFramebuffers(1, &mFbo);
   glDeleteBuffers(1, &mFboVertices);
@@ -25,79 +25,47 @@ OpenGLPostProcessBuffer::~OpenGLPostProcessBuffer()
 
 void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
 {
+  // store texture slot
+  mFboTextureSlot = textureSlot;
+
   // width, height
   std::pair<int, int> screenSize = mGraphicsModule->GetScreenDimensions();
+  mWidth = screenSize.first;
+  mHeight = screenSize.second;
 
-  mFboTextureSlot = textureSlot;
+  // generate buffers
+  glGenFramebuffers(1, &mMSFbo);
+  glGenFramebuffers(1, &mFbo);
+  glGenRenderbuffers(1, &mRbo);
+
+  // initialize render buffer storage with multisampled color buffer
+  glBindFramebuffer(GL_FRAMEBUFFER, mMSFbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, mRbo);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGB, mWidth, mHeight);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mRbo);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+  {
+    fprintf(stderr, "glCheckFramebufferStatus: error");
+    return;
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
 
   // Texture
   glActiveTexture(GL_TEXTURE0 + textureSlot);
-
-  GLenum error = glGetError();
-  auto errStr = glewGetErrorString(error);
-
   glGenTextures(1, &mFboTexture);
-  
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-  
   glBindTexture(GL_TEXTURE_2D, mFboTexture);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenSize.first, screenSize.second,
-               0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, 
+               GL_UNSIGNED_BYTE, nullptr);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
-  // Depth buffer
-  glGenRenderbuffers(1, &mRboDepth);
-  glBindRenderbuffer(GL_RENDERBUFFER, mRboDepth);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 
-                        screenSize.first, screenSize.second);
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-  // Framebuffer to link everything together
-  glGenFramebuffers(1, &mFbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
                          GL_TEXTURE_2D, mFboTexture, 0);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
-                            GL_RENDERBUFFER, mRboDepth);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
-  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-  if (status != GL_FRAMEBUFFER_COMPLETE)
-  {
-    fprintf(stderr, "glCheckFramebufferStatus: error %p", status);
-    return;
-  }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -168,7 +136,11 @@ void OpenGLPostProcessBuffer::InitializeProgram()
 
 void OpenGLPostProcessBuffer::Bind()
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, mMSFbo);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFbo);
+  glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight,
+                    GL_COLOR_BUFFER_BIT, GL_NEAREST);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OpenGLPostProcessBuffer::Unbind()
@@ -180,65 +152,22 @@ void OpenGLPostProcessBuffer::Draw()
 {
   glUseProgram(mProgram);
 
-  GLenum error = glGetError();
-  auto errStr = glewGetErrorString(error);
-
   GLuint texLoc = glGetUniformLocation(mProgram, "fbo_texture");
   glUniform1i(texLoc, GL_TEXTURE0 + mFboTextureSlot);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glActiveTexture(GL_TEXTURE0 + mFboTextureSlot);
   glBindTexture(GL_TEXTURE_2D, 0);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
 
   // bind dt for temp shader
   Engine* engine = mGraphicsModule->GetEngine();
   double dt = engine->GetDt();
   GLint loc = glGetUniformLocation(mProgram, "offset");
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glUniform1f(loc, static_cast<float>(dt));
 
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
-  //GLfloat verts[] = {
-  //  -1.0f, -1.0f,
-  //  1.0f, -1.0f,
-  //  -1.0f,  1.0f,
-  //  1.0f,  1.0f
-  //};
-
   glEnableVertexAttribArray(mAttributeVcoord);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glBindBuffer(GL_ARRAY_BUFFER, mFboVertices);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
-
   glDisableVertexAttribArray(mAttributeVcoord);
-
-  error = glGetError();
-  errStr = glewGetErrorString(error);
 }
 
 void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
@@ -256,16 +185,17 @@ void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
 
 void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)
 {
-  int width = static_cast<int>(event.newSize[0]);
-  int height = static_cast<int>(event.newSize[1]);
+  mWidth = static_cast<int>(event.newSize[0]);
+  mHeight = static_cast<int>(event.newSize[1]);
 
   glBindTexture(GL_TEXTURE_2D, mFboTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-               0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, 
+               GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  glBindRenderbuffer(GL_RENDERBUFFER, mRboDepth);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
+  glBindRenderbuffer(GL_RENDERBUFFER, mRbo);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 
+                        mWidth, mHeight);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
