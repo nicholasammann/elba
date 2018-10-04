@@ -32,19 +32,42 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
 
   // Texture
   glActiveTexture(GL_TEXTURE0 + textureSlot);
+
+  GLenum error = glGetError();
+  auto errStr = glewGetErrorString(error);
+
   glGenTextures(1, &mFboTexture);
+  
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+  
   glBindTexture(GL_TEXTURE_2D, mFboTexture);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenSize.first, screenSize.second,
                0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glBindTexture(GL_TEXTURE_2D, 0);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
 
   // Depth buffer
   glGenRenderbuffers(1, &mRboDepth);
@@ -58,8 +81,15 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
   glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
                          GL_TEXTURE_2D, mFboTexture, 0);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
                             GL_RENDERBUFFER, mRboDepth);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -150,27 +180,65 @@ void OpenGLPostProcessBuffer::Draw()
 {
   glUseProgram(mProgram);
 
-  glBindTexture(GL_TEXTURE_2D, mFboTexture);
-  glUniform1i(mUniformFboTexture, GL_TEXTURE0 + mFboTextureSlot);
-  
+  GLenum error = glGetError();
+  auto errStr = glewGetErrorString(error);
+
+  GLuint texLoc = glGetUniformLocation(mProgram, "fbo_texture");
+  glUniform1i(texLoc, GL_TEXTURE0 + mFboTextureSlot);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
+  glActiveTexture(GL_TEXTURE0 + mFboTextureSlot);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   // bind dt for temp shader
   Engine* engine = mGraphicsModule->GetEngine();
   double dt = engine->GetDt();
   GLint loc = glGetUniformLocation(mProgram, "offset");
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glUniform1f(loc, static_cast<float>(dt));
 
-  GLfloat verts[] = {
-    -1.0f, -1.0f,
-    1.0f, -1.0f,
-    -1.0f,  1.0f,
-    1.0f,  1.0f
-  };
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
+  //GLfloat verts[] = {
+  //  -1.0f, -1.0f,
+  //  1.0f, -1.0f,
+  //  -1.0f,  1.0f,
+  //  1.0f,  1.0f
+  //};
 
   glEnableVertexAttribArray(mAttributeVcoord);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glBindBuffer(GL_ARRAY_BUFFER, mFboVertices);
-  glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, verts);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
+  glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
+
   glDisableVertexAttribArray(mAttributeVcoord);
+
+  error = glGetError();
+  errStr = glewGetErrorString(error);
 }
 
 void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
