@@ -48,6 +48,8 @@ private:
 
   int mWidth;
   int mHeight;
+
+  GLuint mVAO;
 };
 
 } // End of Elba namespace
