@@ -75,6 +75,7 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
 
 void OpenGLPostProcessBuffer::InitializeQuad()
 {
+  GLuint VBO;
   GLfloat verts[] = {
     -1.0f, -1.0f,
      1.0f, -1.0f,
@@ -82,9 +83,16 @@ void OpenGLPostProcessBuffer::InitializeQuad()
      1.0f,  1.0f
   };
 
-  glGenBuffers(1, &mFboVertices);
-  glBindBuffer(GL_ARRAY_BUFFER, mFboVertices);
+  glGenVertexArrays(1, &mVAO);
+  glGenBuffers(1, &VBO);
+
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+  glBindVertexArray(mVAO);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (GLvoid*)0);
+
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -136,6 +144,11 @@ void OpenGLPostProcessBuffer::InitializeProgram()
 
 void OpenGLPostProcessBuffer::Bind()
 {
+  glBindFramebuffer(GL_FRAMEBUFFER, mMSFbo);
+}
+
+void OpenGLPostProcessBuffer::Unbind()
+{
   glBindFramebuffer(GL_READ_FRAMEBUFFER, mMSFbo);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFbo);
   glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight,
@@ -143,13 +156,11 @@ void OpenGLPostProcessBuffer::Bind()
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OpenGLPostProcessBuffer::Unbind()
-{
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void OpenGLPostProcessBuffer::Draw()
 {
+  glClearColor(0.2, 0.8, 0.8, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   glUseProgram(mProgram);
 
   GLuint texLoc = glGetUniformLocation(mProgram, "fbo_texture");

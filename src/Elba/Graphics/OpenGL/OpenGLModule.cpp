@@ -108,7 +108,7 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   mPostProcessBuffer->Bind();
   
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   DrawEvent event;
 
@@ -121,9 +121,6 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   }
 
   mPostProcessBuffer->Unbind();
-
-  glClearColor(0.5, 0.2, 0.8, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   mPostProcessBuffer->Draw();
 }
