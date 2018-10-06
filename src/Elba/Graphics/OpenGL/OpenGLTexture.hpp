@@ -26,6 +26,8 @@ public:
   OpenGLTexture();
   OpenGLTexture(std::string path, FileType fileType = FileType::other);
 
+  void GenerateFramebufferTexture();
+
   void GenerateTexture();
   void DeleteTexture();
   void RebindTexture();
@@ -45,6 +47,9 @@ public:
 
   int GetWidth() const;
   int GetHeight() const;
+
+  void SetWidth(int width);
+  void SetHeight(int height);
 
 private:
   std::string mPath;

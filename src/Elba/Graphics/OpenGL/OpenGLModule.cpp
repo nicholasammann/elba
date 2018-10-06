@@ -105,10 +105,16 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
+  GLenum error = glGetError();
+
   mPostProcessBuffer->Bind();
+
+  error = glGetError();
 
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  error = glGetError();
 
   DrawEvent event;
 
@@ -120,7 +126,11 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
     pair.second(event);
   }
 
+  error = glGetError();
+
   mPostProcessBuffer->Unbind();
+
+  error = glGetError();
 
   mPostProcessBuffer->Draw();
 }
