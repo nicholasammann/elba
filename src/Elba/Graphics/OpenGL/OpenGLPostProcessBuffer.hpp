@@ -8,6 +8,7 @@ namespace Elba
 {
 class OpenGLModule;
 class OpenGLShader;
+class OpenGLTexture;
 
 class OpenGLPostProcessBuffer
 {
@@ -38,13 +39,14 @@ private:
   GLuint mFboTextureSlot;
   GLuint mFboVertices;
 
-  GLuint mProgram;
+  //GLuint mProgram;
   GLuint mAttributeVcoord;
   GLuint mUniformFboTexture;
 
   void OnResize(const ResizeEvent& event);
 
   OpenGLShader* mShader;
+  OpenGLTexture* mTexture;
 
   int mWidth;
   int mHeight;
