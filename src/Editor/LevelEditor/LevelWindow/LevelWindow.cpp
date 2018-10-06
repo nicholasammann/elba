@@ -67,9 +67,9 @@ void Editor::LevelWindow::Render()
 
 void Editor::LevelWindow::Initialize()
 {
-  glEnable(GL_DEPTH_TEST);
-
   GLenum err = glewInit();
+
+  glEnable(GL_DEPTH_TEST);
 
   Elba::OpenGLModule* glModule = dynamic_cast<Elba::OpenGLModule*>(mGraphicsModule);
   if (glModule)
