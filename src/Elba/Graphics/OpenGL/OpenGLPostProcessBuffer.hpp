@@ -20,8 +20,8 @@ public:
   void InitializeQuad();
   void InitializeProgram();
 
-  void Bind();
-  void Unbind();
+  void PreRender();
+  void PostRender();
 
   void Draw();
 
@@ -31,27 +31,24 @@ private:
   OpenGLModule* mGraphicsModule;
 
   // buffers
-  GLuint mMSFbo;
   GLuint mFbo;
   GLuint mRbo;
+  GLuint mVAO;
 
-  GLuint mFboTexture;
-  GLuint mFboTextureSlot;
-  GLuint mFboVertices;
+  GLuint mTextureColorBuffer;
 
   //GLuint mProgram;
-  GLuint mAttributeVcoord;
   GLuint mUniformFboTexture;
 
   void OnResize(const ResizeEvent& event);
 
   OpenGLShader* mShader;
-  OpenGLTexture* mTexture;
 
   int mWidth;
   int mHeight;
 
-  GLuint mVAO;
+  float mElapsedTime;
+
 };
 
 } // End of Elba namespace

@@ -12,51 +12,43 @@ namespace Elba
 OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
   , mShader(nullptr)
-  , mTexture(new OpenGLTexture())
+  , mElapsedTime(0.0f)
 {
 }
 
 OpenGLPostProcessBuffer::~OpenGLPostProcessBuffer()
 {
-  glDeleteRenderbuffers(1, &mRbo);
-  glDeleteTextures(1, &mFboTexture);
-  glDeleteFramebuffers(1, &mFbo);
-  glDeleteBuffers(1, &mFboVertices);
-  //glDeleteProgram(mProgram);
 }
 
 void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
 {
-  // store texture slot
-  mFboTextureSlot = textureSlot;
-
   // width, height
   std::pair<int, int> screenSize = mGraphicsModule->GetScreenDimensions();
   mWidth = screenSize.first;
   mHeight = screenSize.second;
 
-  // generate buffers
-  glGenFramebuffers(1, &mMSFbo);
+  // generate framebuffer
   glGenFramebuffers(1, &mFbo);
-  glGenRenderbuffers(1, &mRbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
 
-  // initialize render buffer storage with multisampled color buffer
-  glBindFramebuffer(GL_FRAMEBUFFER, mMSFbo);
+  // create color attachment texture
+  glGenTextures(1, &mTextureColorBuffer);
+  glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTextureColorBuffer, 0);
+
+  // create renderbuffer for depth and stencil attachment
+  glGenRenderbuffers(1, &mRbo);
   glBindRenderbuffer(GL_RENDERBUFFER, mRbo);
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGB, mWidth, mHeight);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mRbo);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRbo);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
   {
-    fprintf(stderr, "glCheckFramebufferStatus: error");
-    return;
+    throw std::exception("Framebuffer is garbage");
   }
-
-  glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
-
-  mTexture->SetWidth(mWidth);
-  mTexture->SetHeight(mHeight);
-  mTexture->GenerateFramebufferTexture();
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -66,115 +58,65 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
 
 void OpenGLPostProcessBuffer::InitializeQuad()
 {
-  GLuint VBO;
-  GLfloat verts[] = {
-    -1.0f, -1.0f,
-     1.0f, -1.0f,
-    -1.0f,  1.0f,
-     1.0f,  1.0f
+  float quadVertices[] = {
+    // positions   // texCoords
+    -1.0f,  1.0f,  0.0f, 1.0f,
+    -1.0f, -1.0f,  0.0f, 0.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+
+    -1.0f,  1.0f,  0.0f, 1.0f,
+     1.0f, -1.0f,  1.0f, 0.0f,
+     1.0f,  1.0f,  1.0f, 1.0f
   };
 
+  GLuint VBO;
   glGenVertexArrays(1, &mVAO);
   glGenBuffers(1, &VBO);
 
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-
   glBindVertexArray(mVAO);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (GLvoid*)0);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (GLvoid*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (GLvoid*)(2 * sizeof(float)));
 }
 
 void OpenGLPostProcessBuffer::InitializeProgram()
 {
   LoadShader("postprocess");
-
-  mShader->UseShaderProgram();
-  GLuint prg = mShader->GetShaderProgram();
-
-  //glAttachShader(mProgram, mShader->GetVertShader());
-  //glAttachShader(mProgram, mShader->GetFragShader());
-  //glLinkProgram(mProgram);
-  //
-  //GLint linkOk;
-  //glGetProgramiv(mProgram, GL_LINK_STATUS, &linkOk);
-  //
-  //if (!linkOk)
-  //{
-  //  fprintf(stderr, "glLinkProgram: error");
-  //  return;
-  //}
-  //
-  //glValidateProgram(mProgram);
-  //GLint validateOk;
-  //glGetProgramiv(mProgram, GL_VALIDATE_STATUS, &validateOk);
-  //
-  //if (!validateOk)
-  //{
-  //  fprintf(stderr, "glValidate: error");
-  //  return;
-  //}
-
-  //const char* attributeName = "v_coord";
-  //mAttributeVcoord = glGetAttribLocation(prg, attributeName);
-  //
-  //if (mAttributeVcoord == -1)
-  //{
-  //  fprintf(stderr, "Could not bind attribute %s\n", attributeName);
-  //  return;
-  //}
-
-  //const char* uniformName = "fbo_texture";
-  //mUniformFboTexture = glGetUniformLocation(prg, uniformName);
-  //
-  //if (mUniformFboTexture == -1)
-  //{
-  //  fprintf(stderr, "Could not bind uniform %s\n", uniformName);
-  //  return;
-  //}
 }
 
-void OpenGLPostProcessBuffer::Bind()
+void OpenGLPostProcessBuffer::PreRender()
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, mMSFbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
+  glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGLPostProcessBuffer::Unbind()
+void OpenGLPostProcessBuffer::PostRender()
 {
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, mMSFbo);
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFbo);
-  glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight,
-                    GL_COLOR_BUFFER_BIT, GL_NEAREST);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDisable(GL_DEPTH_TEST);
 }
 
 void OpenGLPostProcessBuffer::Draw()
 {
-  GLenum error = glGetError();
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
-  glClearColor(0.0, 0.0, 0.0, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
   mShader->UseShaderProgram();
-  GLuint prg = mShader->GetShaderProgram();
+  glActiveTexture(GL_TEXTURE0);
+  mShader->SetInt("screenTexture", 0);
 
-  mTexture->SetUniform(prg, "fbo_texture", 0);
-  mTexture->Bind(0);
-
-  // bind dt for temp shader
   Engine* engine = mGraphicsModule->GetEngine();
-  double dt = engine->GetDt();
-  mShader->SetFloat("offset", dt);
+  float dt = static_cast<float>(engine->GetDt());
+  mElapsedTime += dt;
+  mShader->SetFloat("offset", mElapsedTime);
 
-  glEnableVertexAttribArray(mAttributeVcoord);
-  glBindBuffer(GL_ARRAY_BUFFER, mFboVertices);
-  glVertexAttribPointer(mAttributeVcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  glDisableVertexAttribArray(mAttributeVcoord);
-
-  mTexture->Unbind();
+  glBindVertexArray(mVAO);
+  glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 }
 
 void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
@@ -195,15 +137,15 @@ void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)
   mWidth = static_cast<int>(event.newSize[0]);
   mHeight = static_cast<int>(event.newSize[1]);
 
-  glBindTexture(GL_TEXTURE_2D, mFboTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, 
-               GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  glBindRenderbuffer(GL_RENDERBUFFER, mRbo);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 
-                        mWidth, mHeight);
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  //glBindTexture(GL_TEXTURE_2D, mFboTexture);
+  //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, 
+  //             GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  //glBindTexture(GL_TEXTURE_2D, 0);
+  //
+  //glBindRenderbuffer(GL_RENDERBUFFER, mRbo);
+  //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 
+  //                      mWidth, mHeight);
+  //glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 } // End of Elba namespace
