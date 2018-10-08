@@ -61,7 +61,7 @@ private:
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
 
-  OpenGLPostProcessBuffer* mPostProcessBuffer;
+  std::vector<OpenGLPostProcessBuffer*> mPostFxBuffers;
 
   glm::vec4 mClearColor;
 };
