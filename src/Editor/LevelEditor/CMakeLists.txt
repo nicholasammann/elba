@@ -1,6 +1,7 @@
 add_subdirectory(LevelWindow)
 add_subdirectory(Menus)
 add_subdirectory(ObjectBrowser)
+add_subdirectory(PostProcessingOptions)
 
 target_sources(editor
 PRIVATE

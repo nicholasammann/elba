@@ -13,6 +13,8 @@ OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
   , mShader(nullptr)
   , mElapsedTime(0.0f)
+  , mEdgeDetectionOn(0)
+  , mBlurOn(0)
 {
 }
 
@@ -111,6 +113,9 @@ void OpenGLPostProcessBuffer::Draw()
   glActiveTexture(GL_TEXTURE0);
   mShader->SetInt("screenTexture", 0);
 
+  mShader->SetInt("edgeOn", mEdgeDetectionOn);
+  mShader->SetInt("blurOn", mBlurOn);
+
   //Engine* engine = mGraphicsModule->GetEngine();
   //float dt = static_cast<float>(engine->GetDt());
   //mElapsedTime += dt;
@@ -132,6 +137,16 @@ void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
   std::string vertPath = assetsDir + "Shaders/" + shaderName + ".vert";
   std::string fragPath = assetsDir + "Shaders/" + shaderName + ".frag";
   mShader = new OpenGLShader(shaderName.c_str(), vertPath.c_str(), fragPath.c_str());
+}
+
+void OpenGLPostProcessBuffer::SetEdgeDetection(int value)
+{
+  mEdgeDetectionOn = value;
+}
+
+void OpenGLPostProcessBuffer::SetBlur(int value)
+{
+  mBlurOn = value;
 }
 
 void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)

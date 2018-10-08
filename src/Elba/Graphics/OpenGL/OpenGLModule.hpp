@@ -56,12 +56,14 @@ public:
 
   Camera* GetCamera();
 
+  std::vector<OpenGLPostProcessBuffer*>& GetPostProcessingBuffers();
+
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
 
-  std::vector<OpenGLPostProcessBuffer*> mPostFxBuffers;
+  std::vector<OpenGLPostProcessBuffer*> mPostProcessingBuffers;
 
   glm::vec4 mClearColor;
 };
