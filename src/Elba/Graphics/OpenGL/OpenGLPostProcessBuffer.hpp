@@ -27,6 +27,9 @@ public:
 
   void LoadShader(std::string shaderName);
 
+  void SetEdgeDetection(int value);
+  void SetBlur(int value);
+
 private:
   OpenGLModule* mGraphicsModule;
 
@@ -48,6 +51,10 @@ private:
   int mHeight;
 
   float mElapsedTime;
+
+  // Options (temp solution)
+  int mEdgeDetectionOn;
+  int mBlurOn;
 
 };
 

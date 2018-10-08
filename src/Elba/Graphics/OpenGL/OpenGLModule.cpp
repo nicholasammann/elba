@@ -73,7 +73,7 @@ void OpenGLModule::InitializePostProcessBuffer()
   bufferA->InitializeBuffers(0);
   bufferA->InitializeQuad();
   bufferA->InitializeProgram();
-  mPostFxBuffers.push_back(bufferA);
+  mPostProcessingBuffers.push_back(bufferA);
 
   //OpenGLPostProcessBuffer* bufferB = new OpenGLPostProcessBuffer(this);
   //bufferB->InitializeBuffers(1);
@@ -111,9 +111,9 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
-  auto buffer_it = mPostFxBuffers.begin();
+  auto buffer_it = mPostProcessingBuffers.begin();
   
-  if (buffer_it != mPostFxBuffers.end())
+  if (buffer_it != mPostProcessingBuffers.end())
   {
     (*buffer_it)->PreRender();
   }
@@ -131,13 +131,13 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
     pair.second(event);
   }
 
-  if (buffer_it != mPostFxBuffers.end())
+  if (buffer_it != mPostProcessingBuffers.end())
   {
     (*buffer_it)->PostRender();
 
     auto prevBuffer_it = buffer_it++;
 
-    while (buffer_it != mPostFxBuffers.end())
+    while (buffer_it != mPostProcessingBuffers.end())
     {
       (*buffer_it)->PreRender();
       (*prevBuffer_it)->Draw();
@@ -167,6 +167,11 @@ void OpenGLModule::SetClearColor(glm::vec4 color)
 Camera* OpenGLModule::GetCamera()
 {
   return mCamera.get();
+}
+
+std::vector<OpenGLPostProcessBuffer*>& OpenGLModule::GetPostProcessingBuffers()
+{
+  return mPostProcessingBuffers;
 }
 
 } // End of Elba namespace

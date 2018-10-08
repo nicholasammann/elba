@@ -5,6 +5,7 @@
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
 #include "Editor/LevelEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
 
 namespace Editor
 {
@@ -37,7 +38,8 @@ bool LevelEditor::Initialize()
   QWidget* container = mainWindow->createWindowContainer(mLevelWindow);
   tabs->addTab(container, "Level Window");
 
-  AddWidget<ObjectBrowser>(this);
+  //AddWidget<ObjectBrowser>(this);
+  AddWidget<PostProcessingOptions>(this);
 
   return true;
 }

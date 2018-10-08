@@ -5,7 +5,10 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 
-const float offset = 1.0 / 300.0;  
+uniform int edgeOn;
+uniform int blurOn;
+
+const float offset = 1.0 / 300.0;
 
 void main(void)
 {
@@ -21,11 +24,10 @@ void main(void)
         vec2( offset, -offset)  // bottom-right    
     );
 
-    float sharpen[9] = float[](1, 1, 1,
-                               1, -8, 1,
-                               1, 1, 1);
+    float edge[9] = float[](1, 1, 1,
+                            1, -8, 1,
+                            1, 1, 1);
 
-                               
     float blur[9] = float[](
     1.0 / 16, 2.0 / 16, 1.0 / 16,
     2.0 / 16, 4.0 / 16, 2.0 / 16,
@@ -37,10 +39,27 @@ void main(void)
     {
         sampleTex[i] = vec3(texture(screenTexture, TexCoords.st + offsets[i]));
     }
+
     vec3 col = vec3(0.0);
-    for(int i = 0; i < 9; i++)
-        //col += sampleTex[i] * sharpen[i];
-        col += sampleTex[i] * blur[i];
-    
+
+    if (edgeOn != 0)
+    {
+        for(int i = 0; i < 9; i++)
+        {
+            col += sampleTex[i] * edge[i];
+        }
+    }
+    else if (blurOn != 0)
+    {
+        for(int i = 0; i < 9; i++)
+        {
+            col += sampleTex[i] * blur[i];
+        }
+    }
+    else
+    {
+        col = vec3(texture(screenTexture, TexCoords.st));
+    }
+
     FragColor = vec4(col, 1.0);
 }
