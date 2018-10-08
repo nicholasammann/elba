@@ -49,14 +49,16 @@ void main(void)
             col += sampleTex[i] * edge[i];
         }
     }
-    else if (blurOn != 0)
+
+    if (blurOn != 0)
     {
         for(int i = 0; i < 9; i++)
         {
             col += sampleTex[i] * blur[i];
         }
     }
-    else
+
+    if (edgeOn == 0 && blurOn == 0)
     {
         col = vec3(texture(screenTexture, TexCoords.st));
     }
