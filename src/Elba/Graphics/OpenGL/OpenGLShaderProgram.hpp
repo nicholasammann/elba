@@ -15,7 +15,7 @@ namespace Elba
 /**
 * \brief Contains vertex and fragment shader information
 */
-class OpenGLShader
+class OpenGLShaderProgram
 {
 public:
   /** 
@@ -24,7 +24,7 @@ public:
   * \param vertPath The path to the vertex shader.
   * \param fragPath The path to the fragment shader.
   */
-  OpenGLShader(const char* name, const char* vertPath, const char* fragPath);
+  OpenGLShaderProgram(const char* name, const char* vertPath, const char* fragPath);
 
   /**
   * \brief Set this as the currently active shader for OpenGL
@@ -52,9 +52,6 @@ private:
   unsigned int mShaderProgram;
   unsigned int mVertShader;
   unsigned int mFragShader;
-
-  // reads in a shader from file
-  const GLchar* ReadShader(const std::string& filename);
 };
 
 } // End of Elba namespace

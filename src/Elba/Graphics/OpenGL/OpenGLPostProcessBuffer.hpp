@@ -7,7 +7,7 @@
 namespace Elba
 {
 class OpenGLModule;
-class OpenGLShader;
+class OpenGLShaderProgram;
 class OpenGLTexture;
 
 class OpenGLPostProcessBuffer
@@ -45,7 +45,7 @@ private:
 
   void OnResize(const ResizeEvent& event);
 
-  OpenGLShader* mShader;
+  OpenGLShaderProgram* mShader;
 
   int mWidth;
   int mHeight;

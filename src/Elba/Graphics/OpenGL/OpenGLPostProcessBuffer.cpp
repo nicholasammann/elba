@@ -3,7 +3,7 @@
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLShaderProgram.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 #include "Elba/Utilities/Utils.hpp"
 
@@ -136,7 +136,7 @@ void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
   std::string assetsDir = Utils::GetAssetsDirectory();
   std::string vertPath = assetsDir + "Shaders/" + shaderName + ".vert";
   std::string fragPath = assetsDir + "Shaders/" + shaderName + ".frag";
-  mShader = new OpenGLShader(shaderName.c_str(), vertPath.c_str(), fragPath.c_str());
+  mShader = new OpenGLShaderProgram(shaderName.c_str(), vertPath.c_str(), fragPath.c_str());
 }
 
 void OpenGLPostProcessBuffer::SetEdgeDetection(int value)
