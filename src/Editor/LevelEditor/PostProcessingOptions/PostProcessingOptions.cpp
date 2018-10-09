@@ -47,10 +47,10 @@ void PostProcessingOptions::OnEdgeDetectionChanged(int value)
   Elba::GraphicsModule* graphics = engine->GetGraphicsModule();
   Elba::OpenGLModule* glModule = static_cast<Elba::OpenGLModule*>(graphics);
 
-  std::vector<Elba::OpenGLPostProcessBuffer*>& buffers = glModule->GetPostProcessingBuffers();
-  Elba::OpenGLPostProcessBuffer* buffer = *buffers.begin();
+  //std::vector<Elba::OpenGLPostProcessBuffer*>& buffers = glModule->GetPostProcessingBuffers();
+  //Elba::OpenGLPostProcessBuffer* buffer = *buffers.begin();
 
-  buffer->SetEdgeDetection(value);
+  //buffer->SetEdgeDetection(value);
 }
 
 void PostProcessingOptions::OnBlurChanged(int value)
@@ -60,10 +60,10 @@ void PostProcessingOptions::OnBlurChanged(int value)
   Elba::GraphicsModule* graphics = engine->GetGraphicsModule();
   Elba::OpenGLModule* glModule = static_cast<Elba::OpenGLModule*>(graphics);
 
-  std::vector<Elba::OpenGLPostProcessBuffer*>& buffers = glModule->GetPostProcessingBuffers();
-  Elba::OpenGLPostProcessBuffer* buffer = *buffers.begin();
+  //std::vector<Elba::OpenGLPostProcessBuffer*>& buffers = glModule->GetPostProcessingBuffers();
+  //Elba::OpenGLPostProcessBuffer* buffer = *buffers.begin();
 
-  buffer->SetBlur(value);
+  //buffer->SetBlur(value);
 }
 
 } // End of Editor namespace
