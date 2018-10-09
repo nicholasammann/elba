@@ -28,6 +28,7 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mFactory(NewUnique<OpenGLFactory>(this))
   , mCamera(NewUnique<Camera>())
   , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
+  , mPostProcessBuffer(NewUnique<OpenGLPostProcessBuffer>(this))
 {
 }
 
@@ -69,17 +70,9 @@ void OpenGLModule::Initialize()
 
 void OpenGLModule::InitializePostProcessBuffer()
 {
-  OpenGLPostProcessBuffer* bufferA = new OpenGLPostProcessBuffer(this);
-  bufferA->InitializeBuffers(0);
-  bufferA->InitializeQuad();
-  bufferA->InitializeProgram();
-  mPostProcessingBuffers.push_back(bufferA);
-
-  //OpenGLPostProcessBuffer* bufferB = new OpenGLPostProcessBuffer(this);
-  //bufferB->InitializeBuffers(1);
-  //bufferB->InitializeQuad();
-  //bufferB->InitializeProgram();
-  //mPostFxBuffers.push_back(bufferB);
+  mPostProcessBuffer->InitializeBuffers(0);
+  mPostProcessBuffer->InitializeQuad();
+  mPostProcessBuffer->InitializeProgram();
 }
 
 void OpenGLModule::Update(double dt)
@@ -111,12 +104,7 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
-  auto buffer_it = mPostProcessingBuffers.begin();
-  
-  if (buffer_it != mPostProcessingBuffers.end())
-  {
-    (*buffer_it)->PreRender();
-  }
+  mPostProcessBuffer->PreRender();
 
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -131,22 +119,8 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
     pair.second(event);
   }
 
-  if (buffer_it != mPostProcessingBuffers.end())
-  {
-    (*buffer_it)->PostRender();
-
-    auto prevBuffer_it = buffer_it++;
-
-    while (buffer_it != mPostProcessingBuffers.end())
-    {
-      (*buffer_it)->PreRender();
-      (*prevBuffer_it)->Draw();
-      (*buffer_it)->PostRender();
-      prevBuffer_it = buffer_it++;
-    }
-
-    (*prevBuffer_it)->Draw();
-  }
+  mPostProcessBuffer->PostRender();
+  mPostProcessBuffer->Draw();
 }
 
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
@@ -167,11 +141,6 @@ void OpenGLModule::SetClearColor(glm::vec4 color)
 Camera* OpenGLModule::GetCamera()
 {
   return mCamera.get();
-}
-
-std::vector<OpenGLPostProcessBuffer*>& OpenGLModule::GetPostProcessingBuffers()
-{
-  return mPostProcessingBuffers;
 }
 
 } // End of Elba namespace
