@@ -46,7 +46,7 @@ void OpenGLMesh::LoadShader(std::string name)
 
   std::string vertPath = assetsDir + "Shaders/" + name + ".vert";
   std::string fragPath = assetsDir + "Shaders/" + name + ".frag";
-  OpenGLShader* shader = new OpenGLShader(name.c_str(), vertPath.c_str(), fragPath.c_str());
+  OpenGLShaderProgram* shader = new OpenGLShaderProgram(name.c_str(), vertPath.c_str(), fragPath.c_str());
 
   for (OpenGLSubmesh& submesh : mSubmeshes)
   {

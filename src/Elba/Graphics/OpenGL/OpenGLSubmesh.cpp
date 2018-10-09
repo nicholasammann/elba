@@ -133,7 +133,7 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   }
 }
 
-void OpenGLSubmesh::SetShader(OpenGLShader* shader)
+void OpenGLSubmesh::SetShader(OpenGLShaderProgram* shader)
 {
   mShader = shader;
 }
