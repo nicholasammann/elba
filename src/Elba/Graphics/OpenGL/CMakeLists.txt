@@ -12,7 +12,7 @@ PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/OpenGLTexture.cpp
 
 PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR}/OpenGLComputeShader.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/OpenGLComputeShader.hpp
   ${CMAKE_CURRENT_LIST_DIR}/OpenGLFactory.hpp
   ${CMAKE_CURRENT_LIST_DIR}/OpenGLMesh.hpp
   ${CMAKE_CURRENT_LIST_DIR}/OpenGLModule.hpp
