@@ -13,7 +13,7 @@ bool resizeFlag = false;
 void window_resize_callback(GLFWwindow* aWindow, int aWidth, int aHeight)
 {
   glViewport(0, 0, aWidth, aHeight);
-  
+
   oldWidth = g_width;
   oldHeight = g_height;
 
