@@ -10,66 +10,28 @@
 #include <gl/glew.h>
 
 #include "Elba/Graphics/OpenGL/OpenGLShaderProgram.hpp"
+#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLVertexShader.hpp"
+#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLFragmentShader.hpp"
 
 namespace Elba
 {
 OpenGLShaderProgram::OpenGLShaderProgram(const char* aName, const char* vertPath, const char* fragPath)
-: mName(aName), mShaderProgram(0), mVertShader(0), mFragShader(0),
-mVertPath(vertPath), mFragPath(fragPath)
+  : mName(aName)
+  , mShaderProgram(0)
 {
-  // read in vertex shader
-  const GLchar* vertexShaderSource = ReadShader(vertPath);
-
-  // create a shader object (return value is the id)
-  mVertShader = glCreateShader(GL_VERTEX_SHADER);
-
-  // attach vertex shader source code
-  glShaderSource(mVertShader, 1, &vertexShaderSource, nullptr);
-
-  // compile vertex shader
-  glCompileShader(mVertShader);
-
-  // check if vertex shader compiled correctly
-  int success;
-  char infoLog[512] = { '\0' };
-  glGetShaderiv(mVertShader, GL_COMPILE_STATUS, &success);
-
-  if (!success)
-  {
-    glGetShaderInfoLog(mVertShader, 512, nullptr, infoLog);
-    std::string error = std::string(vertPath) + " : (Vertex Shader compilation failed) : " + std::string(infoLog);
-    throw error;
-  }
-
-  // read in fragment shader
-  const GLchar *fragmentShaderSource = ReadShader(fragPath);
-
-  // create a shader object
-  mFragShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-  // attach fragment shader source code
-  glShaderSource(mFragShader, 1, &fragmentShaderSource, nullptr);
-
-  // compile fragment shader
-  glCompileShader(mFragShader);
-
-  // check if fragment shader compiled correctly
-  glGetShaderiv(mFragShader, GL_COMPILE_STATUS, &success);
-
-  if (!success)
-  {
-    glGetShaderInfoLog(mFragShader, 512, nullptr, infoLog);
-    std::string error = std::string(fragPath) + " : (Fragment Shader compilation failed) : " + std::string(infoLog);
-    throw error;
-  }
+  mVertShader = new OpenGLVertexShader(vertPath);
+  mFragShader = new OpenGLFragmentShader(fragPath);
 
   // create a shader program
   mShaderProgram = glCreateProgram();
 
   // attach shaders and link program
-  glAttachShader(mShaderProgram, mVertShader);
-  glAttachShader(mShaderProgram, mFragShader);
+  glAttachShader(mShaderProgram, mVertShader->GetShaderId());
+  glAttachShader(mShaderProgram, mFragShader->GetShaderId());
   glLinkProgram(mShaderProgram);
+
+  int success;
+  char infoLog[512] = { '\0' };
 
   try
   {
@@ -90,10 +52,6 @@ mVertPath(vertPath), mFragPath(fragPath)
   }
 
   glUseProgram(mShaderProgram);
-
-  // delete the shader objects (we don't need them anymore)
-  //glDeleteShader(mVertShader);
-  //glDeleteShader(mFragShader);
 }
 
 void OpenGLShaderProgram::UseShaderProgram()
@@ -121,29 +79,9 @@ unsigned int OpenGLShaderProgram::GetShaderProgram() const
   return mShaderProgram;
 }
 
-unsigned int OpenGLShaderProgram::GetVertShader() const
-{
-  return mVertShader;
-}
-
-unsigned int OpenGLShaderProgram::GetFragShader() const
-{
-  return mFragShader;
-}
-
 std::string OpenGLShaderProgram::GetName()
 {
   return mName;
-}
-
-std::string OpenGLShaderProgram::GetVertPath()
-{
-  return mVertPath;
-}
-
-std::string OpenGLShaderProgram::GetFragPath()
-{
-  return mFragPath;
 }
 
 } // End of Elba namespace

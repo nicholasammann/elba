@@ -6,6 +6,8 @@ namespace Elba
 {
 
 OpenGLShader::OpenGLShader(std::string filename)
+  : mPath("")
+  , mShader(0)
 {
   // read in vertex shader
   mShaderSource = ReadShader(filename);
@@ -14,6 +16,11 @@ OpenGLShader::OpenGLShader(std::string filename)
 const std::string& OpenGLShader::GetPath() const
 {
   return mPath;
+}
+
+GLuint OpenGLShader::GetShaderId()
+{
+  return mShader;
 }
 
 const GLchar* OpenGLShader::ReadShader(const std::string& filename)
