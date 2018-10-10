@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "Elba/Graphics/OpenGL/OpenGLShaderProgram.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
 #include "Elba/Graphics/Submesh.hpp"
 
 #include "Elba/Utilities/GlobalKey.hpp"
@@ -60,7 +60,7 @@ public:
   * \brief Sets the shader this mesh will use to draw.
   * \param shader A shader for the submesh to use.
   */
-  void SetShader(OpenGLShaderProgram* shader);
+  void SetShaders(OpenGLProgram* program);
 
   /**
   * \brief Loads the diffuse texture for this submesh
@@ -79,7 +79,7 @@ private:
   unsigned int mVBO;
   unsigned int mEBO;
 
-  OpenGLShaderProgram* mShader;
+  OpenGLProgram* mProgram;
 
   // Diffuse, Specular, Normal, Height - same order as enum
   OpenGLTexture* mTextures[4];

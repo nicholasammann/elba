@@ -1,9 +1,11 @@
 #include <iostream>
 
 #include "Elba/Engine.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcessBuffer.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLShaderProgram.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLVertexShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFragmentShader.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 #include "Elba/Utilities/Utils.hpp"
 
@@ -11,7 +13,7 @@ namespace Elba
 {
 OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
-  , mShader(nullptr)
+  , mProgram(nullptr)
   , mElapsedTime(0.0f)
   , mEdgeDetectionOn(0)
   , mBlurOn(0)
@@ -20,6 +22,7 @@ OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
 
 OpenGLPostProcessBuffer::~OpenGLPostProcessBuffer()
 {
+  delete mProgram;
 }
 
 void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
@@ -89,7 +92,7 @@ void OpenGLPostProcessBuffer::InitializeQuad()
 
 void OpenGLPostProcessBuffer::InitializeProgram()
 {
-  LoadShader("postprocess");
+  LoadShaders("postprocess");
 }
 
 void OpenGLPostProcessBuffer::PreRender()
@@ -109,12 +112,13 @@ void OpenGLPostProcessBuffer::Draw()
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  mShader->UseShaderProgram();
+  mProgram->Use();
+  
   glActiveTexture(GL_TEXTURE0);
-  mShader->SetInt("screenTexture", 0);
+  mProgram->SetUniform("screenTexture", 0);
 
-  mShader->SetInt("edgeOn", mEdgeDetectionOn);
-  mShader->SetInt("blurOn", mBlurOn);
+  mProgram->SetUniform("edgeOn", mEdgeDetectionOn);
+  mProgram->SetUniform("blurOn", mBlurOn);
 
   //Engine* engine = mGraphicsModule->GetEngine();
   //float dt = static_cast<float>(engine->GetDt());
@@ -126,17 +130,25 @@ void OpenGLPostProcessBuffer::Draw()
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 }
 
-void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
+void OpenGLPostProcessBuffer::LoadShaders(std::string shaderName)
 {
-  if (mShader)
+  if (mProgram)
   {
-    delete mShader;
+    delete mProgram;
   }
 
   std::string assetsDir = Utils::GetAssetsDirectory();
+
   std::string vertPath = assetsDir + "Shaders/" + shaderName + ".vert";
+  UniquePtr<OpenGLVertexShader> vertShader = NewUnique<OpenGLVertexShader>(vertPath);
+  
   std::string fragPath = assetsDir + "Shaders/" + shaderName + ".frag";
-  mShader = new OpenGLShaderProgram(shaderName.c_str(), vertPath.c_str(), fragPath.c_str());
+  UniquePtr<OpenGLFragmentShader> fragShader = NewUnique<OpenGLFragmentShader>(fragPath);
+
+  mProgram = new OpenGLProgram(shaderName.c_str());
+  mProgram->AttachShader(std::move(vertShader));
+  mProgram->AttachShader(std::move(fragShader));
+  mProgram->Link();
 }
 
 void OpenGLPostProcessBuffer::SetEdgeDetection(int value)
@@ -147,6 +159,11 @@ void OpenGLPostProcessBuffer::SetEdgeDetection(int value)
 void OpenGLPostProcessBuffer::SetBlur(int value)
 {
   mBlurOn = value;
+}
+
+GLuint OpenGLPostProcessBuffer::GetTexture() const
+{
+  return mTextureColorBuffer;
 }
 
 void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)

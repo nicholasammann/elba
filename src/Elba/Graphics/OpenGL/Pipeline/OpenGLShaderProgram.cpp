@@ -9,9 +9,9 @@
 
 #include <gl/glew.h>
 
-#include "Elba/Graphics/OpenGL/OpenGLShaderProgram.hpp"
-#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLVertexShader.hpp"
-#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLFragmentShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLShaderProgram.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLVertexShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFragmentShader.hpp"
 
 namespace Elba
 {
@@ -32,16 +32,10 @@ OpenGLShaderProgram::OpenGLShaderProgram(const char* aName, const char* vertPath
 
   int success;
   char infoLog[512] = { '\0' };
-
-  try
-  {
-    // check if linking the shader program was succesful
-    glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
-  }
-  catch (...)
-  {
-  }
-
+  
+  // check if linking the shader program was succesful
+  glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
+  
   if (!success)
   {
     glGetProgramInfoLog(mShaderProgram, 512, nullptr, infoLog);

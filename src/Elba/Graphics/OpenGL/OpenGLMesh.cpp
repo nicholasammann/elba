@@ -14,6 +14,8 @@
 
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLVertexShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFragmentShader.hpp"
 
 #include "Elba/Utilities/Utils.hpp"
 
@@ -45,12 +47,19 @@ void OpenGLMesh::LoadShader(std::string name)
   std::string assetsDir = Utils::GetAssetsDirectory();
 
   std::string vertPath = assetsDir + "Shaders/" + name + ".vert";
+  UniquePtr<OpenGLVertexShader> vertShader = NewUnique<OpenGLVertexShader>(vertPath);
+
   std::string fragPath = assetsDir + "Shaders/" + name + ".frag";
-  OpenGLShaderProgram* shader = new OpenGLShaderProgram(name.c_str(), vertPath.c_str(), fragPath.c_str());
+  UniquePtr<OpenGLFragmentShader> fragShader = NewUnique<OpenGLFragmentShader>(fragPath);
+
+  OpenGLProgram* program = new OpenGLProgram(name.c_str());
+  program->AttachShader(std::move(vertShader));
+  program->AttachShader(std::move(fragShader));
+  program->Link();
 
   for (OpenGLSubmesh& submesh : mSubmeshes)
   {
-    submesh.SetShader(shader);
+    submesh.SetShaders(program);
   }
 }
 

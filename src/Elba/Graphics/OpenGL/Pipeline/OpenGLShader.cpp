@@ -1,6 +1,6 @@
 #include <fstream>
 
-#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLShader.hpp"
 
 namespace Elba
 {
@@ -48,6 +48,24 @@ const GLchar* OpenGLShader::ReadShader(const std::string& filename)
   sourceChar[source.size()] = '\0';
 
   return sourceChar;
+}
+
+bool OpenGLShader::VerifyShaderCompilation(std::string errorMessage) const
+{
+  // check if vertex shader compiled correctly
+  int success;
+  char infoLog[512] = { '\0' };
+  glGetShaderiv(mShader, GL_COMPILE_STATUS, &success);
+
+  if (!success)
+  {
+    glGetShaderInfoLog(mShader, 512, nullptr, infoLog);
+    std::string error = errorMessage + ": " + std::string(infoLog);
+    throw error;
+    return false;
+  }
+
+  return true;
 }
 
 } // End of Elba namespace
