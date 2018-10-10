@@ -7,7 +7,7 @@
 namespace Elba
 {
 class OpenGLModule;
-class OpenGLShaderProgram;
+class OpenGLProgram;
 class OpenGLTexture;
 
 class OpenGLPostProcessBuffer
@@ -25,10 +25,12 @@ public:
 
   void Draw();
 
-  void LoadShader(std::string shaderName);
+  void LoadShaders(std::string shaderName);
 
   void SetEdgeDetection(int value);
   void SetBlur(int value);
+
+  GLuint GetTexture() const;
 
 private:
   OpenGLModule* mGraphicsModule;
@@ -40,12 +42,9 @@ private:
 
   GLuint mTextureColorBuffer;
 
-  //GLuint mProgram;
-  GLuint mUniformFboTexture;
-
   void OnResize(const ResizeEvent& event);
 
-  OpenGLShaderProgram* mShader;
+  OpenGLProgram* mProgram;
 
   int mWidth;
   int mHeight;

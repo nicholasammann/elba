@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLShader.hpp"
 
 namespace Elba
 {

@@ -25,6 +25,8 @@ protected:
   // reads in a shader from file
   const GLchar* ReadShader(const std::string& filename);
 
+  bool VerifyShaderCompilation(std::string errorMessage) const;
+
 };
 
 } // End of Elba namespace

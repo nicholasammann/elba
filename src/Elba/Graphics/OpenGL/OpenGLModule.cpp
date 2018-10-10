@@ -143,5 +143,15 @@ Camera* OpenGLModule::GetCamera()
   return mCamera.get();
 }
 
+GlobalKey OpenGLModule::AddComputeShader(std::string path)
+{
+  UniquePtr<OpenGLComputeShader> shader = NewUnique<OpenGLComputeShader>(this, path);
+
+  GlobalKey key;
+  mComputeShaders.emplace(key.ToStdString(), std::move(shader));
+
+  return key;
+}
+
 } // End of Elba namespace
 

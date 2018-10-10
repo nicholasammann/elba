@@ -3,7 +3,7 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcessBuffer.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
