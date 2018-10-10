@@ -8,15 +8,8 @@
 
 namespace Elba
 {
-
 class OpenGLModule;
-
-struct ComputeShaderTexture
-{
-  GLuint id;
-  GLuint width;
-  GLuint height;
-};
+struct PostProcessTexture;
 
 class OpenGLComputeShader : public OpenGLShader
 {
@@ -25,15 +18,17 @@ public:
 
   void Dispatch();
 
+  void BindTextures();
+  void UnbindTextures();
+
+  void SetInputTexture(PostProcessTexture* texture);
+  void SetOutputTexture(PostProcessTexture* texture);
+
 private:
-
-  void GenerateOutputTexture();
-
   OpenGLModule* mGraphics;
-
   GLuint mProgram;
-
-  ComputeShaderTexture mOutputTexture;
+  PostProcessTexture* mInputTexture;
+  PostProcessTexture* mOutputTexture;
 };
 
 } // End of Elba namespace

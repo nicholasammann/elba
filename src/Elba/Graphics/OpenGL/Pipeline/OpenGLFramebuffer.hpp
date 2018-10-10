@@ -10,11 +10,11 @@ class OpenGLModule;
 class OpenGLProgram;
 class OpenGLTexture;
 
-class OpenGLPostProcessBuffer
+class OpenGLFramebuffer
 {
 public:
-  OpenGLPostProcessBuffer(OpenGLModule* graphicsModule);
-  ~OpenGLPostProcessBuffer();
+  OpenGLFramebuffer(OpenGLModule* graphicsModule);
+  ~OpenGLFramebuffer();
 
   void InitializeBuffers(int textureSlot);
   void InitializeQuad();

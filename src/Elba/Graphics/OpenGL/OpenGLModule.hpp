@@ -5,8 +5,8 @@
 
 #include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
-#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcessBuffer.hpp"
-#include "Elba/Graphics/OpenGL/Pipeline/OpenGLComputeShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 
 #include "Elba/Graphics/Camera.hpp"
 
@@ -59,15 +59,14 @@ public:
 
   Camera* GetCamera();
 
-  GlobalKey AddComputeShader(std::string path);
-
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
 
-  UniquePtr<OpenGLPostProcessBuffer> mPostProcessBuffer;
-  Map<std::string, UniquePtr<OpenGLComputeShader> > mComputeShaders;
+  UniquePtr<OpenGLFramebuffer> mFramebuffer;
+
+  UniquePtr<OpenGLPostProcess> mPostProcess;
 
   glm::vec4 mClearColor;
 };

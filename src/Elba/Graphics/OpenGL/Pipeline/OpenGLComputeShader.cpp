@@ -1,4 +1,5 @@
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLComputeShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
 namespace Elba
@@ -22,28 +23,37 @@ OpenGLComputeShader::OpenGLComputeShader(OpenGLModule* module, std::string path)
 void OpenGLComputeShader::Dispatch()
 {
   glUseProgram(mProgram);
-  glDispatchCompute(mOutputTexture.width, mOutputTexture.height, 1);
+  glDispatchCompute(mInputTexture->width, mInputTexture->height, 1);
 }
 
-void OpenGLComputeShader::GenerateOutputTexture()
+void OpenGLComputeShader::BindTextures()
 {
-  std::pair<int, int> dim = mGraphics->GetScreenDimensions();
-  mOutputTexture.width = dim.first;
-  mOutputTexture.height = dim.second;
+  glActiveTexture(GL_TEXTURE0 + mOutputTexture->slot);
+  glBindTexture(GL_TEXTURE_2D, mOutputTexture->id);
 
-  glGenTextures(1, &mOutputTexture.id);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, mOutputTexture.id);
+  glActiveTexture(GL_TEXTURE0 + mInputTexture->slot);
+  glBindTexture(GL_TEXTURE_2D, mInputTexture->id);
+}
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+void OpenGLComputeShader::UnbindTextures()
+{
+  // output texture
+  glActiveTexture(GL_TEXTURE0 + mOutputTexture->slot);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, mOutputTexture.width, mOutputTexture.height,
-               0, GL_RGBA, GL_FLOAT, nullptr);
+  // input texture
+  glActiveTexture(GL_TEXTURE0 + mInputTexture->slot);
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
 
-  glBindImageTexture(0, mOutputTexture.id, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+void OpenGLComputeShader::SetInputTexture(PostProcessTexture* texture)
+{
+  mInputTexture = texture;
+}
+
+void OpenGLComputeShader::SetOutputTexture(PostProcessTexture* texture)
+{
+  mOutputTexture = texture;
 }
 
 } // End of Elba namespace
