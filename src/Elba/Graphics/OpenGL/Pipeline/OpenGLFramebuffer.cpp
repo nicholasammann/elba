@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "Elba/Engine.hpp"
-#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcessBuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLVertexShader.hpp"
@@ -11,7 +11,7 @@
 
 namespace Elba
 {
-OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
+OpenGLFramebuffer::OpenGLFramebuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
   , mProgram(nullptr)
   , mElapsedTime(0.0f)
@@ -20,12 +20,12 @@ OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
 {
 }
 
-OpenGLPostProcessBuffer::~OpenGLPostProcessBuffer()
+OpenGLFramebuffer::~OpenGLFramebuffer()
 {
   delete mProgram;
 }
 
-void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
+void OpenGLFramebuffer::InitializeBuffers(int textureSlot)
 {
   // width, height
   std::pair<int, int> screenSize = mGraphicsModule->GetScreenDimensions();
@@ -63,7 +63,7 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
   mGraphicsModule->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event) {this->OnResize(event);});
 }
 
-void OpenGLPostProcessBuffer::InitializeQuad()
+void OpenGLFramebuffer::InitializeQuad()
 {
   float quadVertices[] = {
     // positions   // texCoords
@@ -90,24 +90,24 @@ void OpenGLPostProcessBuffer::InitializeQuad()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (GLvoid*)(2 * sizeof(float)));
 }
 
-void OpenGLPostProcessBuffer::InitializeProgram()
+void OpenGLFramebuffer::InitializeProgram()
 {
   LoadShaders("postprocess");
 }
 
-void OpenGLPostProcessBuffer::PreRender()
+void OpenGLFramebuffer::PreRender()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
   glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGLPostProcessBuffer::PostRender()
+void OpenGLFramebuffer::PostRender()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glDisable(GL_DEPTH_TEST);
 }
 
-void OpenGLPostProcessBuffer::Draw()
+void OpenGLFramebuffer::Draw()
 {
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
@@ -130,7 +130,7 @@ void OpenGLPostProcessBuffer::Draw()
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 }
 
-void OpenGLPostProcessBuffer::LoadShaders(std::string shaderName)
+void OpenGLFramebuffer::LoadShaders(std::string shaderName)
 {
   if (mProgram)
   {
@@ -151,22 +151,22 @@ void OpenGLPostProcessBuffer::LoadShaders(std::string shaderName)
   mProgram->Link();
 }
 
-void OpenGLPostProcessBuffer::SetEdgeDetection(int value)
+void OpenGLFramebuffer::SetEdgeDetection(int value)
 {
   mEdgeDetectionOn = value;
 }
 
-void OpenGLPostProcessBuffer::SetBlur(int value)
+void OpenGLFramebuffer::SetBlur(int value)
 {
   mBlurOn = value;
 }
 
-GLuint OpenGLPostProcessBuffer::GetTexture() const
+GLuint OpenGLFramebuffer::GetTexture() const
 {
   return mTextureColorBuffer;
 }
 
-void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)
+void OpenGLFramebuffer::OnResize(const ResizeEvent& event)
 {
   mWidth = static_cast<int>(event.newSize[0]);
   mHeight = static_cast<int>(event.newSize[1]);

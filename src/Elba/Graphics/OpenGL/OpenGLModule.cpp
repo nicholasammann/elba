@@ -28,7 +28,8 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mFactory(NewUnique<OpenGLFactory>(this))
   , mCamera(NewUnique<Camera>())
   , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
-  , mPostProcessBuffer(NewUnique<OpenGLPostProcessBuffer>(this))
+  , mFramebuffer(NewUnique<OpenGLFramebuffer>(this))
+  , mPostProcess(NewUnique<OpenGLPostProcess>(this))
 {
 }
 
@@ -70,9 +71,9 @@ void OpenGLModule::Initialize()
 
 void OpenGLModule::InitializePostProcessBuffer()
 {
-  mPostProcessBuffer->InitializeBuffers(0);
-  mPostProcessBuffer->InitializeQuad();
-  mPostProcessBuffer->InitializeProgram();
+  mFramebuffer->InitializeBuffers(0);
+  mFramebuffer->InitializeQuad();
+  mFramebuffer->InitializeProgram();
 }
 
 void OpenGLModule::Update(double dt)
@@ -104,7 +105,7 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
-  mPostProcessBuffer->PreRender();
+  mFramebuffer->PreRender();
 
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -119,8 +120,11 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
     pair.second(event);
   }
 
-  mPostProcessBuffer->PostRender();
-  mPostProcessBuffer->Draw();
+  mFramebuffer->PostRender();
+
+  mPostProcess->DispatchComputeShaders();
+
+  mFramebuffer->Draw();
 }
 
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
@@ -141,16 +145,6 @@ void OpenGLModule::SetClearColor(glm::vec4 color)
 Camera* OpenGLModule::GetCamera()
 {
   return mCamera.get();
-}
-
-GlobalKey OpenGLModule::AddComputeShader(std::string path)
-{
-  UniquePtr<OpenGLComputeShader> shader = NewUnique<OpenGLComputeShader>(this, path);
-
-  GlobalKey key;
-  mComputeShaders.emplace(key.ToStdString(), std::move(shader));
-
-  return key;
 }
 
 } // End of Elba namespace
