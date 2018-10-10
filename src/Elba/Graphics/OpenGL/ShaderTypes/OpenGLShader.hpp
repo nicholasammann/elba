@@ -9,13 +9,17 @@ namespace Elba
 
 class OpenGLShader
 {
+public:
   OpenGLShader(std::string filename);
 
   const std::string& GetPath() const;
 
+  GLuint GetShaderId();
+
 protected:
   std::string mPath;
 
+  GLuint mShader;
   const GLchar* mShaderSource;
 
   // reads in a shader from file

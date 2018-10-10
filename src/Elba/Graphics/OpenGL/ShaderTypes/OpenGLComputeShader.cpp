@@ -1,4 +1,4 @@
-#include "Elba/Graphics/OpenGL/OpenGLComputeShader.hpp"
+#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLComputeShader.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
 namespace Elba

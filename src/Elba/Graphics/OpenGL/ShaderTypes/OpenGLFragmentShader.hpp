@@ -2,12 +2,18 @@
 
 #include <string>
 
+#include "Elba/Graphics/OpenGL/ShaderTypes/OpenGLShader.hpp"
+
 namespace Elba
 {
 
-class OpenGLShader
+class OpenGLFragmentShader : public OpenGLShader
 {
-  OpenGLShader(std::string filename);
+public:
+  OpenGLFragmentShader(std::string path);
+
+private:
+
 };
 
 } // End of Elba namespace
