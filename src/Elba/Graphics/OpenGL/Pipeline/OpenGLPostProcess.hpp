@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Elba/Graphics/OpenGL/Pipeline/OpenGLComputeShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
 
 #include "Elba/Utilities/GlobalKey.hpp"
 #include "Elba/Utilities/StdTypedefs.hpp"
@@ -23,18 +23,24 @@ class OpenGLPostProcess
 public:
   OpenGLPostProcess(OpenGLModule* module);
 
+  void Initialize();
+
   GlobalKey AddComputeShader(std::string path);
 
   void DispatchComputeShaders();
 
+  PostProcessTexture* GetOutputTexture();
+
 private:
   OpenGLModule* mGraphics;
 
-  Map<std::string, UniquePtr<OpenGLComputeShader> > mComputeShaders;
+  Vector<std::pair<std::string, UniquePtr<OpenGLProgram> > > mComputeShaders;
 
   PostProcessTexture mTextures[2];
 
   PostProcessTexture CreateTexture(int slot);
+
+  PostProcessTexture* mFinalTexture;
 
 };
 

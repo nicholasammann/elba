@@ -32,9 +32,9 @@ public:
   void Initialize() final;
 
   /**
-  * \brief Initializes buffers for post processing.
+  * \brief Initializes framebuffer for post processing.
   */
-  void InitializePostProcessBuffer();
+  void InitializePostProcessing();
 
   /**
   * \brief Update function called by Engine. Updates graphics.
@@ -58,6 +58,8 @@ public:
   void SetClearColor(glm::vec4 color);
 
   Camera* GetCamera();
+
+  OpenGLFramebuffer* GetFramebuffer();
 
 private:
   UniquePtr<OpenGLFactory> mFactory;

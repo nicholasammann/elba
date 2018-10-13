@@ -166,6 +166,11 @@ GLuint OpenGLFramebuffer::GetTexture() const
   return mTextureColorBuffer;
 }
 
+void OpenGLFramebuffer::SetTexture(GLuint texId)
+{
+  mTextureColorBuffer = texId;
+}
+
 void OpenGLFramebuffer::OnResize(const ResizeEvent& event)
 {
   mWidth = static_cast<int>(event.newSize[0]);

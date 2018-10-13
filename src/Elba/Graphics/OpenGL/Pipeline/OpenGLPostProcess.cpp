@@ -1,3 +1,4 @@
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLComputeShader.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
@@ -6,23 +7,66 @@ namespace Elba
 
 OpenGLPostProcess::OpenGLPostProcess(OpenGLModule* module)
   : mGraphics(module)
+  , mFinalTexture(nullptr)
 {
-  mTextures[0] = CreateTexture(0);
+}
+
+void OpenGLPostProcess::Initialize()
+{
+  std::pair<int, int> dim = mGraphics->GetScreenDimensions();
+
+  // initialize first texture with texture from framebuffer
+  OpenGLFramebuffer* framebuffer = mGraphics->GetFramebuffer();
+  mTextures[0].id = framebuffer->GetTexture();
+  mTextures[0].width = dim.first;
+  mTextures[0].height = dim.second;
+  mTextures[0].slot = 0;
+
+  // create empty second texture to write to
   mTextures[1] = CreateTexture(1);
 }
 
 GlobalKey OpenGLPostProcess::AddComputeShader(std::string path)
 {
-  UniquePtr<OpenGLComputeShader> shader = NewUnique<OpenGLComputeShader>(this, path);
+  UniquePtr<OpenGLProgram> program = NewUnique<OpenGLProgram>("compute");
+  program->Use();
 
-  GlobalKey key;
-  mComputeShaders.emplace(key.ToStdString(), std::move(shader));
+  UniquePtr<OpenGLComputeShader> shader = NewUnique<OpenGLComputeShader>(mGraphics, path, program.get());
 
-  return key;
+  GlobalKey shaderKey = program->AttachShader(std::move(shader));
+  
+  program->Link();
+
+  mComputeShaders.push_back(std::make_pair(shaderKey.ToStdString(), std::move(program)));
+
+  return shaderKey;
 }
 
 void OpenGLPostProcess::DispatchComputeShaders()
 {
+  PostProcessTexture* input = &mTextures[0];
+  PostProcessTexture* output = &mTextures[1];
+
+  for (auto& pair : mComputeShaders)
+  {
+    pair.second->Use();
+    OpenGLComputeShader* shader = static_cast<OpenGLComputeShader*>(pair.second->GetShader(pair.first));
+    shader->SetInputTexture(input);
+    shader->SetOutputTexture(output);
+    shader->BindTextures();
+    shader->Dispatch();
+
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    std::swap(input, output);
+  }
+
+  mFinalTexture = input;
+}
+
+PostProcessTexture* OpenGLPostProcess::GetOutputTexture()
+{
+  return mFinalTexture;
 }
 
 PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)

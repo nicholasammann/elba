@@ -4,6 +4,7 @@
 
 #include <gl/glew.h>
 
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLShader.hpp"
 
 namespace Elba
@@ -14,7 +15,7 @@ struct PostProcessTexture;
 class OpenGLComputeShader : public OpenGLShader
 {
 public:
-  OpenGLComputeShader(OpenGLModule* module, std::string path);
+  OpenGLComputeShader(OpenGLModule* module, std::string path, OpenGLProgram* program);
 
   void Dispatch();
 
@@ -26,7 +27,7 @@ public:
 
 private:
   OpenGLModule* mGraphics;
-  GLuint mProgram;
+  OpenGLProgram* mProgram;
   PostProcessTexture* mInputTexture;
   PostProcessTexture* mOutputTexture;
 };

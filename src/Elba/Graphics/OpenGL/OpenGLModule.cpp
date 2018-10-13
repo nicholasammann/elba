@@ -65,15 +65,19 @@ void OpenGLModule::Initialize()
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(mWindow, window_resize_callback);
 
-    InitializePostProcessBuffer();
+    InitializePostProcessing();
   }
 }
 
-void OpenGLModule::InitializePostProcessBuffer()
+void OpenGLModule::InitializePostProcessing()
 {
   mFramebuffer->InitializeBuffers(0);
   mFramebuffer->InitializeQuad();
   mFramebuffer->InitializeProgram();
+
+  mPostProcess->Initialize();
+
+  mPostProcess->AddComputeShader("noeffect.comp");
 }
 
 void OpenGLModule::Update(double dt)
@@ -123,7 +127,8 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
   mFramebuffer->PostRender();
 
   mPostProcess->DispatchComputeShaders();
-
+  
+  mFramebuffer->SetTexture(mPostProcess->GetOutputTexture()->id);
   mFramebuffer->Draw();
 }
 
@@ -145,6 +150,11 @@ void OpenGLModule::SetClearColor(glm::vec4 color)
 Camera* OpenGLModule::GetCamera()
 {
   return mCamera.get();
+}
+
+OpenGLFramebuffer* OpenGLModule::GetFramebuffer()
+{
+  return mFramebuffer.get();
 }
 
 } // End of Elba namespace

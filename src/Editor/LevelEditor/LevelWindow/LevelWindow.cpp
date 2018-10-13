@@ -74,7 +74,7 @@ void Editor::LevelWindow::Initialize()
   Elba::OpenGLModule* glModule = dynamic_cast<Elba::OpenGLModule*>(mGraphicsModule);
   if (glModule)
   {
-    glModule->InitializePostProcessBuffer();
+    glModule->InitializePostProcessing();
   }
 }
 
