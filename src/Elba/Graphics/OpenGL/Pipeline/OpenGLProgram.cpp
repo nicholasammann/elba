@@ -93,4 +93,16 @@ GlobalKey OpenGLProgram::AttachShader(UniquePtr<OpenGLShader> shader)
   return key;
 }
 
+OpenGLShader* OpenGLProgram::GetShader(std::string key)
+{
+  auto it = mShaders.find(key);
+
+  if (it != mShaders.end())
+  {
+    return it->second.get();
+  }
+
+  return nullptr;
+}
+
 } // End of Elba namespace

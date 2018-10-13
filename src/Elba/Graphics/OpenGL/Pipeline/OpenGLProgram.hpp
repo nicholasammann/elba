@@ -15,9 +15,10 @@
 #include "Elba/Utilities/GlobalKey.hpp"
 #include "Elba/Utilities/StdTypedefs.hpp"
 
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLShader.hpp"
+
 namespace Elba
 {
-class OpenGLShader;
 
 /**
 * \brief Contains vertex and fragment shader information
@@ -51,6 +52,8 @@ public:
   std::string GetName();
 
   GlobalKey AttachShader(UniquePtr<OpenGLShader> shader);
+
+  OpenGLShader* GetShader(std::string key);
 
 protected:
   Map<std::string, UniquePtr<OpenGLShader> > mShaders;

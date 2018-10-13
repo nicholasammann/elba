@@ -5,24 +5,20 @@
 namespace Elba
 {
 
-OpenGLComputeShader::OpenGLComputeShader(OpenGLModule* module, std::string path)
+OpenGLComputeShader::OpenGLComputeShader(OpenGLModule* module, std::string path, OpenGLProgram* program)
   : OpenGLShader(path)
   , mGraphics(module)
+  , mProgram(program)
 {
   mShader = glCreateShader(GL_COMPUTE_SHADER);
   glShaderSource(mShader, 1, &mShaderSource, nullptr);
   glCompileShader(mShader);
 
   VerifyShaderCompilation("Compute shader failed to compile");
-
-  mProgram = glCreateProgram();
-  glAttachShader(mProgram, mShader);
-  glLinkProgram(mProgram);
 }
 
 void OpenGLComputeShader::Dispatch()
 {
-  glUseProgram(mProgram);
   glDispatchCompute(mInputTexture->width, mInputTexture->height, 1);
 }
 

@@ -31,6 +31,7 @@ public:
   void SetBlur(int value);
 
   GLuint GetTexture() const;
+  void SetTexture(GLuint texId);
 
 private:
   OpenGLModule* mGraphicsModule;
