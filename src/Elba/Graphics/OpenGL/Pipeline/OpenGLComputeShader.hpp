@@ -15,19 +15,21 @@ struct PostProcessTexture;
 class OpenGLComputeShader : public OpenGLShader
 {
 public:
-  OpenGLComputeShader(OpenGLModule* module, std::string path, OpenGLProgram* program);
+  OpenGLComputeShader(OpenGLModule* module, std::string path);
 
   void Dispatch();
 
-  void BindTextures();
+  void BindTextures(OpenGLProgram* program);
   void UnbindTextures();
 
   void SetInputTexture(PostProcessTexture* texture);
   void SetOutputTexture(PostProcessTexture* texture);
 
+  PostProcessTexture* GetInputTexture();
+  PostProcessTexture* GetOutputTexture();
+
 private:
   OpenGLModule* mGraphics;
-  OpenGLProgram* mProgram;
   PostProcessTexture* mInputTexture;
   PostProcessTexture* mOutputTexture;
 };
