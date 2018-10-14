@@ -25,7 +25,7 @@ public:
 
   void Initialize();
 
-  GlobalKey AddComputeShader(std::string path);
+  GlobalKey AddComputeShader(std::string filename);
 
   void DispatchComputeShaders();
 

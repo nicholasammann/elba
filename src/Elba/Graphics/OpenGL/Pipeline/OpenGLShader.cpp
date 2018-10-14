@@ -6,7 +6,7 @@ namespace Elba
 {
 
 OpenGLShader::OpenGLShader(std::string filename)
-  : mPath("")
+  : mPath(filename)
   , mShader(0)
 {
   // read in vertex shader
@@ -40,6 +40,10 @@ const GLchar* OpenGLShader::ReadShader(const std::string& filename)
       }
     }
     file.close();
+  }
+  else
+  {
+    throw std::exception("THE FILE DIDN'T LOAD, RED ALERT, RED ALERT");
   }
 
   char* sourceChar = new char[source.size() + 1];

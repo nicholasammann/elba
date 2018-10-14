@@ -2,6 +2,8 @@
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
+#include "Elba/Utilities/Utils.hpp"
+
 namespace Elba
 {
 
@@ -15,27 +17,31 @@ void OpenGLPostProcess::Initialize()
 {
   std::pair<int, int> dim = mGraphics->GetScreenDimensions();
 
+  // create empty second texture to write to
+  mTextures[0] = CreateTexture(0);
+  
   // initialize first texture with texture from framebuffer
   OpenGLFramebuffer* framebuffer = mGraphics->GetFramebuffer();
-  mTextures[0].id = framebuffer->GetTexture();
-  mTextures[0].width = dim.first;
-  mTextures[0].height = dim.second;
-  mTextures[0].slot = 0;
-
-  // create empty second texture to write to
-  mTextures[1] = CreateTexture(1);
+  mTextures[1].id = framebuffer->GetTexture();
+  mTextures[1].width = dim.first;
+  mTextures[1].height = dim.second;
+  mTextures[1].slot = 1;
 }
 
-GlobalKey OpenGLPostProcess::AddComputeShader(std::string path)
+GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
 {
-  UniquePtr<OpenGLProgram> program = NewUnique<OpenGLProgram>("compute");
-  program->Use();
+  // add the asset path to the given file path
+  std::string fullPath = Utils::GetAssetsDirectory() + "Shaders/" + filename;
 
-  UniquePtr<OpenGLComputeShader> shader = NewUnique<OpenGLComputeShader>(mGraphics, path, program.get());
+  UniquePtr<OpenGLProgram> program = NewUnique<OpenGLProgram>("compute");
+
+  UniquePtr<OpenGLComputeShader> shader = NewUnique<OpenGLComputeShader>(mGraphics, fullPath);
 
   GlobalKey shaderKey = program->AttachShader(std::move(shader));
-  
+
   program->Link();
+
+  program->Use();
 
   mComputeShaders.push_back(std::make_pair(shaderKey.ToStdString(), std::move(program)));
 
@@ -44,24 +50,27 @@ GlobalKey OpenGLPostProcess::AddComputeShader(std::string path)
 
 void OpenGLPostProcess::DispatchComputeShaders()
 {
-  PostProcessTexture* input = &mTextures[0];
+  // start with the texture ptrs flipped, so after the first swap they will be correct
+  PostProcessTexture* input =  &mTextures[0];
   PostProcessTexture* output = &mTextures[1];
 
   for (auto& pair : mComputeShaders)
   {
+    std::swap(input, output);
+
     pair.second->Use();
     OpenGLComputeShader* shader = static_cast<OpenGLComputeShader*>(pair.second->GetShader(pair.first));
-    shader->SetInputTexture(input);
     shader->SetOutputTexture(output);
-    shader->BindTextures();
+    shader->SetInputTexture(input);
+    shader->BindTextures(pair.second.get());
     shader->Dispatch();
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    std::swap(input, output);
+    shader->UnbindTextures();
   }
 
-  mFinalTexture = input;
+  mFinalTexture = output;
 }
 
 PostProcessTexture* OpenGLPostProcess::GetOutputTexture()
@@ -90,7 +99,7 @@ PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, texture.width, texture.height,
     0, GL_RGBA, GL_FLOAT, nullptr);
 
-  glBindImageTexture(0, texture.id, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+  glBindImageTexture(0, texture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
   return texture;
 }

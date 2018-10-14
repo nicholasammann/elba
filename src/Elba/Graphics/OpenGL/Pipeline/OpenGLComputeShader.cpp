@@ -5,10 +5,9 @@
 namespace Elba
 {
 
-OpenGLComputeShader::OpenGLComputeShader(OpenGLModule* module, std::string path, OpenGLProgram* program)
+OpenGLComputeShader::OpenGLComputeShader(OpenGLModule* module, std::string path)
   : OpenGLShader(path)
   , mGraphics(module)
-  , mProgram(program)
 {
   mShader = glCreateShader(GL_COMPUTE_SHADER);
   glShaderSource(mShader, 1, &mShaderSource, nullptr);
@@ -22,23 +21,25 @@ void OpenGLComputeShader::Dispatch()
   glDispatchCompute(mInputTexture->width, mInputTexture->height, 1);
 }
 
-void OpenGLComputeShader::BindTextures()
+void OpenGLComputeShader::BindTextures(OpenGLProgram* program)
 {
-  glActiveTexture(GL_TEXTURE0 + mOutputTexture->slot);
+  program->SetUniform("img_output", 0);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, mOutputTexture->id);
 
-  glActiveTexture(GL_TEXTURE0 + mInputTexture->slot);
+  program->SetUniform("img_input", 1);
+  glActiveTexture(GL_TEXTURE0 + 1);
   glBindTexture(GL_TEXTURE_2D, mInputTexture->id);
 }
 
 void OpenGLComputeShader::UnbindTextures()
 {
   // output texture
-  glActiveTexture(GL_TEXTURE0 + mOutputTexture->slot);
+  glActiveTexture(GL_TEXTURE0 + 0);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   // input texture
-  glActiveTexture(GL_TEXTURE0 + mInputTexture->slot);
+  glActiveTexture(GL_TEXTURE0 + 1);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -50,6 +51,16 @@ void OpenGLComputeShader::SetInputTexture(PostProcessTexture* texture)
 void OpenGLComputeShader::SetOutputTexture(PostProcessTexture* texture)
 {
   mOutputTexture = texture;
+}
+
+PostProcessTexture* OpenGLComputeShader::GetInputTexture()
+{
+  return mInputTexture;
+}
+
+PostProcessTexture* OpenGLComputeShader::GetOutputTexture()
+{
+  return mOutputTexture;
 }
 
 } // End of Elba namespace
