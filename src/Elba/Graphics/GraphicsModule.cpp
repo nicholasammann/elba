@@ -70,4 +70,12 @@ bool GraphicsModule::DeregisterForResize(GlobalKey key)
   return false;
 }
 
+void GraphicsModule::OnResize(const ResizeEvent& event)
+{
+  for (auto cb : mResizeCallbacks)
+  {
+    cb.second(event);
+  }
+}
+
 } // End of Elba namespace
