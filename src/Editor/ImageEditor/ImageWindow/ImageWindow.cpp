@@ -78,6 +78,7 @@ void ImageWindow::Initialize()
   if (glModule)
   {
     glModule->InitializePostProcessing();
+    //glModule->SetUseFramebuffer(false);
   }
 }
 
@@ -89,32 +90,6 @@ void ImageWindow::SetAnimating(bool animating)
   {
     RenderLater();
   }
-}
-
-void ImageWindow::RegisterForResize(Elba::GlobalKey key, ResizeCallback callback)
-{
-  mResizeCallbacks.emplace_back(std::make_pair(key, callback));
-}
-
-bool ImageWindow::DeregisterForResize(Elba::GlobalKey key)
-{
-  auto result = std::find_if(mResizeCallbacks.begin(), mResizeCallbacks.end(),
-    [key](const std::pair<Elba::GlobalKey, ResizeCallback>& pair)
-  {
-    if (key.ToStdString() == pair.first.ToStdString())
-    {
-      return true;
-    }
-    return false;
-  });
-
-  if (result != mResizeCallbacks.end())
-  {
-    mResizeCallbacks.erase(result);
-    return true;
-  }
-
-  return false;
 }
 
 void ImageWindow::RenderLater()
@@ -210,14 +185,11 @@ bool ImageWindow::event(QEvent* event)
     {
       QResizeEvent* realEvent = static_cast<QResizeEvent*>(event);
 
-      ResizeEvent resize;
+      Elba::ResizeEvent resize;
       resize.oldSize = glm::vec2(realEvent->oldSize().width(), realEvent->oldSize().height());
       resize.newSize = glm::vec2(realEvent->size().width(), realEvent->size().height());
 
-      for (auto cb : mResizeCallbacks)
-      {
-        cb.second(resize);
-      }
+      mGraphicsModule->OnResize(resize);
 
       return QWindow::event(event);
     }

@@ -23,7 +23,7 @@ ImageEditor::ImageEditor(Framework::MainWindow* mainWindow)
   mImageWindow = new ImageWindow(this);
 
   mResizeCallbackKey = Elba::GlobalKey();
-  mImageWindow->RegisterForResize(mResizeCallbackKey, [this](const Editor::ResizeEvent& event)
+  graphics->RegisterForResize(mResizeCallbackKey, [this](const Elba::ResizeEvent& event)
   {
     this->OnResize(event);
   });
@@ -77,7 +77,7 @@ Elba::Engine* ImageEditor::GetEngine()
   return mEngine;
 }
 
-void ImageEditor::OnResize(const ResizeEvent& event)
+void ImageEditor::OnResize(const Elba::ResizeEvent& event)
 {
   Elba::CoreModule* core = mEngine->GetCoreModule();
   Elba::Level* level = core->GetGameLevel();
@@ -87,7 +87,7 @@ void ImageEditor::OnResize(const ResizeEvent& event)
   if (first != children.end())
   {
     Elba::Object* object = first->second.get();
-
+  
     Elba::ResizeHandler* resizeHandler = object->GetComponent<Elba::ResizeHandler>();
     resizeHandler->Resize(static_cast<int>(event.newSize.x), static_cast<int>(event.newSize.y));
   }

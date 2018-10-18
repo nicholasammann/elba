@@ -2,6 +2,7 @@
 
 #include <qpainter.h>
 #include <qopenglpaintdevice.h>
+#include <qevent.h>
 
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Components/Rotate.hpp"
@@ -75,6 +76,7 @@ void Editor::LevelWindow::Initialize()
   if (glModule)
   {
     glModule->InitializePostProcessing();
+    glModule->SetUseFramebuffer(false);
   }
 }
 
@@ -138,7 +140,7 @@ void Editor::LevelWindow::RenderNow()
 
     // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     transform->SetWorldScale(glm::vec3(1.0f));
 
@@ -163,6 +165,19 @@ bool Editor::LevelWindow::event(QEvent* event)
     {
       RenderNow();
       return true;
+    }
+
+    case QEvent::Resize:
+    {
+      QResizeEvent* realEvent = static_cast<QResizeEvent*>(event);
+
+      Elba::ResizeEvent resize;
+      resize.oldSize = glm::vec2(realEvent->oldSize().width(), realEvent->oldSize().height());
+      resize.newSize = glm::vec2(realEvent->size().width(), realEvent->size().height());
+
+      mGraphicsModule->OnResize(resize);
+
+      return QWindow::event(event);
     }
 
     case QEvent::Paint:

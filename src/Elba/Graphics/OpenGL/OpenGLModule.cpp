@@ -29,6 +29,7 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mCamera(NewUnique<Camera>())
   , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
   , mFramebuffer(NewUnique<OpenGLFramebuffer>(this))
+  , mUseFramebuffer(true)
   , mPostProcess(NewUnique<OpenGLPostProcess>(this))
 {
 }
@@ -87,16 +88,13 @@ void OpenGLModule::Update(double dt)
     event.oldSize = glm::vec2(oldWidth, oldHeight);
     event.newSize = glm::vec2(g_width, g_height);
 
-    for (auto cb : mResizeCallbacks)
-    {
-      cb.second(event);
-    }
+    OnResize(event);
 
     resizeFlag = false;
   }
 
   // Run update if engine is NOT running in editor
-  // If running in editor, the Render function will be called explicitly
+  // If running in editor, the Render function will be called by the editor
   if (!GetEngine()->InEditor())
   {
     Render(g_width, g_height);
@@ -108,7 +106,18 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
-  mFramebuffer->PreRender();
+  if (mUseFramebuffer)
+  {
+    mFramebuffer->PreRender();
+  }
+
+  int viewport[4] = { 0 };
+
+  glGetIntegerv(GL_VIEWPORT, viewport);
+
+  glViewport(0, 0, screenWidth, screenHeight);
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glEnable(GL_DEPTH_TEST);
 
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,12 +132,13 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
     pair.second(event);
   }
 
-  mFramebuffer->PostRender();
-
-  mPostProcess->DispatchComputeShaders();
-  
-  mFramebuffer->SetTexture(mPostProcess->GetOutputTexture()->id);
-  mFramebuffer->Draw();
+  if (mUseFramebuffer)
+  {
+    mFramebuffer->PostRender();
+    mPostProcess->DispatchComputeShaders();
+    mFramebuffer->SetTexture(mPostProcess->GetOutputTexture()->id);
+    mFramebuffer->Draw();
+  }
 }
 
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
@@ -154,6 +164,11 @@ Camera* OpenGLModule::GetCamera()
 OpenGLFramebuffer* OpenGLModule::GetFramebuffer()
 {
   return mFramebuffer.get();
+}
+
+void OpenGLModule::SetUseFramebuffer(bool useFramebuffer)
+{
+  mUseFramebuffer = useFramebuffer;
 }
 
 } // End of Elba namespace

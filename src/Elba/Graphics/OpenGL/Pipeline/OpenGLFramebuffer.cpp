@@ -57,7 +57,10 @@ void OpenGLFramebuffer::InitializeBuffers(int textureSlot)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // Register for Resize event
-  mGraphicsModule->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event) {this->OnResize(event);});
+  mGraphicsModule->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event)
+  {
+    this->OnResize(event);
+  });
 }
 
 void OpenGLFramebuffer::InitializeQuad()
@@ -95,7 +98,6 @@ void OpenGLFramebuffer::InitializeProgram()
 void OpenGLFramebuffer::PreRender()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
-  glEnable(GL_DEPTH_TEST);
 }
 
 void OpenGLFramebuffer::PostRender()
@@ -110,7 +112,7 @@ void OpenGLFramebuffer::Draw()
   glClear(GL_COLOR_BUFFER_BIT);
 
   mProgram->Use();
-  
+
   glActiveTexture(GL_TEXTURE0);
   mProgram->SetUniform("screenTexture", 0);
 

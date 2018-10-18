@@ -27,7 +27,7 @@ private:
   ImageWindow* mImageWindow;
 
   Elba::GlobalKey mResizeCallbackKey;
-  void OnResize(const ResizeEvent& event);
+  void OnResize(const Elba::ResizeEvent& event);
 };
 
 } // End of Editor namespace
