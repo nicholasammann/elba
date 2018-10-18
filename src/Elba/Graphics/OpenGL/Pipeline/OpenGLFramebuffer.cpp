@@ -14,9 +14,6 @@ namespace Elba
 OpenGLFramebuffer::OpenGLFramebuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
   , mProgram(nullptr)
-  , mElapsedTime(0.0f)
-  , mEdgeDetectionOn(0)
-  , mBlurOn(0)
 {
 }
 
@@ -67,13 +64,13 @@ void OpenGLFramebuffer::InitializeQuad()
 {
   float quadVertices[] = {
     // positions   // texCoords
-    -1.0f,  1.0f,  0.0f, 1.0f,
-    -1.0f, -1.0f,  0.0f, 0.0f,
-     1.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f,  1.0f,  0.0f, 1.0f, // top left
+    -1.0f, -1.0f,  0.0f, 0.0f, // bottom left
+     1.0f, -1.0f,  1.0f, 0.0f, // bottom right
 
-    -1.0f,  1.0f,  0.0f, 1.0f,
-     1.0f, -1.0f,  1.0f, 0.0f,
-     1.0f,  1.0f,  1.0f, 1.0f
+    -1.0f,  1.0f,  0.0f, 1.0f, // top left
+     1.0f, -1.0f,  1.0f, 0.0f, // bottom right
+     1.0f,  1.0f,  1.0f, 1.0f  // top right
   };
 
   GLuint VBO;
@@ -117,14 +114,6 @@ void OpenGLFramebuffer::Draw()
   glActiveTexture(GL_TEXTURE0);
   mProgram->SetUniform("screenTexture", 0);
 
-  mProgram->SetUniform("edgeOn", mEdgeDetectionOn);
-  mProgram->SetUniform("blurOn", mBlurOn);
-
-  //Engine* engine = mGraphicsModule->GetEngine();
-  //float dt = static_cast<float>(engine->GetDt());
-  //mElapsedTime += dt;
-  //mShader->SetFloat("offset", mElapsedTime);
-
   glBindVertexArray(mVAO);
   glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
@@ -149,16 +138,6 @@ void OpenGLFramebuffer::LoadShaders(std::string shaderName)
   mProgram->AttachShader(std::move(vertShader));
   mProgram->AttachShader(std::move(fragShader));
   mProgram->Link();
-}
-
-void OpenGLFramebuffer::SetEdgeDetection(int value)
-{
-  mEdgeDetectionOn = value;
-}
-
-void OpenGLFramebuffer::SetBlur(int value)
-{
-  mBlurOn = value;
 }
 
 GLuint OpenGLFramebuffer::GetTexture() const

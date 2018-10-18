@@ -27,9 +27,6 @@ public:
 
   void LoadShaders(std::string shaderName);
 
-  void SetEdgeDetection(int value);
-  void SetBlur(int value);
-
   GLuint GetTexture() const;
   void SetTexture(GLuint texId);
 
@@ -49,13 +46,6 @@ private:
 
   int mWidth;
   int mHeight;
-
-  float mElapsedTime;
-
-  // Options (temp solution)
-  int mEdgeDetectionOn;
-  int mBlurOn;
-
 };
 
 } // End of Elba namespace
