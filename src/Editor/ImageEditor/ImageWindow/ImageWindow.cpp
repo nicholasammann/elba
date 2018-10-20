@@ -78,8 +78,15 @@ void ImageWindow::Initialize()
   if (glModule)
   {
     glModule->InitializePostProcessing();
-    //glModule->SetUseFramebuffer(false);
+    Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
+    //postProcess->AddComputeShader("noeffect.comp");
+    //postProcess->AddComputeShader("redshift.comp");
+    glModule->SetUseFramebuffer(false);
   }
+
+  Elba::ResizeEvent resize;
+  resize.oldSize = resize.newSize = glm::vec2(width(), height());
+  mGraphicsModule->OnResize(resize);
 }
 
 void ImageWindow::SetAnimating(bool animating)

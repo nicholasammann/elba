@@ -79,7 +79,13 @@ void Editor::LevelWindow::Initialize()
     glModule->InitializePostProcessing();
     Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
     postProcess->AddComputeShader("noeffect.comp");
+    postProcess->AddComputeShader("redshift.comp");
+    //postProcess->AddComputeShader("noeffect.comp");
   }
+
+  Elba::ResizeEvent resize;
+  resize.oldSize = resize.newSize = glm::vec2(width(), height());
+  mGraphicsModule->OnResize(resize);
 }
 
 void Editor::LevelWindow::SetAnimating(bool animating)  

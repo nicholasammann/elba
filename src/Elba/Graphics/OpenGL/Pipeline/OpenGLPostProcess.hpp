@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
 
 #include "Elba/Utilities/GlobalKey.hpp"
@@ -41,6 +42,8 @@ private:
   PostProcessTexture CreateTexture(int slot);
 
   PostProcessTexture* mFinalTexture;
+
+  void OnResize(const ResizeEvent& event);
 
 };
 
