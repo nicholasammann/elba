@@ -77,7 +77,9 @@ public:
 protected:
   std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
   std::vector<std::pair<GlobalKey, ResizeCallback> > mResizeCallbacks;
-
+  
+  unsigned int mScreenWidth;
+  unsigned int mScreenHeight;
 };
 
 } // End of Elba namespace

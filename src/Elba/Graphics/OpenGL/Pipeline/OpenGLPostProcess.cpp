@@ -15,18 +15,13 @@ OpenGLPostProcess::OpenGLPostProcess(OpenGLModule* module)
 
 void OpenGLPostProcess::Initialize()
 {
-  std::pair<int, int> dim = mGraphics->GetScreenDimensions();
+  // create texture to copy framebuffer output into
+  mTextures[0] = CreateTexture(0);
 
-  // initialize first texture with texture from framebuffer
-  OpenGLFramebuffer* framebuffer = mGraphics->GetFramebuffer();
-  mTextures[0].id = framebuffer->GetTexture();
-  mTextures[0].width = dim.first;
-  mTextures[0].height = dim.second;
-  mTextures[0].slot = 0;
-  glBindImageTexture(0, mTextures[0].id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-  
   // create empty second texture to write to
   mTextures[1] = CreateTexture(1);
+
+  mGraphics->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event) { this->OnResize(event); });
 }
 
 GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
@@ -51,14 +46,18 @@ GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
 
 void OpenGLPostProcess::DispatchComputeShaders()
 {
+  std::pair<int, int> dim = mGraphics->GetScreenDimensions();
+  OpenGLFramebuffer* framebuffer = mGraphics->GetFramebuffer();
+  glCopyImageSubData(framebuffer->GetTexture(), GL_TEXTURE_2D, 0, 0, 0, 0,
+                     mTextures[0].id, GL_TEXTURE_2D, 0, 0, 0, 0, 
+                     dim.first, dim.second, 1);
+
   // start with the texture ptrs flipped, so after the first swap they will be correct
   PostProcessTexture* output = &mTextures[0];
   PostProcessTexture* input =  &mTextures[1];
 
   for (auto& pair : mComputeShaders)
   {
-    std::swap(input, output);
-
     pair.second->Use();
     OpenGLComputeShader* shader = static_cast<OpenGLComputeShader*>(pair.second->GetShader(pair.first));
     shader->SetOutputTexture(output);
@@ -97,12 +96,36 @@ PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, texture.width, texture.height,
-    0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, texture.width, texture.height, 0, GL_RGBA, GL_FLOAT, nullptr);
 
   glBindImageTexture(slot, texture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
   return texture;
+}
+
+void OpenGLPostProcess::OnResize(const ResizeEvent& event)
+{
+  GLuint w = static_cast<GLuint>(event.newSize.x);
+  GLuint h = static_cast<GLuint>(event.newSize.y);
+
+  // resize textures
+  for (int i = 0; i < 2; ++i)
+  {
+    mTextures[i].width = w;
+    mTextures[i].height = h;
+
+    glActiveTexture(GL_TEXTURE0 + mTextures[i].slot);
+    glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
+
+    glBindImageTexture(mTextures[i].slot, mTextures[i].id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+  }
 }
 
 } // End of Elba namespace

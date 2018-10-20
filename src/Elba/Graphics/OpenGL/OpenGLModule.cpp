@@ -90,6 +90,9 @@ void OpenGLModule::Update(double dt)
 
     OnResize(event);
 
+    mScreenWidth = g_width;
+    mScreenHeight = g_height;
+
     resizeFlag = false;
   }
 
@@ -148,7 +151,7 @@ UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
 
 std::pair<int, int> OpenGLModule::GetScreenDimensions() const
 {
-  return std::pair<int, int>(g_width, g_height);
+  return std::pair<int, int>(mScreenWidth, mScreenHeight);
 }
 
 void OpenGLModule::SetClearColor(glm::vec4 color)

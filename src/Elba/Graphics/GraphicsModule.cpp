@@ -72,6 +72,9 @@ bool GraphicsModule::DeregisterForResize(GlobalKey key)
 
 void GraphicsModule::OnResize(const ResizeEvent& event)
 {
+  mScreenWidth = event.newSize.x;
+  mScreenHeight = event.newSize.y;
+
   for (auto cb : mResizeCallbacks)
   {
     cb.second(event);
