@@ -116,7 +116,10 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
   }
 }
 
-void ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result)
+void ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture, 
+                                                 int screenWidth, 
+                                                 int screenHeight, 
+                                                 std::vector<Pixel>& result)
 {
   int stride = screenWidth * 4;
 

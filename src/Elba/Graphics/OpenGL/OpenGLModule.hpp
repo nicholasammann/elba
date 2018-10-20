@@ -63,6 +63,8 @@ public:
 
   void SetUseFramebuffer(bool useFramebuffer);
 
+  OpenGLPostProcess* GetPostProcess();
+
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;

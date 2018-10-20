@@ -171,5 +171,10 @@ void OpenGLModule::SetUseFramebuffer(bool useFramebuffer)
   mUseFramebuffer = useFramebuffer;
 }
 
+OpenGLPostProcess* OpenGLModule::GetPostProcess()
+{
+  return mPostProcess.get();
+}
+
 } // End of Elba namespace
 
