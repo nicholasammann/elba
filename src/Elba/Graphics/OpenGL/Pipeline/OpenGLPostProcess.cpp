@@ -17,15 +17,16 @@ void OpenGLPostProcess::Initialize()
 {
   std::pair<int, int> dim = mGraphics->GetScreenDimensions();
 
-  // create empty second texture to write to
-  mTextures[0] = CreateTexture(0);
-  
   // initialize first texture with texture from framebuffer
   OpenGLFramebuffer* framebuffer = mGraphics->GetFramebuffer();
-  mTextures[1].id = framebuffer->GetTexture();
-  mTextures[1].width = dim.first;
-  mTextures[1].height = dim.second;
-  mTextures[1].slot = 1;
+  mTextures[0].id = framebuffer->GetTexture();
+  mTextures[0].width = dim.first;
+  mTextures[0].height = dim.second;
+  mTextures[0].slot = 0;
+  glBindImageTexture(0, mTextures[0].id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+  
+  // create empty second texture to write to
+  mTextures[1] = CreateTexture(1);
 }
 
 GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
@@ -51,8 +52,8 @@ GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
 void OpenGLPostProcess::DispatchComputeShaders()
 {
   // start with the texture ptrs flipped, so after the first swap they will be correct
-  PostProcessTexture* input =  &mTextures[0];
-  PostProcessTexture* output = &mTextures[1];
+  PostProcessTexture* output = &mTextures[0];
+  PostProcessTexture* input =  &mTextures[1];
 
   for (auto& pair : mComputeShaders)
   {
@@ -99,7 +100,7 @@ PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, texture.width, texture.height,
     0, GL_RGBA, GL_FLOAT, nullptr);
 
-  glBindImageTexture(0, texture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+  glBindImageTexture(slot, texture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
   return texture;
 }

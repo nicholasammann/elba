@@ -23,22 +23,22 @@ void OpenGLComputeShader::Dispatch()
 
 void OpenGLComputeShader::BindTextures(OpenGLProgram* program)
 {
-  program->SetUniform("img_output", 0);
+  program->SetUniform("img_input", 0);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, mOutputTexture->id);
-
-  program->SetUniform("img_input", 1);
-  glActiveTexture(GL_TEXTURE0 + 1);
   glBindTexture(GL_TEXTURE_2D, mInputTexture->id);
+ 
+  program->SetUniform("img_output", 1);
+  glActiveTexture(GL_TEXTURE0 + 1);
+  glBindTexture(GL_TEXTURE_2D, mOutputTexture->id);
 }
 
 void OpenGLComputeShader::UnbindTextures()
 {
-  // output texture
-  glActiveTexture(GL_TEXTURE0 + 0);
+  // input texture
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  // input texture
+  // output texture
   glActiveTexture(GL_TEXTURE0 + 1);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
