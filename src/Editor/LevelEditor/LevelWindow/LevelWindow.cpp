@@ -14,6 +14,7 @@
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
@@ -76,7 +77,8 @@ void Editor::LevelWindow::Initialize()
   if (glModule)
   {
     glModule->InitializePostProcessing();
-    glModule->SetUseFramebuffer(false);
+    Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
+    postProcess->AddComputeShader("noeffect.comp");
   }
 }
 
