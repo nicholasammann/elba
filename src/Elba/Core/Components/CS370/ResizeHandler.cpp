@@ -20,6 +20,7 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mMasterHeight(600)
   , mScreenWidth(800)
   , mScreenHeight(600)
+  , mUseHistogramEqualization(true)
 {
 }
 
@@ -115,6 +116,12 @@ void ResizeHandler::SetImage(const std::vector<Pixel>& image, int width, int hei
   mMasterImage = image;
 }
 
+void ResizeHandler::SetUseHistogramEqualization(bool useHistogram)
+{
+  mUseHistogramEqualization = useHistogram;
+  Interpolate(mScreenWidth, mScreenHeight);
+}
+
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
 {
   mMasterWidth = event.newTexture->GetWidth();
@@ -136,35 +143,45 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
   if (it != mesh->GetSubmeshes().end())
   {
     OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+    std::vector<Pixel> image;
+    int w = screenWidth;
+    int h = screenHeight;
 
     // do some form of interpolation
     switch (mInterpolationMode)
     {
       case InterpolationMode::NearestNeighbor:
       {
-        std::vector<Pixel> image;
         NearestNeighborInterpolation(texture, screenWidth, screenHeight, image);
-        texture->SetImage(image, screenWidth, screenHeight);
         break;
       }
 
       case InterpolationMode::Bilinear:
       {
-        std::vector<Pixel> image;
         BilinearInterpolation(texture, screenWidth, screenHeight, image);
-        texture->SetImage(image, screenWidth, screenHeight);
         break;
       }
 
       case InterpolationMode::None:
       {
         // EVERYTHING IS AWFUL NO INTERPOLATION OH MY GOD
-        texture->SetImage(mMasterImage, mMasterWidth, mMasterHeight);
-        return;
+        image = mMasterImage;
+        w = mMasterWidth;
+        h = mMasterHeight;
+        break;
       }
     }
 
-    // recreate the opengl texture
+    if (mUseHistogramEqualization)
+    {
+      // do histogram equalization
+      HistogramEqualization(image);
+    }
+
+    // update the image on the texture
+    texture->SetImage(image, w, h);
+
+    // bind the new image data to the gpu
     texture->RebindTexture();
   }
 }
@@ -273,6 +290,48 @@ Pixel ResizeHandler::BilinearValue(int x, int y, int width, int height, float wi
   result.a = 255;
 
   return result;
+}
+
+void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
+{
+  int total = image.size();
+
+  // first pass to count intensities
+  int redHgram[256] = { 0 };
+  int blueHgram[256] = { 0 };
+  int greenHgram[256] = { 0 };
+
+  for (Pixel& pixel : image)
+  {
+    ++redHgram[pixel.r];
+    ++blueHgram[pixel.g];
+    ++greenHgram[pixel.b];
+  }
+
+  // second pass to calculate probabilities
+  float probs[256] = { 0.0f };
+  for (int i = 0; i < 256; ++i)
+  {
+    //probs[i] = static_cast<float>((redHgram[i] + blueHgram[i] + greenHgram[i])) / (3.0f * total);
+    probs[i] = static_cast<float>(redHgram[i]) / total;
+  }
+
+  int roundedMapping[256] = { 0 };
+  float prev = 0.0f;
+
+  for (int i = 0; i < 256; ++i)
+  {
+    float current = 255.0f * probs[i] + prev;
+    roundedMapping[i] = std::round(current);
+    prev = current;
+  }
+
+  for (Pixel& pixel : image)
+  {
+    pixel.r = roundedMapping[pixel.r];
+    pixel.g = roundedMapping[pixel.g];
+    pixel.b = roundedMapping[pixel.b];
+  }
 }
 
 } // End of Elba namespace

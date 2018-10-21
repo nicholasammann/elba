@@ -47,36 +47,48 @@ void ImageOperationHandler::SetImageB(OpenGLTexture* image)
 
 void ImageOperationHandler::DoNone()
 {
-  OpenGLTexture* texture = GetObjectTexture();
-  texture->SetImage(mImageA->GetImage(), mImageA->GetWidth(), mImageA->GetHeight());
-  texture->RebindTexture();
+  if (mImageA)
+  {
+    OpenGLTexture* texture = GetObjectTexture();
+    texture->SetImage(mImageA->GetImage(), mImageA->GetWidth(), mImageA->GetHeight());
+    texture->RebindTexture();
+  }
 }
 
 void ImageOperationHandler::DoAddition()
 {
-  OpenGLTexture* texture = GetObjectTexture();
-  std::vector<Pixel> addition = GetAddition();
-  texture->SetImage(addition, mScreenWidth, mScreenHeight);
-  GetParent()->GetComponent<ResizeHandler>()->SetImage(addition, mScreenWidth, mScreenHeight);
-  texture->RebindTexture();
+  if (mImageA && mImageB)
+  {
+    OpenGLTexture* texture = GetObjectTexture();
+    std::vector<Pixel> addition = GetAddition();
+    texture->SetImage(addition, mScreenWidth, mScreenHeight);
+    GetParent()->GetComponent<ResizeHandler>()->SetImage(addition, mScreenWidth, mScreenHeight);
+    texture->RebindTexture();
+  }
 }
 
 void ImageOperationHandler::DoSubtraction()
 {
-  OpenGLTexture* texture = GetObjectTexture();
-  std::vector<Pixel> subtraction = GetSubtraction();
-  texture->SetImage(subtraction, mScreenWidth, mScreenHeight);
-  GetParent()->GetComponent<ResizeHandler>()->SetImage(subtraction, mScreenWidth, mScreenHeight);
-  texture->RebindTexture();
+  if (mImageA && mImageB)
+  {
+    OpenGLTexture* texture = GetObjectTexture();
+    std::vector<Pixel> subtraction = GetSubtraction();
+    texture->SetImage(subtraction, mScreenWidth, mScreenHeight);
+    GetParent()->GetComponent<ResizeHandler>()->SetImage(subtraction, mScreenWidth, mScreenHeight);
+    texture->RebindTexture();
+  }
 }
 
 void ImageOperationHandler::DoProduct()
 {
-  OpenGLTexture* texture = GetObjectTexture();
-  std::vector<Pixel> product = GetProduct();
-  texture->SetImage(product, mScreenWidth, mScreenHeight);
-  GetParent()->GetComponent<ResizeHandler>()->SetImage(product, mScreenWidth, mScreenHeight);
-  texture->RebindTexture();
+  if (mImageA && mImageB)
+  {
+    OpenGLTexture* texture = GetObjectTexture();
+    std::vector<Pixel> product = GetProduct();
+    texture->SetImage(product, mScreenWidth, mScreenHeight);
+    GetParent()->GetComponent<ResizeHandler>()->SetImage(product, mScreenWidth, mScreenHeight);
+    texture->RebindTexture();
+  }
 }
 
 void ImageOperationHandler::SetImageNegative(int value)
