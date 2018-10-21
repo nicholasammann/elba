@@ -128,7 +128,7 @@ T* Workspace::GetWidget() const
 
   if (it != mWidgets.end())
   {
-    return it->second.get();
+    return static_cast<T*>(it->second.get());
   }
 
   return nullptr;

@@ -25,8 +25,8 @@ ResizeHandler::ResizeHandler(Object* parent)
 
 void ResizeHandler::Initialize()
 {
-  mTransform = GetParent()->GetComponent<Elba::Transform>();
-  mModel = GetParent()->GetComponent<Elba::Model>();
+  mTransform = GetParent()->GetComponent<Transform>();
+  mModel = GetParent()->GetComponent<Model>();
 
   OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
   auto sbm_it = mesh->GetSubmeshes().begin();
@@ -60,6 +60,59 @@ void ResizeHandler::SetInterpolationMode(InterpolationMode mode)
 
   // Perform interpolation again with different mode
   Interpolate(mScreenWidth, mScreenHeight);
+}
+
+ResizeHandler::InterpolationMode ResizeHandler::GetInterpolationMode() const
+{
+  return mInterpolationMode;
+}
+
+void ResizeHandler::NearestNeighborInterpolation(std::vector<Pixel>& source, int srcWidth, int srcHeight, 
+                                                 std::vector<Pixel>& result, int targetWidth, int targetHeight)
+{
+  int stride = targetWidth * 4;
+
+  float widthRatio = static_cast<float>(srcWidth) / static_cast<float>(targetWidth);
+  float heightRatio = static_cast<float>(srcHeight) / static_cast<float>(targetHeight);
+
+  for (int y = 0; y < targetHeight; ++y)
+  {
+    for (int x = 0; x < targetWidth; ++x)
+    {
+      // bilinear interpolation
+      result.emplace_back(NearestNeighborValue(x, y, srcWidth, srcHeight, widthRatio, heightRatio, source));
+    }
+  }
+}
+
+void ResizeHandler::BilinearInterpolation(std::vector<Pixel>& source, int srcWidth, int srcHeight, 
+                                          std::vector<Pixel>& result, int targetWidth, int targetHeight)
+{
+  int stride = targetWidth * 4;
+
+  float widthRatio = static_cast<float>(srcWidth) / static_cast<float>(targetWidth);
+  float heightRatio = static_cast<float>(srcHeight) / static_cast<float>(targetHeight);
+
+  for (int y = 0; y < targetHeight; ++y)
+  {
+    for (int x = 0; x < targetWidth; ++x)
+    {
+      // bilinear interpolation
+      result.emplace_back(BilinearValue(x, y, srcWidth, srcHeight, widthRatio, heightRatio, source));
+    }
+  }
+}
+
+void ResizeHandler::SetImage(const std::vector<Pixel>& image, int width, int height)
+{
+  mMasterWidth = width;
+  mMasterHeight = height;
+
+  // delete old master image
+  mMasterImage.clear();
+
+  // allocate new master image
+  mMasterImage = image;
 }
 
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
@@ -131,12 +184,12 @@ void ResizeHandler::NearestNeighborInterpolation(OpenGLTexture* texture,
     for (int x = 0; x < screenWidth; ++x)
     {
       // bilinear interpolation
-      result.emplace_back(NearestNeighborValue(x, y, widthRatio, heightRatio));
+      result.emplace_back(NearestNeighborValue(x, y, mMasterWidth, mMasterHeight, widthRatio, heightRatio, mMasterImage));
     }
   }
 }
 
-Pixel ResizeHandler::NearestNeighborValue(int x, int y, float widthRatio, float heightRatio)
+Pixel ResizeHandler::NearestNeighborValue(int x, int y, int width, int height, float widthRatio, float heightRatio, std::vector<Pixel>& src)
 {
   float tX = x * widthRatio;
   float tY = y * heightRatio;
@@ -144,17 +197,17 @@ Pixel ResizeHandler::NearestNeighborValue(int x, int y, float widthRatio, float 
   float sX = roundf(tX);
   float sY = roundf(tY);
 
-  while (sX >= mMasterWidth)
+  while (sX >= width)
   {
-    sX -= mMasterWidth;
+    sX -= width;
   }
 
-  while (sY >= mMasterHeight)
+  while (sY >= height)
   {
-    sY -= mMasterHeight;
+    sY -= height;
   }
 
-  return mMasterImage[sY * mMasterWidth + sX];
+  return src[sY * width + sX];
 }
 
 void ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result)
@@ -169,12 +222,12 @@ void ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int screenWidt
     for (int x = 0; x < screenWidth; ++x)
     {
       // bilinear interpolation
-      result.emplace_back(BilinearValue(x, y, widthRatio, heightRatio));
+      result.emplace_back(BilinearValue(x, y, mMasterWidth, mMasterHeight, widthRatio, heightRatio, mMasterImage));
     }
   }
 }
 
-Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightRatio)
+Pixel ResizeHandler::BilinearValue(int x, int y, int width, int height, float widthRatio, float heightRatio, std::vector<Pixel>& src)
 {
   Pixel result;
 
@@ -184,7 +237,7 @@ Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightR
   int x1 = floor(tX);
   int x2 = floor(tX + 1);
   
-  if (x2 >= mMasterWidth)
+  if (x2 >= width)
   {
     x2 = 0;
   }
@@ -192,7 +245,7 @@ Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightR
   int y1 = floor(tY);
   int y2 = floor(tY + 1);
 
-  if (y2 >= mMasterHeight)
+  if (y2 >= height)
   {
     y2 = 0;
   }
@@ -205,16 +258,16 @@ Pixel ResizeHandler::BilinearValue(int x, int y, float widthRatio, float heightR
 
   float alpha = (tX - x1) / (x2 - x1);
   float beta = (tY - y1) / (y2 - y1);
-  float fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].r + alpha * mMasterImage[y1 * mMasterWidth + x2].r;
-  float fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].r + alpha * mMasterImage[y2 * mMasterWidth + x2].r;
+  float fxy1 = (1.0f - alpha) * src[y1 * width + x1].r + alpha * src[y1 * width + x2].r;
+  float fxy2 = (1.0f - alpha) * src[y2 * width + x1].r + alpha * src[y2 * width + x2].r;
   result.r = (1.0f - beta) * fxy1 + beta * fxy2;
 
-  fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].g + alpha * mMasterImage[y1 * mMasterWidth + x2].g;
-  fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].g + alpha * mMasterImage[y2 * mMasterWidth + x2].g;
+  fxy1 = (1.0f - alpha) * src[y1 * width + x1].g + alpha * src[y1 * width + x2].g;
+  fxy2 = (1.0f - alpha) * src[y2 * width + x1].g + alpha * src[y2 * width + x2].g;
   result.g = (1.0f - beta) * fxy1 + beta * fxy2;
 
-  fxy1 = (1.0f - alpha) * mMasterImage[y1 * mMasterWidth + x1].b + alpha * mMasterImage[y1 * mMasterWidth + x2].b;
-  fxy2 = (1.0f - alpha) * mMasterImage[y2 * mMasterWidth + x1].b + alpha * mMasterImage[y2 * mMasterWidth + x2].b;
+  fxy1 = (1.0f - alpha) * src[y1 * width + x1].b + alpha * src[y1 * width + x2].b;
+  fxy2 = (1.0f - alpha) * src[y2 * width + x1].b + alpha * src[y2 * width + x2].b;
   result.b = (1.0f - beta) * fxy1 + beta * fxy2;
 
   result.a = 255;

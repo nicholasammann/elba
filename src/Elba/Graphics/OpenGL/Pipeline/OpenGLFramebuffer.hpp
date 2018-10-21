@@ -30,6 +30,13 @@ public:
   GLuint GetTexture() const;
   void SetTexture(GLuint texId);
 
+  void SetDoImageNegative(int value);
+  void SetDoLogTransform(int value);
+  void SetDoGammaTransform(int value);
+  void SetDoEdgeDetection(int value);
+  void SetValueC(float value);
+  void SetValueGamma(float value);
+
 private:
   OpenGLModule* mGraphicsModule;
 
@@ -46,6 +53,17 @@ private:
 
   int mWidth;
   int mHeight;
+
+  // Possible post processing features
+  int mDoImageNegative;
+
+  int mDoLogTransform;
+  
+  int mDoGammaTransform;
+  float mValueC;
+  float mValueGamma;
+
+  int mDoEdgeDetection;
 };
 
 } // End of Elba namespace

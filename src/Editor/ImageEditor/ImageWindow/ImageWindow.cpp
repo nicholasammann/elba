@@ -6,6 +6,7 @@
 
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Components/CS370/ResizeHandler.hpp"
+#include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
 
 #include "Elba/Engine.hpp"
 
@@ -79,9 +80,7 @@ void ImageWindow::Initialize()
   {
     glModule->InitializePostProcessing();
     Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
-    //postProcess->AddComputeShader("noeffect.comp");
-    //postProcess->AddComputeShader("redshift.comp");
-    glModule->SetUseFramebuffer(false);
+    glModule->SetUseFramebuffer(true);
   }
 
   Elba::ResizeEvent resize;
@@ -155,6 +154,8 @@ void ImageWindow::RenderNow()
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("quad.fbx");
     model->LoadShader("textured");
+
+    object->AddComponent<Elba::ImageOperationHandler>();
 
     Elba::OpenGLMesh* mesh = static_cast<Elba::OpenGLMesh*>(model->GetMesh());
     std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();

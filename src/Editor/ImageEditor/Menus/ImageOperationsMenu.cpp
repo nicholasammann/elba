@@ -10,13 +10,14 @@
 #include "Editor/Framework/Workspace.hpp"
 #include "Editor/ImageEditor/Menus/ImageOperationsMenu.hpp"
 #include "Editor/ImageEditor/ImageEditor.hpp"
+#include "Editor/ImageEditor/ImageOperationsPanel/ImageOperationsPanel.hpp"
 
 
 namespace Editor
 {
 
 ImageOperationsMenu::ImageOperationsMenu(Framework::Workspace* workspace)
-  : Framework::Menu("File", workspace)
+  : Framework::Menu("Image Operations", workspace)
 {
   AddAction<ImageOperationsMenu>("Select Image A", &ImageOperationsMenu::LoadTextureA, this, "Select Image A for image operations.");
   AddAction<ImageOperationsMenu>("Select Image B", &ImageOperationsMenu::LoadTextureB, this, "Select Image B for image operations.");
@@ -57,11 +58,17 @@ void ImageOperationsMenu::LoadTextureA()
   // Prompt user to select file, load image file into texture
   Elba::OpenGLTexture* texture = LoadTexture();
 
-  // Get only object in scene
-  Elba::Object* object = GetFirstObject();
+  if (texture)
+  {
+    // Get only object in scene
+    Elba::Object* object = GetFirstObject();
 
-  Elba::ImageOperationHandler* operHandler = object->GetComponent<Elba::ImageOperationHandler>();
-  operHandler->SetImageA(texture);
+    Elba::ImageOperationHandler* operHandler = object->GetComponent<Elba::ImageOperationHandler>();
+    operHandler->SetImageA(texture);
+
+    ImageOperationsPanel* imageOps = mWorkspace->GetWidget<ImageOperationsPanel>();
+    imageOps->SetImageALabel(texture->GetPath());
+  }
 }
 
 void ImageOperationsMenu::LoadTextureB()
@@ -69,11 +76,17 @@ void ImageOperationsMenu::LoadTextureB()
   // Prompt user to select file, load image file into texture
   Elba::OpenGLTexture* texture = LoadTexture();
 
-  // Get only object in scene
-  Elba::Object* object = GetFirstObject();
+  if (texture)
+  {
+    // Get only object in scene
+    Elba::Object* object = GetFirstObject();
 
-  Elba::ImageOperationHandler* operHandler = object->GetComponent<Elba::ImageOperationHandler>();
-  operHandler->SetImageB(texture);
+    Elba::ImageOperationHandler* operHandler = object->GetComponent<Elba::ImageOperationHandler>();
+    operHandler->SetImageB(texture);
+
+    ImageOperationsPanel* imageOps = mWorkspace->GetWidget<ImageOperationsPanel>();
+    imageOps->SetImageBLabel(texture->GetPath());
+  }
 }
 
 

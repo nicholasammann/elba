@@ -6,6 +6,7 @@
 #include "Editor/ImageEditor/ImageEditor.hpp"
 #include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
 #include "Editor/ImageEditor/Menus/FileMenu.hpp"
+#include "Editor/ImageEditor/Menus/ImageOperationsMenu.hpp"
 #include "Editor/ImageEditor/OptionsPanel/OptionsPanel.hpp"
 #include "Editor/ImageEditor/ImageOperationsPanel/ImageOperationsPanel.hpp"
 
@@ -50,6 +51,7 @@ bool ImageEditor::Initialize()
 
   // Add menus
   AddMenu<FileMenu>(this);
+  AddMenu<ImageOperationsMenu>(this);
 
   // Add widgets
   AddWidget<OptionsPanel>(this);
