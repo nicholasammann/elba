@@ -13,6 +13,7 @@ namespace Editor
 ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   : Framework::Widget(workspace)
   , mLayout(new QVBoxLayout(this))
+  , mImageOpComponent(nullptr)
 {
   // cache core and graphics module ptrs
   Elba::Engine* engine = workspace->GetEngine();
@@ -25,7 +26,6 @@ ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   mNumImageCombo = new QComboBox(this);
   mNumImageCombo->addItem("Single Image Operations");
   mNumImageCombo->addItem("Double Image Operations");
-
   connect(mNumImageCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ImageOperationsPanel::OnNumImageChange);
 
   mOneImageOperationCombo = new QComboBox(this);
@@ -33,41 +33,69 @@ ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   mOneImageOperationCombo->addItem("Image Negative");
   mOneImageOperationCombo->addItem("Log Transform");
   mOneImageOperationCombo->addItem("Gamma Transform");
+  connect(mOneImageOperationCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ImageOperationsPanel::OnOneImageOpChange);
 
   QDoubleValidator* validator = new QDoubleValidator(this);
   validator->setBottom(0.0);
   validator->setDecimals(4);
 
+  QWidget* cWidg = new QWidget(this);
+  QHBoxLayout* cLayout = new QHBoxLayout(this);
+  QLabel* cLabel = new QLabel("C:");
   mInputC = new QLineEdit("C", this);
   mInputC->setValidator(validator);
-  mInputC->setText("0.5");
+  mInputC->setText("1.0");
+  connect(mInputC, &QLineEdit::textChanged, this, &ImageOperationsPanel::OnCChanged);
+  cLayout->addWidget(cLabel);
+  cLayout->addWidget(mInputC);
+  cWidg->setLayout(cLayout);
 
+  QWidget* gammaWidg = new QWidget(this);
+  QLabel* gammaLabel = new QLabel("Gamma:");
+  QHBoxLayout* gammaLayout = new QHBoxLayout(this);
   mInputGamma = new QLineEdit("Gamma", this);
   mInputGamma->setValidator(validator);
   mInputGamma->setText("0.5");
+  connect(mInputGamma, &QLineEdit::textChanged, this, &ImageOperationsPanel::OnGammaChanged);
+  gammaLayout->addWidget(gammaLabel);
+  gammaLayout->addWidget(mInputGamma);
+  gammaWidg->setLayout(gammaLayout);
 
   mTwoImageOperationCombo = new QComboBox(this);
   mTwoImageOperationCombo->addItem("None");
   mTwoImageOperationCombo->addItem("Addition");
   mTwoImageOperationCombo->addItem("Subtraction");
   mTwoImageOperationCombo->addItem("Product");
+  connect(mTwoImageOperationCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ImageOperationsPanel::OnTwoImageOpChange);
+
+  mImageALabel = new QLabel("No Image A Selected");
+  mImageBLabel = new QLabel("No Image B Selected");
 
   mLayout->setAlignment(Qt::AlignTop);
   mLayout->addWidget(mNumImageCombo);
   mLayout->addWidget(mOneImageOperationCombo);
+  mLayout->addWidget(cWidg);
+  mLayout->addWidget(gammaWidg);
   mLayout->addWidget(mTwoImageOperationCombo);
-  mLayout->addWidget(mInputC);
-  mLayout->addWidget(mInputGamma);
+  mLayout->addWidget(mImageALabel);
+  mLayout->addWidget(mImageBLabel);
 
-  mOneImageOperationCombo->hide();
-  mTwoImageOperationCombo->hide();
-  mInputC->hide();
-  mInputGamma->hide();
+  OnNumImageChange(0);
 }
 
 Framework::Widget::DockArea ImageOperationsPanel::GetDefaultDockArea() const
 {
   return DockArea::Left;
+}
+
+void ImageOperationsPanel::SetImageALabel(std::string label)
+{
+  mImageALabel->setText(label.c_str());
+}
+
+void ImageOperationsPanel::SetImageBLabel(std::string label)
+{
+  mImageBLabel->setText(label.c_str());
 }
 
 void ImageOperationsPanel::OnNumImageChange(int index)
@@ -80,6 +108,8 @@ void ImageOperationsPanel::OnNumImageChange(int index)
       mInputC->show();
       mInputGamma->show();
       mTwoImageOperationCombo->hide();
+      mImageALabel->hide();
+      mImageBLabel->hide();
       break;
     }
 
@@ -100,24 +130,46 @@ void ImageOperationsPanel::OnOneImageOpChange(int index)
   {
     case OneImageOps::None:
     {
+      GetImageOpComponent()->SetImageNegative(0);
+      GetImageOpComponent()->SetLogTransform(0);
+      GetImageOpComponent()->SetGammaTransform(0);
       break;
     }
 
     case OneImageOps::ImageNegative:
     {
+      GetImageOpComponent()->SetImageNegative(1);
+      GetImageOpComponent()->SetLogTransform(0);
+      GetImageOpComponent()->SetGammaTransform(0);
       break;
     }
 
     case OneImageOps::LogTransform:
     {
+      GetImageOpComponent()->SetImageNegative(0);
+      GetImageOpComponent()->SetLogTransform(1);
+      GetImageOpComponent()->SetGammaTransform(0);
       break;
     }
 
     case OneImageOps::GammaTransform:
     {
+      GetImageOpComponent()->SetImageNegative(0);
+      GetImageOpComponent()->SetLogTransform(0);
+      GetImageOpComponent()->SetGammaTransform(1);
       break;
     }
   }
+}
+
+void ImageOperationsPanel::OnCChanged(const QString& text)
+{
+  GetImageOpComponent()->SetCValue(text.toFloat());
+}
+
+void ImageOperationsPanel::OnGammaChanged(const QString& text)
+{
+  GetImageOpComponent()->SetGammaValue(text.toFloat());
 }
 
 void ImageOperationsPanel::OnTwoImageOpChange(int index)
@@ -152,18 +204,17 @@ void ImageOperationsPanel::OnTwoImageOpChange(int index)
 
 Elba::ImageOperationHandler* ImageOperationsPanel::GetImageOpComponent()
 {
-  if (mImageOpComponent)
+  if (!mImageOpComponent)
   {
-    return mImageOpComponent;
+    ImageEditor* workspace = GetWorkspace<ImageEditor>();
+    Elba::Engine* engine = workspace->GetEngine();
+    Elba::CoreModule* core = engine->GetCoreModule();
+    Elba::Level* level = core->GetGameLevel();
+    Elba::ObjectMap const& children = level->GetChildren();
+    auto first = children.begin();
+    mImageOpComponent = first->second->GetComponent<Elba::ImageOperationHandler>();
   }
-
-  ImageEditor* workspace = GetWorkspace<ImageEditor>();
-  Elba::Engine* engine = workspace->GetEngine();
-  Elba::CoreModule* core = engine->GetCoreModule();
-  Elba::Level* level = core->GetGameLevel();
-  Elba::ObjectMap const& children = level->GetChildren();
-  auto first = children.begin();
-  return first->second->GetComponent<Elba::ImageOperationHandler>();
+  return mImageOpComponent;
 }
 
 } // End of Editor namespace

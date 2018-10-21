@@ -14,6 +14,12 @@ namespace Elba
 OpenGLFramebuffer::OpenGLFramebuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
   , mProgram(nullptr)
+  , mDoImageNegative(0)
+  , mDoLogTransform(0)
+  , mDoGammaTransform(0)
+  , mValueC(1.0f)
+  , mValueGamma(0.5f)
+  , mDoEdgeDetection(0)
 {
 }
 
@@ -115,6 +121,12 @@ void OpenGLFramebuffer::Draw()
 
   glActiveTexture(GL_TEXTURE0);
   mProgram->SetUniform("screenTexture", 0);
+  mProgram->SetUniform("doNegative", mDoImageNegative);
+  mProgram->SetUniform("doLog", mDoLogTransform);
+  mProgram->SetUniform("doGamma", mDoGammaTransform);
+  mProgram->SetUniform("c", mValueC);
+  mProgram->SetUniform("gamma", mValueGamma);
+  mProgram->SetUniform("doSobel", mDoEdgeDetection);
 
   glBindVertexArray(mVAO);
   glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
@@ -150,6 +162,36 @@ GLuint OpenGLFramebuffer::GetTexture() const
 void OpenGLFramebuffer::SetTexture(GLuint texId)
 {
   mTextureColorBuffer = texId;
+}
+
+void OpenGLFramebuffer::SetDoImageNegative(int value)
+{
+  mDoImageNegative = value;
+}
+
+void OpenGLFramebuffer::SetDoLogTransform(int value)
+{
+  mDoLogTransform = value;
+}
+
+void OpenGLFramebuffer::SetDoGammaTransform(int value)
+{
+  mDoGammaTransform = value;
+}
+
+void OpenGLFramebuffer::SetDoEdgeDetection(int value)
+{
+  mDoEdgeDetection = value;
+}
+
+void OpenGLFramebuffer::SetValueC(float value)
+{
+  mValueC = value;
+}
+
+void OpenGLFramebuffer::SetValueGamma(float value)
+{
+  mValueGamma = value;
 }
 
 void OpenGLFramebuffer::OnResize(const ResizeEvent& event)

@@ -5,6 +5,7 @@
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qlineedit.h>
+#include <qlabel.h>
 
 #include "Editor/Framework/Widget.hpp"
 
@@ -23,6 +24,9 @@ public:
   ImageOperationsPanel(ImageEditor* workspace);
 
   virtual DockArea GetDefaultDockArea() const;
+
+  void SetImageALabel(std::string label);
+  void SetImageBLabel(std::string label);
 
 private:
   Elba::CoreModule* mCore;
@@ -49,7 +53,10 @@ private:
   void OnOneImageOpChange(int index);
 
   QLineEdit* mInputC;
+  void OnCChanged(const QString& text);
+  
   QLineEdit* mInputGamma;
+  void OnGammaChanged(const QString& text);
 
   QComboBox* mTwoImageOperationCombo;
   enum class TwoImageOps
@@ -60,6 +67,9 @@ private:
     Product
   };
   void OnTwoImageOpChange(int index);
+
+  QLabel* mImageALabel;
+  QLabel* mImageBLabel;
 
   // helper
   Elba::ImageOperationHandler* GetImageOpComponent();
