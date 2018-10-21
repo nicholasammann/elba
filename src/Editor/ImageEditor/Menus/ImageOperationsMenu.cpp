@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include <qfiledialog.h>
 
 #include "Elba/Core/CoreModule.hpp"
@@ -12,6 +14,7 @@
 #include "Editor/ImageEditor/ImageEditor.hpp"
 #include "Editor/ImageEditor/ImageOperationsPanel/ImageOperationsPanel.hpp"
 
+namespace fs = std::experimental::filesystem;
 
 namespace Editor
 {
@@ -67,7 +70,9 @@ void ImageOperationsMenu::LoadTextureA()
     operHandler->SetImageA(texture);
 
     ImageOperationsPanel* imageOps = mWorkspace->GetWidget<ImageOperationsPanel>();
-    imageOps->SetImageALabel(texture->GetPath());
+    std::string path = texture->GetPath();
+    fs::path fsPath(path);
+    imageOps->SetImageALabel(fsPath.filename().string());
   }
 }
 
@@ -85,7 +90,9 @@ void ImageOperationsMenu::LoadTextureB()
     operHandler->SetImageB(texture);
 
     ImageOperationsPanel* imageOps = mWorkspace->GetWidget<ImageOperationsPanel>();
-    imageOps->SetImageBLabel(texture->GetPath());
+    std::string path = texture->GetPath();
+    fs::path fsPath(path);
+    imageOps->SetImageBLabel(fsPath.filename().string());
   }
 }
 

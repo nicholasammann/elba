@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <qlabel.h>
+
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Core/Components/CS370/ResizeHandler.hpp"
@@ -34,8 +36,22 @@ OptionsPanel::OptionsPanel(ImageEditor* workspace)
   // Set current to None
   mInterpolationCombo->setCurrentIndex(0);
 
-  // Add combo to layout
+  // checkbox for turning on and off histogram equalization
+  QWidget* histWidg = new QWidget(this);
+  QHBoxLayout* histLayout = new QHBoxLayout(this);
+  histWidg->setLayout(histLayout);
+  mUseHistogramCheckbox = new QCheckBox(this);
+  mUseHistogramCheckbox->setChecked(true);
+  QLabel* histLabel = new QLabel("Use Histogram Equalization");
+  histLayout->addWidget(histLabel);
+  histLayout->addWidget(mUseHistogramCheckbox);
+  connect(mUseHistogramCheckbox, &QCheckBox::stateChanged, this, &OptionsPanel::OnUseHistogramChange);
+
+  // Add widgets to layout
   mLayout->addWidget(mInterpolationCombo);
+  mLayout->addWidget(histWidg);
+  
+  // Set alignment of our widgets in the layout
   mLayout->setAlignment(Qt::AlignTop);
 }
 
@@ -46,16 +62,37 @@ Framework::Widget::DockArea OptionsPanel::GetDefaultDockArea() const
 
 void OptionsPanel::OnInterpolationChange(int index)
 {
+  Elba::Object* obj = GetObject();
+
+  if (obj)
+  {
+    Elba::ResizeHandler* resizer = obj->GetComponent<Elba::ResizeHandler>();
+    resizer->SetInterpolationMode(static_cast<Elba::ResizeHandler::InterpolationMode>(index));
+  }
+}
+
+void OptionsPanel::OnUseHistogramChange(int value)
+{
+  Elba::Object* obj = GetObject();
+
+  if (obj)
+  {
+    Elba::ResizeHandler* resizer = obj->GetComponent<Elba::ResizeHandler>();
+    resizer->SetUseHistogramEqualization(static_cast<bool>(value));
+  }
+}
+
+Elba::Object* OptionsPanel::GetObject()
+{
   Elba::Level* level = mCore->GetGameLevel();
 
   auto it = level->GetChildren().begin();
 
   if (it != level->GetChildren().end())
   {
-    Elba::ResizeHandler* resizer = it->second->GetComponent<Elba::ResizeHandler>();
-
-    resizer->SetInterpolationMode(static_cast<Elba::ResizeHandler::InterpolationMode>(index));
+    return it->second.get();
   }
+  return nullptr;
 }
 
 } // End of Editor namespace

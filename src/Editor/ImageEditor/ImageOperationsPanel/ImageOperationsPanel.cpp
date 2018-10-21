@@ -39,7 +39,7 @@ ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   validator->setBottom(0.0);
   validator->setDecimals(4);
 
-  QWidget* cWidg = new QWidget(this);
+  mCWidg = new QWidget(this);
   QHBoxLayout* cLayout = new QHBoxLayout(this);
   QLabel* cLabel = new QLabel("C:");
   mInputC = new QLineEdit("C", this);
@@ -48,9 +48,9 @@ ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   connect(mInputC, &QLineEdit::textChanged, this, &ImageOperationsPanel::OnCChanged);
   cLayout->addWidget(cLabel);
   cLayout->addWidget(mInputC);
-  cWidg->setLayout(cLayout);
+  mCWidg->setLayout(cLayout);
 
-  QWidget* gammaWidg = new QWidget(this);
+  mGammaWidg = new QWidget(this);
   QLabel* gammaLabel = new QLabel("Gamma:");
   QHBoxLayout* gammaLayout = new QHBoxLayout(this);
   mInputGamma = new QLineEdit("Gamma", this);
@@ -59,7 +59,7 @@ ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   connect(mInputGamma, &QLineEdit::textChanged, this, &ImageOperationsPanel::OnGammaChanged);
   gammaLayout->addWidget(gammaLabel);
   gammaLayout->addWidget(mInputGamma);
-  gammaWidg->setLayout(gammaLayout);
+  mGammaWidg->setLayout(gammaLayout);
 
   mTwoImageOperationCombo = new QComboBox(this);
   mTwoImageOperationCombo->addItem("None");
@@ -74,8 +74,8 @@ ImageOperationsPanel::ImageOperationsPanel(ImageEditor* workspace)
   mLayout->setAlignment(Qt::AlignTop);
   mLayout->addWidget(mNumImageCombo);
   mLayout->addWidget(mOneImageOperationCombo);
-  mLayout->addWidget(cWidg);
-  mLayout->addWidget(gammaWidg);
+  mLayout->addWidget(mCWidg);
+  mLayout->addWidget(mGammaWidg);
   mLayout->addWidget(mTwoImageOperationCombo);
   mLayout->addWidget(mImageALabel);
   mLayout->addWidget(mImageBLabel);
@@ -105,8 +105,8 @@ void ImageOperationsPanel::OnNumImageChange(int index)
     case SingleImage:
     {
       mOneImageOperationCombo->show();
-      mInputC->show();
-      mInputGamma->show();
+      mCWidg->show();
+      mGammaWidg->show();
       mTwoImageOperationCombo->hide();
       mImageALabel->hide();
       mImageBLabel->hide();
@@ -116,9 +116,11 @@ void ImageOperationsPanel::OnNumImageChange(int index)
     case DoubleImage:
     {
       mTwoImageOperationCombo->show();
+      mImageALabel->show();
+      mImageBLabel->show();
       mOneImageOperationCombo->hide();
-      mInputC->hide();
-      mInputGamma->hide();
+      mCWidg->hide();
+      mGammaWidg->hide();
       break;
     }
   }

@@ -40,6 +40,8 @@ public:
 
   void SetImage(const std::vector<Pixel>& image, int width, int height);
 
+  void SetUseHistogramEqualization(bool useHistogram);
+
 private:
   Transform* mTransform;
   Model* mModel;
@@ -61,6 +63,9 @@ private:
 
   int mScreenWidth;
   int mScreenHeight;
+
+  bool mUseHistogramEqualization;
+  void HistogramEqualization(std::vector<Pixel>& image);
 };
 
 } // End of Elba namespace

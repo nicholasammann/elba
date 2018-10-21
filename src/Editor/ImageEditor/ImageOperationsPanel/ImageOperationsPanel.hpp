@@ -52,9 +52,11 @@ private:
   };
   void OnOneImageOpChange(int index);
 
+  QWidget* mCWidg;
   QLineEdit* mInputC;
   void OnCChanged(const QString& text);
-  
+
+  QWidget* mGammaWidg;
   QLineEdit* mInputGamma;
   void OnGammaChanged(const QString& text);
 
