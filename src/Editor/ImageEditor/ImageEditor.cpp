@@ -7,6 +7,7 @@
 #include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
 #include "Editor/ImageEditor/Menus/FileMenu.hpp"
 #include "Editor/ImageEditor/OptionsPanel/OptionsPanel.hpp"
+#include "Editor/ImageEditor/ImageOperationsPanel/ImageOperationsPanel.hpp"
 
 namespace Editor
 {
@@ -52,6 +53,7 @@ bool ImageEditor::Initialize()
 
   // Add widgets
   AddWidget<OptionsPanel>(this);
+  AddWidget<ImageOperationsPanel>(this);
 
   return true;
 }

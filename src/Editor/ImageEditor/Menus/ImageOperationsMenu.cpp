@@ -33,7 +33,7 @@ Elba::OpenGLTexture* ImageOperationsMenu::LoadTexture()
   // make sure the user selected a file
   if (fileName == "")
   {
-    return;
+    return nullptr;
   }
 
   std::string path = fileName.toLocal8Bit().constData();

@@ -25,6 +25,22 @@ void ImageOperationHandler::SetImageB(OpenGLTexture* image)
   mImageB = image;
 }
 
+void ImageOperationHandler::DoNone()
+{
+}
+
+void ImageOperationHandler::DoAddition()
+{
+}
+
+void ImageOperationHandler::DoSubtraction()
+{
+}
+
+void ImageOperationHandler::DoProduct()
+{
+}
+
 std::vector<Pixel> ImageOperationHandler::GetAddition()
 {
   return std::vector<Pixel>();

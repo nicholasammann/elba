@@ -14,6 +14,12 @@ OptionsPanel::OptionsPanel(ImageEditor* workspace)
   : Framework::Widget(workspace)
   , mLayout(new QVBoxLayout(this))
 {
+  Elba::Engine* engine = workspace->GetEngine();
+  mCore = engine->GetCoreModule();
+  mGraphics = static_cast<Elba::OpenGLModule*>(engine->GetGraphicsModule());
+
+  setWindowTitle("Options");
+
   mInterpolationCombo = new QComboBox(this);
   mInterpolationCombo->addItem("None");
   mInterpolationCombo->addItem("Nearest Neighbor");
@@ -31,10 +37,6 @@ OptionsPanel::OptionsPanel(ImageEditor* workspace)
   // Add combo to layout
   mLayout->addWidget(mInterpolationCombo);
   mLayout->setAlignment(Qt::AlignTop);
-
-  Elba::Engine* engine = workspace->GetEngine();
-  mCore = engine->GetCoreModule();
-  mGraphics = static_cast<Elba::OpenGLModule*>(engine->GetGraphicsModule());
 }
 
 Framework::Widget::DockArea OptionsPanel::GetDefaultDockArea() const
