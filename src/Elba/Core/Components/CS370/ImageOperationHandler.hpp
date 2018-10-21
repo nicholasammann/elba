@@ -19,13 +19,18 @@ public:
   void SetImageA(OpenGLTexture* image);
   void SetImageB(OpenGLTexture* image);
 
-  std::vector<Pixel> GetAddition();
-  std::vector<Pixel> GetSubtraction();
-  std::vector<Pixel> GetProduct();
+  void DoNone();
+  void DoAddition();
+  void DoSubtraction();
+  void DoProduct();
 
 private:
   OpenGLTexture* mImageA;
   OpenGLTexture* mImageB;
+
+  std::vector<Pixel> GetAddition();
+  std::vector<Pixel> GetSubtraction();
+  std::vector<Pixel> GetProduct();
 };
 
 } // End of Elba namespace
