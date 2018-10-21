@@ -3,7 +3,7 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
@@ -14,6 +14,11 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
   : Widget(workspace)
 {
   QVBoxLayout* layout = new QVBoxLayout();
+
+  QCheckBox* postProcessing = new QCheckBox("Use Post Processing");
+  connect(postProcessing, &QCheckBox::stateChanged,
+    this, &PostProcessingOptions::OnUsePostProcessingChanged);
+  layout->addWidget(postProcessing);
 
   QCheckBox* edgeDetection = new QCheckBox("Edge Detection");
   connect(edgeDetection, &QCheckBox::stateChanged,
@@ -38,6 +43,16 @@ Framework::Widget::DockArea PostProcessingOptions::GetDefaultDockArea() const
 Framework::Widget::DockArea PostProcessingOptions::GetAllowedDockAreas() const
 {
   return DockArea::All;
+}
+
+void PostProcessingOptions::OnUsePostProcessingChanged(int value)
+{
+  LevelEditor* levelEditor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = levelEditor->GetEngine();
+  Elba::GraphicsModule* graphics = engine->GetGraphicsModule();
+  Elba::OpenGLModule* glModule = static_cast<Elba::OpenGLModule*>(graphics);
+
+  glModule->SetUseFramebuffer(static_cast<bool>(value));
 }
 
 void PostProcessingOptions::OnEdgeDetectionChanged(int value)

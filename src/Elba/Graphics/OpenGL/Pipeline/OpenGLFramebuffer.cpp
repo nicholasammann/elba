@@ -1,28 +1,34 @@
 #include <iostream>
 
 #include "Elba/Engine.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLVertexShader.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFragmentShader.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 #include "Elba/Utilities/Utils.hpp"
 
 namespace Elba
 {
-OpenGLPostProcessBuffer::OpenGLPostProcessBuffer(OpenGLModule* graphicsModule)
+OpenGLFramebuffer::OpenGLFramebuffer(OpenGLModule* graphicsModule)
   : mGraphicsModule(graphicsModule)
-  , mShader(nullptr)
-  , mElapsedTime(0.0f)
-  , mEdgeDetectionOn(0)
-  , mBlurOn(0)
+  , mProgram(nullptr)
+  , mDoImageNegative(0)
+  , mDoLogTransform(0)
+  , mDoGammaTransform(0)
+  , mValueC(1.0f)
+  , mValueGamma(0.5f)
+  , mDoEdgeDetection(0)
 {
 }
 
-OpenGLPostProcessBuffer::~OpenGLPostProcessBuffer()
+OpenGLFramebuffer::~OpenGLFramebuffer()
 {
+  delete mProgram;
 }
 
-void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
+void OpenGLFramebuffer::InitializeBuffers(int textureSlot)
 {
   // width, height
   std::pair<int, int> screenSize = mGraphicsModule->GetScreenDimensions();
@@ -36,7 +42,7 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
   // create color attachment texture
   glGenTextures(1, &mTextureColorBuffer);
   glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, mWidth, mHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -57,20 +63,23 @@ void OpenGLPostProcessBuffer::InitializeBuffers(int textureSlot)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // Register for Resize event
-  mGraphicsModule->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event) {this->OnResize(event);});
+  mGraphicsModule->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event)
+  {
+    this->OnResize(event);
+  });
 }
 
-void OpenGLPostProcessBuffer::InitializeQuad()
+void OpenGLFramebuffer::InitializeQuad()
 {
   float quadVertices[] = {
     // positions   // texCoords
-    -1.0f,  1.0f,  0.0f, 1.0f,
-    -1.0f, -1.0f,  0.0f, 0.0f,
-     1.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f,  1.0f,  0.0f, 1.0f, // top left
+    -1.0f, -1.0f,  0.0f, 0.0f, // bottom left
+     1.0f, -1.0f,  1.0f, 0.0f, // bottom right
 
-    -1.0f,  1.0f,  0.0f, 1.0f,
-     1.0f, -1.0f,  1.0f, 0.0f,
-     1.0f,  1.0f,  1.0f, 1.0f
+    -1.0f,  1.0f,  0.0f, 1.0f, // top left
+     1.0f, -1.0f,  1.0f, 0.0f, // bottom right
+     1.0f,  1.0f,  1.0f, 1.0f  // top right
   };
 
   GLuint VBO;
@@ -87,69 +96,105 @@ void OpenGLPostProcessBuffer::InitializeQuad()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (GLvoid*)(2 * sizeof(float)));
 }
 
-void OpenGLPostProcessBuffer::InitializeProgram()
+void OpenGLFramebuffer::InitializeProgram()
 {
-  LoadShader("postprocess");
+  LoadShaders("postprocess");
 }
 
-void OpenGLPostProcessBuffer::PreRender()
+void OpenGLFramebuffer::PreRender()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, mFbo);
-  glEnable(GL_DEPTH_TEST);
 }
 
-void OpenGLPostProcessBuffer::PostRender()
+void OpenGLFramebuffer::PostRender()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glDisable(GL_DEPTH_TEST);
 }
 
-void OpenGLPostProcessBuffer::Draw()
+void OpenGLFramebuffer::Draw()
 {
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  mShader->UseShaderProgram();
+  mProgram->Use();
+
   glActiveTexture(GL_TEXTURE0);
-  mShader->SetInt("screenTexture", 0);
-
-  mShader->SetInt("edgeOn", mEdgeDetectionOn);
-  mShader->SetInt("blurOn", mBlurOn);
-
-  //Engine* engine = mGraphicsModule->GetEngine();
-  //float dt = static_cast<float>(engine->GetDt());
-  //mElapsedTime += dt;
-  //mShader->SetFloat("offset", mElapsedTime);
+  mProgram->SetUniform("screenTexture", 0);
+  mProgram->SetUniform("doNegative", mDoImageNegative);
+  mProgram->SetUniform("doLog", mDoLogTransform);
+  mProgram->SetUniform("doGamma", mDoGammaTransform);
+  mProgram->SetUniform("c", mValueC);
+  mProgram->SetUniform("gamma", mValueGamma);
+  mProgram->SetUniform("doSobel", mDoEdgeDetection);
 
   glBindVertexArray(mVAO);
   glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 }
 
-void OpenGLPostProcessBuffer::LoadShader(std::string shaderName)
+void OpenGLFramebuffer::LoadShaders(std::string shaderName)
 {
-  if (mShader)
+  if (mProgram)
   {
-    delete mShader;
+    delete mProgram;
   }
 
   std::string assetsDir = Utils::GetAssetsDirectory();
+
   std::string vertPath = assetsDir + "Shaders/" + shaderName + ".vert";
+  UniquePtr<OpenGLVertexShader> vertShader = NewUnique<OpenGLVertexShader>(vertPath);
+  
   std::string fragPath = assetsDir + "Shaders/" + shaderName + ".frag";
-  mShader = new OpenGLShader(shaderName.c_str(), vertPath.c_str(), fragPath.c_str());
+  UniquePtr<OpenGLFragmentShader> fragShader = NewUnique<OpenGLFragmentShader>(fragPath);
+
+  mProgram = new OpenGLProgram(shaderName.c_str());
+  mProgram->AttachShader(std::move(vertShader));
+  mProgram->AttachShader(std::move(fragShader));
+  mProgram->Link();
 }
 
-void OpenGLPostProcessBuffer::SetEdgeDetection(int value)
+GLuint OpenGLFramebuffer::GetTexture() const
 {
-  mEdgeDetectionOn = value;
+  return mTextureColorBuffer;
 }
 
-void OpenGLPostProcessBuffer::SetBlur(int value)
+void OpenGLFramebuffer::SetTexture(GLuint texId)
 {
-  mBlurOn = value;
+  mTextureColorBuffer = texId;
 }
 
-void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)
+void OpenGLFramebuffer::SetDoImageNegative(int value)
+{
+  mDoImageNegative = value;
+}
+
+void OpenGLFramebuffer::SetDoLogTransform(int value)
+{
+  mDoLogTransform = value;
+}
+
+void OpenGLFramebuffer::SetDoGammaTransform(int value)
+{
+  mDoGammaTransform = value;
+}
+
+void OpenGLFramebuffer::SetDoEdgeDetection(int value)
+{
+  mDoEdgeDetection = value;
+}
+
+void OpenGLFramebuffer::SetValueC(float value)
+{
+  mValueC = value;
+}
+
+void OpenGLFramebuffer::SetValueGamma(float value)
+{
+  mValueGamma = value;
+}
+
+void OpenGLFramebuffer::OnResize(const ResizeEvent& event)
 {
   mWidth = static_cast<int>(event.newSize[0]);
   mHeight = static_cast<int>(event.newSize[1]);
@@ -158,7 +203,7 @@ void OpenGLPostProcessBuffer::OnResize(const ResizeEvent& event)
 
   // create color attachment texture
   glBindTexture(GL_TEXTURE_2D, mTextureColorBuffer);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, mWidth, mHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

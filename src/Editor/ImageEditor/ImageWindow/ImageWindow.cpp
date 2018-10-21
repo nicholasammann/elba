@@ -6,10 +6,11 @@
 
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Components/CS370/ResizeHandler.hpp"
+#include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
 
 #include "Elba/Engine.hpp"
 
-#include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
@@ -73,6 +74,18 @@ void ImageWindow::Initialize()
   glEnable(GL_DEPTH_TEST);
 
   GLenum err = glewInit();
+
+  Elba::OpenGLModule* glModule = dynamic_cast<Elba::OpenGLModule*>(mGraphicsModule);
+  if (glModule)
+  {
+    glModule->InitializePostProcessing();
+    Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
+    glModule->SetUseFramebuffer(true);
+  }
+
+  Elba::ResizeEvent resize;
+  resize.oldSize = resize.newSize = glm::vec2(width(), height());
+  mGraphicsModule->OnResize(resize);
 }
 
 void ImageWindow::SetAnimating(bool animating)
@@ -83,32 +96,6 @@ void ImageWindow::SetAnimating(bool animating)
   {
     RenderLater();
   }
-}
-
-void ImageWindow::RegisterForResize(Elba::GlobalKey key, ResizeCallback callback)
-{
-  mResizeCallbacks.emplace_back(std::make_pair(key, callback));
-}
-
-bool ImageWindow::DeregisterForResize(Elba::GlobalKey key)
-{
-  auto result = std::find_if(mResizeCallbacks.begin(), mResizeCallbacks.end(),
-    [key](const std::pair<Elba::GlobalKey, ResizeCallback>& pair)
-  {
-    if (key.ToStdString() == pair.first.ToStdString())
-    {
-      return true;
-    }
-    return false;
-  });
-
-  if (result != mResizeCallbacks.end())
-  {
-    mResizeCallbacks.erase(result);
-    return true;
-  }
-
-  return false;
 }
 
 void ImageWindow::RenderLater()
@@ -168,6 +155,8 @@ void ImageWindow::RenderNow()
     model->LoadMesh("quad.fbx");
     model->LoadShader("textured");
 
+    object->AddComponent<Elba::ImageOperationHandler>();
+
     Elba::OpenGLMesh* mesh = static_cast<Elba::OpenGLMesh*>(model->GetMesh());
     std::vector<Elba::OpenGLSubmesh>& submeshes = mesh->GetSubmeshes();
     std::string assetsDir = Elba::Utils::GetAssetsDirectory();
@@ -204,14 +193,11 @@ bool ImageWindow::event(QEvent* event)
     {
       QResizeEvent* realEvent = static_cast<QResizeEvent*>(event);
 
-      ResizeEvent resize;
+      Elba::ResizeEvent resize;
       resize.oldSize = glm::vec2(realEvent->oldSize().width(), realEvent->oldSize().height());
       resize.newSize = glm::vec2(realEvent->size().width(), realEvent->size().height());
 
-      for (auto cb : mResizeCallbacks)
-      {
-        cb.second(resize);
-      }
+      mGraphicsModule->OnResize(resize);
 
       return QWindow::event(event);
     }

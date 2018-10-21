@@ -31,6 +31,17 @@ public:
 
   void SetInterpolationMode(InterpolationMode mode);
 
+  InterpolationMode GetInterpolationMode() const;
+
+  void NearestNeighborInterpolation(std::vector<Pixel>& source, int srcWidth, int srcHeight, 
+                                    std::vector<Pixel>& result, int targetWidth, int targetHeight);
+  void BilinearInterpolation(std::vector<Pixel>& source, int srcWidth, int srcHeight, 
+                             std::vector<Pixel>& result, int targetWidth, int targetHeight);
+
+  void SetImage(const std::vector<Pixel>& image, int width, int height);
+
+  void SetUseHistogramEqualization(bool useHistogram);
+
 private:
   Transform* mTransform;
   Model* mModel;
@@ -45,13 +56,16 @@ private:
   
   void Interpolate(int screenWidth, int screenHeight);
   void NearestNeighborInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result);
-  Pixel NearestNeighborValue(int x, int y, float widthRatio, float heightRatio);
+  Pixel NearestNeighborValue(int x, int y, int width, int height, float widthRatio, float heightRatio, std::vector<Pixel>& src);
 
   void BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result);
-  Pixel BilinearValue(int x, int y, float widthRatio, float heightRatio);
+  Pixel BilinearValue(int x, int y, int width, int height, float widthRatio, float heightRatio, std::vector<Pixel>& src);
 
   int mScreenWidth;
   int mScreenHeight;
+
+  bool mUseHistogramEqualization;
+  void HistogramEqualization(std::vector<Pixel>& image);
 };
 
 } // End of Elba namespace

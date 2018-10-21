@@ -1,3 +1,4 @@
+add_subdirectory(ImageOperationsPanel)
 add_subdirectory(ImageWindow)
 add_subdirectory(Menus)
 add_subdirectory(OptionsPanel)

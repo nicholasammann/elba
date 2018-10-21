@@ -4,6 +4,7 @@
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qlayout.h>
+#include <qcheckbox.h>
 
 #include "Editor/Framework/Widget.hpp"
 
@@ -25,12 +26,15 @@ public:
 private:
   QVBoxLayout* mLayout;
   QComboBox* mInterpolationCombo;
+  QCheckBox* mUseHistogramCheckbox;
 
   Elba::CoreModule* mCore;
   Elba::OpenGLModule* mGraphics;
 
   void OnInterpolationChange(int index);
+  void OnUseHistogramChange(int value);
 
+  Elba::Object* GetObject();
 };
 
 } // End of Editor namespace

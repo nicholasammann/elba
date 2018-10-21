@@ -70,4 +70,15 @@ bool GraphicsModule::DeregisterForResize(GlobalKey key)
   return false;
 }
 
+void GraphicsModule::OnResize(const ResizeEvent& event)
+{
+  mScreenWidth = event.newSize.x;
+  mScreenHeight = event.newSize.y;
+
+  for (auto cb : mResizeCallbacks)
+  {
+    cb.second(event);
+  }
+}
+
 } // End of Elba namespace

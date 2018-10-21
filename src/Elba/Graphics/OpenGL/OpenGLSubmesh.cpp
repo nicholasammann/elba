@@ -1,7 +1,6 @@
 #include <algorithm>
 
 #include <gl/glew.h>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
@@ -13,14 +12,14 @@ static std::string uniformNames[4] = { "diffuseTex", "specularTex", "normalTex",
 
 OpenGLSubmesh::OpenGLSubmesh()
   : Submesh()
-  , mShader(nullptr)
+  , mProgram(nullptr)
   , mTextures{ nullptr }
 {
 }
 
 OpenGLSubmesh::OpenGLSubmesh(const std::vector<Vertex>& verts, const std::vector<Face>& faces)
   : Submesh()
-  , mShader(nullptr)
+  , mProgram(nullptr)
   , mTextures{ nullptr }
 {
   mVertices = verts;
@@ -75,19 +74,19 @@ void OpenGLSubmesh::Initialize()
 void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
 {
   // Can't draw anything without a shader
-  if (!mShader)
+  if (!mProgram)
   {
     return;
   }
 
-  mShader->UseShaderProgram();
-  GLuint shdrPrg = mShader->GetShaderProgram();
+  mProgram->Use();
+  GLuint prg = mProgram->Get();
 
   for (int i = 0; i < TextureType::TypeCount; ++i)
   {
     if (mTextures[i])
     {
-      mTextures[i]->SetUniform(shdrPrg, uniformNames[i], i);
+      mTextures[i]->SetUniform(prg, uniformNames[i], i);
       mTextures[i]->Bind(i);
     }
   }
@@ -111,14 +110,9 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   glUniform1f(matLoc, mMaterial.shininess);
   */
 
-  unsigned int viewLoc = glGetUniformLocation(shdrPrg, "view");
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-  unsigned int projLoc = glGetUniformLocation(shdrPrg, "projection");
-  glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-
-  unsigned int modelLoc = glGetUniformLocation(shdrPrg, "model");
-  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+  mProgram->SetUniform("view", view);
+  mProgram->SetUniform("projection", proj);
+  mProgram->SetUniform("model", model);
 
   glBindVertexArray(mVAO);
   glDrawElements(GL_TRIANGLES, static_cast<int>(mFaces.size()) * 3, GL_UNSIGNED_INT, 0);
@@ -133,9 +127,9 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   }
 }
 
-void OpenGLSubmesh::SetShader(OpenGLShader* shader)
+void OpenGLSubmesh::SetShaders(OpenGLProgram* program)
 {
-  mShader = shader;
+  mProgram = program;
 }
 
 void OpenGLSubmesh::LoadTexture(const std::string& path, TextureType type)

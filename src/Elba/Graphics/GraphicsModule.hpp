@@ -18,14 +18,12 @@ namespace Elba
 {
 class Engine;
 
-
 struct DrawEvent
 {
   glm::mat4 proj;
   glm::mat4 view;
 };
 typedef std::function<void(const DrawEvent&)> DrawCallback;
-
 
 struct ResizeEvent
 {
@@ -55,7 +53,7 @@ public:
   * \brief Update function called by Engine. Updates graphics.
   */
   virtual void Update(double dt) override = 0;
-  
+
   /**
   * \brief Window/context agnostic rendering calls.
   */
@@ -74,10 +72,14 @@ public:
   void RegisterForResize(GlobalKey key, ResizeCallback callback);
   bool DeregisterForResize(GlobalKey key);
 
+  void OnResize(const ResizeEvent& event);
+
 protected:
   std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
   std::vector<std::pair<GlobalKey, ResizeCallback> > mResizeCallbacks;
-
+  
+  unsigned int mScreenWidth;
+  unsigned int mScreenHeight;
 };
 
 } // End of Elba namespace

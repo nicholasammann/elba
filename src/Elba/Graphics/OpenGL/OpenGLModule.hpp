@@ -5,9 +5,12 @@
 
 #include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLPostProcessBuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 
 #include "Elba/Graphics/Camera.hpp"
+
+#include "Elba/Utilities/StdTypedefs.hpp"
 
 namespace Elba
 {
@@ -29,9 +32,9 @@ public:
   void Initialize() final;
 
   /**
-  * \brief Initializes buffers for post processing.
+  * \brief Initializes framebuffer for post processing.
   */
-  void InitializePostProcessBuffer();
+  void InitializePostProcessing();
 
   /**
   * \brief Update function called by Engine. Updates graphics.
@@ -56,12 +59,21 @@ public:
 
   Camera* GetCamera();
 
+  OpenGLFramebuffer* GetFramebuffer();
+
+  void SetUseFramebuffer(bool useFramebuffer);
+
+  OpenGLPostProcess* GetPostProcess();
+
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
 
-  UniquePtr<OpenGLPostProcessBuffer> mPostProcessBuffer;
+  UniquePtr<OpenGLFramebuffer> mFramebuffer;
+  bool mUseFramebuffer;
+
+  UniquePtr<OpenGLPostProcess> mPostProcess;
 
   glm::vec4 mClearColor;
 };

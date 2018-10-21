@@ -13,7 +13,7 @@ bool resizeFlag = false;
 void window_resize_callback(GLFWwindow* aWindow, int aWidth, int aHeight)
 {
   glViewport(0, 0, aWidth, aHeight);
-  
+
   oldWidth = g_width;
   oldHeight = g_height;
 
@@ -28,7 +28,9 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mFactory(NewUnique<OpenGLFactory>(this))
   , mCamera(NewUnique<Camera>())
   , mClearColor(glm::vec4(0.3f, 0.3f, 0.5f, 1.0f))
-  , mPostProcessBuffer(NewUnique<OpenGLPostProcessBuffer>(this))
+  , mFramebuffer(NewUnique<OpenGLFramebuffer>(this))
+  , mUseFramebuffer(true)
+  , mPostProcess(NewUnique<OpenGLPostProcess>(this))
 {
 }
 
@@ -64,15 +66,18 @@ void OpenGLModule::Initialize()
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(mWindow, window_resize_callback);
 
-    InitializePostProcessBuffer();
+    InitializePostProcessing();
   }
 }
 
-void OpenGLModule::InitializePostProcessBuffer()
+void OpenGLModule::InitializePostProcessing()
 {
-  mPostProcessBuffer->InitializeBuffers(0);
-  mPostProcessBuffer->InitializeQuad();
-  mPostProcessBuffer->InitializeProgram();
+  mFramebuffer->InitializeBuffers(0);
+  mFramebuffer->InitializeQuad();
+  mFramebuffer->InitializeProgram();
+
+  mPostProcess->Initialize();
+  //mPostProcess->AddComputeShader("noeffect.comp");
 }
 
 void OpenGLModule::Update(double dt)
@@ -83,16 +88,16 @@ void OpenGLModule::Update(double dt)
     event.oldSize = glm::vec2(oldWidth, oldHeight);
     event.newSize = glm::vec2(g_width, g_height);
 
-    for (auto cb : mResizeCallbacks)
-    {
-      cb.second(event);
-    }
+    OnResize(event);
+
+    mScreenWidth = g_width;
+    mScreenHeight = g_height;
 
     resizeFlag = false;
   }
 
   // Run update if engine is NOT running in editor
-  // If running in editor, the Render function will be called explicitly
+  // If running in editor, the Render function will be called by the editor
   if (!GetEngine()->InEditor())
   {
     Render(g_width, g_height);
@@ -104,7 +109,18 @@ void OpenGLModule::Update(double dt)
 
 void OpenGLModule::Render(int screenWidth, int screenHeight)
 {
-  mPostProcessBuffer->PreRender();
+  if (mUseFramebuffer)
+  {
+    mFramebuffer->PreRender();
+  }
+
+  int viewport[4] = { 0 };
+
+  glGetIntegerv(GL_VIEWPORT, viewport);
+
+  glViewport(0, 0, screenWidth, screenHeight);
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glEnable(GL_DEPTH_TEST);
 
   glClearColor(mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -119,8 +135,13 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
     pair.second(event);
   }
 
-  mPostProcessBuffer->PostRender();
-  mPostProcessBuffer->Draw();
+  if (mUseFramebuffer)
+  {
+    mFramebuffer->PostRender();
+    mPostProcess->DispatchComputeShaders();
+    mFramebuffer->SetTexture(mPostProcess->GetOutputTexture()->id);
+    mFramebuffer->Draw();
+  }
 }
 
 UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
@@ -130,7 +151,7 @@ UniquePtr<Mesh> OpenGLModule::RequestMesh(std::string name)
 
 std::pair<int, int> OpenGLModule::GetScreenDimensions() const
 {
-  return std::pair<int, int>(g_width, g_height);
+  return std::pair<int, int>(mScreenWidth, mScreenHeight);
 }
 
 void OpenGLModule::SetClearColor(glm::vec4 color)
@@ -141,6 +162,21 @@ void OpenGLModule::SetClearColor(glm::vec4 color)
 Camera* OpenGLModule::GetCamera()
 {
   return mCamera.get();
+}
+
+OpenGLFramebuffer* OpenGLModule::GetFramebuffer()
+{
+  return mFramebuffer.get();
+}
+
+void OpenGLModule::SetUseFramebuffer(bool useFramebuffer)
+{
+  mUseFramebuffer = useFramebuffer;
+}
+
+OpenGLPostProcess* OpenGLModule::GetPostProcess()
+{
+  return mPostProcess.get();
 }
 
 } // End of Elba namespace

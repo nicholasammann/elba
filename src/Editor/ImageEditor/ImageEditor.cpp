@@ -6,7 +6,9 @@
 #include "Editor/ImageEditor/ImageEditor.hpp"
 #include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
 #include "Editor/ImageEditor/Menus/FileMenu.hpp"
+#include "Editor/ImageEditor/Menus/ImageOperationsMenu.hpp"
 #include "Editor/ImageEditor/OptionsPanel/OptionsPanel.hpp"
+#include "Editor/ImageEditor/ImageOperationsPanel/ImageOperationsPanel.hpp"
 
 namespace Editor
 {
@@ -23,7 +25,7 @@ ImageEditor::ImageEditor(Framework::MainWindow* mainWindow)
   mImageWindow = new ImageWindow(this);
 
   mResizeCallbackKey = Elba::GlobalKey();
-  mImageWindow->RegisterForResize(mResizeCallbackKey, [this](const Editor::ResizeEvent& event)
+  graphics->RegisterForResize(mResizeCallbackKey, [this](const Elba::ResizeEvent& event)
   {
     this->OnResize(event);
   });
@@ -49,9 +51,11 @@ bool ImageEditor::Initialize()
 
   // Add menus
   AddMenu<FileMenu>(this);
+  AddMenu<ImageOperationsMenu>(this);
 
   // Add widgets
   AddWidget<OptionsPanel>(this);
+  AddWidget<ImageOperationsPanel>(this);
 
   return true;
 }
@@ -77,7 +81,7 @@ Elba::Engine* ImageEditor::GetEngine()
   return mEngine;
 }
 
-void ImageEditor::OnResize(const ResizeEvent& event)
+void ImageEditor::OnResize(const Elba::ResizeEvent& event)
 {
   Elba::CoreModule* core = mEngine->GetCoreModule();
   Elba::Level* level = core->GetGameLevel();
@@ -87,7 +91,7 @@ void ImageEditor::OnResize(const ResizeEvent& event)
   if (first != children.end())
   {
     Elba::Object* object = first->second.get();
-
+  
     Elba::ResizeHandler* resizeHandler = object->GetComponent<Elba::ResizeHandler>();
     resizeHandler->Resize(static_cast<int>(event.newSize.x), static_cast<int>(event.newSize.y));
   }

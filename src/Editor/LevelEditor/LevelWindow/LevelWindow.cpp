@@ -2,6 +2,7 @@
 
 #include <qpainter.h>
 #include <qopenglpaintdevice.h>
+#include <qevent.h>
 
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Components/Rotate.hpp"
@@ -13,6 +14,7 @@
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
@@ -74,8 +76,16 @@ void Editor::LevelWindow::Initialize()
   Elba::OpenGLModule* glModule = dynamic_cast<Elba::OpenGLModule*>(mGraphicsModule);
   if (glModule)
   {
-    glModule->InitializePostProcessBuffer();
+    glModule->InitializePostProcessing();
+    Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
+    postProcess->AddComputeShader("noeffect.comp");
+    postProcess->AddComputeShader("redshift.comp");
+    //postProcess->AddComputeShader("noeffect.comp");
   }
+
+  Elba::ResizeEvent resize;
+  resize.oldSize = resize.newSize = glm::vec2(width(), height());
+  mGraphicsModule->OnResize(resize);
 }
 
 void Editor::LevelWindow::SetAnimating(bool animating)  
@@ -138,7 +148,7 @@ void Editor::LevelWindow::RenderNow()
 
     // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     transform->SetWorldScale(glm::vec3(1.0f));
 
@@ -163,6 +173,19 @@ bool Editor::LevelWindow::event(QEvent* event)
     {
       RenderNow();
       return true;
+    }
+
+    case QEvent::Resize:
+    {
+      QResizeEvent* realEvent = static_cast<QResizeEvent*>(event);
+
+      Elba::ResizeEvent resize;
+      resize.oldSize = glm::vec2(realEvent->oldSize().width(), realEvent->oldSize().height());
+      resize.newSize = glm::vec2(realEvent->size().width(), realEvent->size().height());
+
+      mGraphicsModule->OnResize(resize);
+
+      return QWindow::event(event);
     }
 
     case QEvent::Paint:
