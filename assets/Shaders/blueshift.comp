@@ -12,7 +12,7 @@ void main()
   vec4 pixel = imageLoad(img_input, pixel_coords).rgba;
   
   // calculations
-  pixel = vec4(pixel.r * 0.7, pixel.g * 0.7, pixel.b, 1);
+  pixel = vec4(0, pixel.g, pixel.b, 1);
 
   // output to a specific pixel in the image
   imageStore(img_output, pixel_coords, pixel);
