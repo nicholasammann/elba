@@ -24,13 +24,13 @@ void OpenGLComputeShader::Dispatch()
 void OpenGLComputeShader::BindTextures(OpenGLProgram* program)
 {
   glBindImageTexture(mInputTexture->slot, mInputTexture->id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-  program->SetUniform("img_input", 0);
-  glActiveTexture(GL_TEXTURE0);
+  program->SetUniform("img_input", static_cast<int>(mInputTexture->slot));
+  glActiveTexture(GL_TEXTURE0 + mInputTexture->slot);
   glBindTexture(GL_TEXTURE_2D, mInputTexture->id);
   
   glBindImageTexture(mOutputTexture->slot, mOutputTexture->id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-  program->SetUniform("img_output", 1);
-  glActiveTexture(GL_TEXTURE0 + 1);
+  program->SetUniform("img_output", static_cast<int>(mOutputTexture->slot));
+  glActiveTexture(GL_TEXTURE0 + mOutputTexture->slot);
   glBindTexture(GL_TEXTURE_2D, mOutputTexture->id);
 }
 

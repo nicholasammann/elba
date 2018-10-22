@@ -37,8 +37,6 @@ GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
 
   program->Link();
 
-  program->Use();
-
   mComputeShaders.push_back(std::make_pair(shaderKey.ToStdString(), std::move(program)));
 
   return shaderKey;
@@ -58,6 +56,7 @@ void OpenGLPostProcess::DispatchComputeShaders()
 
   for (auto& pair : mComputeShaders)
   {
+    std::swap(output, input);
     pair.second->Use();
     OpenGLComputeShader* shader = static_cast<OpenGLComputeShader*>(pair.second->GetShader(pair.first));
     shader->SetOutputTexture(output);
