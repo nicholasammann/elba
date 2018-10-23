@@ -13,22 +13,15 @@ namespace Editor
 PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
   : Widget(workspace)
 {
-  QVBoxLayout* layout = new QVBoxLayout();
+  QVBoxLayout* layout = new QVBoxLayout(this);
 
   QCheckBox* postProcessing = new QCheckBox("Use Post Processing");
+  postProcessing->setChecked(true);
   connect(postProcessing, &QCheckBox::stateChanged,
     this, &PostProcessingOptions::OnUsePostProcessingChanged);
   layout->addWidget(postProcessing);
 
-  QCheckBox* edgeDetection = new QCheckBox("Edge Detection");
-  connect(edgeDetection, &QCheckBox::stateChanged,
-          this, &PostProcessingOptions::OnEdgeDetectionChanged);
-  layout->addWidget(edgeDetection);
-
-  QCheckBox* blur= new QCheckBox("Blur");
-  connect(blur, &QCheckBox::stateChanged,
-          this, &PostProcessingOptions::OnBlurChanged);
-  layout->addWidget(blur);
+  mPostProcessingTree = new QTreeWidget(this);
 
   layout->setAlignment(Qt::AlignTop);
 
