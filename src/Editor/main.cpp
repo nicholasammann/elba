@@ -21,11 +21,6 @@ int main(int argc, char** argv)
   LevelEditor* editor = mainWindow->LoadWorkspace<LevelEditor>(mainWindow);
   //ImageEditor* editor = mainWindow->LoadWorkspace<ImageEditor>(mainWindow);
 
-  if (!editor->Initialize())
-  {
-    return 1;
-  }
-
   mainWindow->resize(1280, 800);
   mainWindow->show();
 
