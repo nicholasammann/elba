@@ -17,11 +17,9 @@ public:
 
 private:
 
-  void OnUsePostProcessingChanged(int value);
-  void OnEdgeDetectionChanged(int value);
-  void OnBlurChanged(int value);
-
-  QTreeWidget* mPostProcessingTree;
+  QTreeWidget* mTree;
+  void OnContextMenu(const QPoint& point);
+  //void OnUsePostProcessingChanged(int value);
 };
 
 } // End of Editor namespace
