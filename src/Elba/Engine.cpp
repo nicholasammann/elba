@@ -41,15 +41,22 @@ void Engine::Initialize()
 
 void Engine::Update()
 {
+  static double tempDt = 0.0;
+
   std::chrono::high_resolution_clock::time_point time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> delta = std::chrono::duration_cast<std::chrono::duration<double> >(time - mPreviousTime);
-  mDt = delta.count();
+  tempDt += delta.count();
 
-  mPreviousTime = time;
+  if (tempDt >= 0.016f)
+  {
+    mDt = tempDt;
+    mPreviousTime = time;
+    tempDt = 0.0;
 
-  mCoreModule->Update(mDt);
-  mGraphicsModule->Update(mDt);
-  mPhysicsModule->Update(mDt);
+    mCoreModule->Update(mDt);
+    mGraphicsModule->Update(mDt);
+    mPhysicsModule->Update(mDt);
+  }
 }
 
 void Engine::Shutdown()
