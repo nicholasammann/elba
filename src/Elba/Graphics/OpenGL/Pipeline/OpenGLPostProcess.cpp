@@ -62,6 +62,7 @@ void OpenGLPostProcess::DispatchComputeShaders()
     shader->SetOutputTexture(output);
     shader->SetInputTexture(input);
     shader->BindTextures(pair.second.get());
+    pair.second->BindUniforms();
     shader->Dispatch();
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -75,6 +76,23 @@ void OpenGLPostProcess::DispatchComputeShaders()
 PostProcessTexture* OpenGLPostProcess::GetOutputTexture()
 {
   return mFinalTexture;
+}
+
+OpenGLProgram* OpenGLPostProcess::GetComputeProgram(const GlobalKey& key)
+{
+  auto res = std::find_if(
+    mComputeShaders.begin(),
+    mComputeShaders.end(), 
+    [key](const std::pair<std::string, Elba::UniquePtr<OpenGLProgram> >& item) {
+      return key.ToStdString() == item.first;
+    }
+  );
+
+  if (res != mComputeShaders.end())
+  {
+    return res->second.get();
+  }
+  return nullptr;
 }
 
 PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
