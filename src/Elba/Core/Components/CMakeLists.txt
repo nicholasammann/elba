@@ -1,4 +1,5 @@
 add_subdirectory(CS370)
+add_subdirectory(MAT362)
 
 target_sources(elba
 PRIVATE
