@@ -1,40 +1,41 @@
 #pragma once
 
+#include <vector>
+
+#include <glm/vec2.hpp>
+
 #include "Elba/Core/Component.hpp"
 
 namespace Elba
 {
 
-struct Triangle
-{
-  float a;
-  float b;
-  float c;
-  float d;
-};
-
-struct Trapezoid
-{
-  float p[4];
-};
-
-class Antecedent
+class PiecewiseLinear
 {
 public:
-  Antecedent();
+  PiecewiseLinear();
+
+  float ValueAt(float x);
+
+  void AddPoint(glm::vec2 point);
+  void ClearPoints();
+
+  unsigned int GetNumPoints() const;
 
 private:
-
-
+  std::vector<glm::vec2> mPoints;
 };
 
-class Consequence
+class FuzzySet
 {
 public:
-  Consequence();
+  FuzzySet();
+
+  float ValueAt(float x, std::function<float(float x, float y)> compare);
+
+  void AddFunction(PiecewiseLinear function);
 
 private:
-
+  std::vector<PiecewiseLinear> mFunctions;
 
 };
 
@@ -44,7 +45,7 @@ public:
   FuzzyController(Object* parent);
 
 private:
+  std::vector<FuzzySet> mRules;
 
 };
-}
-
+} // End of Elba namespace
