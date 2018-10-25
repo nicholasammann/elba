@@ -30,7 +30,8 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
 
 void AddEffectContextMenu::AddBlur()
 {
-  mPostProcess->AddComputeShader("blur.comp");
+  Elba::GlobalKey key = mPostProcess->AddComputeShader("blur.comp");
+  //Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
 }
 
 void AddEffectContextMenu::AddWeightedBlur()

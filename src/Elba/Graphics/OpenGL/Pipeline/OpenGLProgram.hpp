@@ -20,6 +20,27 @@
 namespace Elba
 {
 
+struct OpenGLUniformInt
+{
+  OpenGLUniformInt(std::string n = "", int v = 0);
+  std::string name;
+  int value;
+};
+
+struct OpenGLUniformFloat
+{
+  OpenGLUniformFloat(std::string n = "", float v = 0.0f);
+  std::string name;
+  float value;
+};
+
+struct OpenGLUniformMat4
+{
+  OpenGLUniformMat4(std::string n = "", glm::mat4x4 v = glm::mat4x4());
+  std::string name;
+  glm::mat4x4 value;
+};
+
 /**
 * \brief Contains vertex and fragment shader information
 */
@@ -39,6 +60,8 @@ public:
   */
   void Use();
 
+  unsigned int Get() const;
+
   void Link();
 
   // utility uniform functions
@@ -47,7 +70,11 @@ public:
   void SetUniform(const std::string& name, float value);
   void SetUniform(const std::string& name, glm::mat4x4 value);
 
-  unsigned int Get() const;
+  void SetUniform(const OpenGLUniformInt& uniform);
+  void SetUniform(const OpenGLUniformFloat& uniform);
+  void SetUniform(const OpenGLUniformMat4& uniform);
+
+  void BindUniforms();
 
   std::string GetName();
 
@@ -57,6 +84,9 @@ public:
 
 protected:
   Map<std::string, UniquePtr<OpenGLShader> > mShaders;
+  Map<std::string, OpenGLUniformInt> mUniformInts;
+  Map<std::string, OpenGLUniformFloat> mUniformFloats;
+  Map<std::string, OpenGLUniformMat4> mUniformMat4s;
 
 private:
   std::string mName;
