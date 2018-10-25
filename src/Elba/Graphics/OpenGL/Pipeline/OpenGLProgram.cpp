@@ -69,6 +69,39 @@ void OpenGLProgram::SetUniform(const std::string& name, glm::mat4x4 value)
   glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
 }
 
+void OpenGLProgram::SetUniform(const OpenGLUniformInt& uniform)
+{
+  mUniformInts[uniform.name] = uniform;
+}
+
+void OpenGLProgram::SetUniform(const OpenGLUniformFloat& uniform)
+{
+  mUniformFloats[uniform.name] = uniform;
+}
+
+void OpenGLProgram::SetUniform(const OpenGLUniformMat4& uniform)
+{
+  mUniformMat4s[uniform.name] = uniform;
+}
+
+void OpenGLProgram::BindUniforms()
+{
+  for (auto pair : mUniformInts)
+  {
+    SetUniform(pair.second.name, pair.second.value);
+  }
+
+  for (auto pair : mUniformFloats)
+  {
+    SetUniform(pair.second.name, pair.second.value);
+  }
+
+  for (auto pair : mUniformMat4s)
+  {
+    SetUniform(pair.second.name, pair.second.value);
+  }
+}
+
 unsigned int OpenGLProgram::Get() const
 {
   return mProgram;
@@ -103,6 +136,24 @@ OpenGLShader* OpenGLProgram::GetShader(std::string key)
   }
 
   return nullptr;
+}
+
+OpenGLUniformInt::OpenGLUniformInt(std::string n, int v)
+  : name(n)
+  , value(v)
+{
+}
+
+OpenGLUniformFloat::OpenGLUniformFloat(std::string n, float v)
+  : name(n)
+  , value(v)
+{
+}
+
+OpenGLUniformMat4::OpenGLUniformMat4(std::string n, glm::mat4x4 v)
+  : name(n)
+  , value(v)
+{
 }
 
 } // End of Elba namespace

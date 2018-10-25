@@ -6,7 +6,6 @@
 #include "Elba/Utilities/GlobalKey.hpp"
 #include "Elba/Utilities/StdTypedefs.hpp"
 
-
 namespace Elba
 {
 class OpenGLModule;
@@ -31,6 +30,8 @@ public:
   void DispatchComputeShaders();
 
   PostProcessTexture* GetOutputTexture();
+
+  OpenGLProgram* GetComputeProgram(const GlobalKey& key);
 
 private:
   OpenGLModule* mGraphics;

@@ -78,8 +78,6 @@ void Editor::LevelWindow::Initialize()
   {
     glModule->InitializePostProcessing();
     Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
-    postProcess->AddComputeShader("redshift.comp");
-    postProcess->AddComputeShader("blueshift.comp");
   }
 
   Elba::ResizeEvent resize;

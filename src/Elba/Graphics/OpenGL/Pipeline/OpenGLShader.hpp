@@ -16,17 +16,16 @@ public:
 
   GLuint GetShaderId();
 
+  void BindUniforms();
+
 protected:
   std::string mPath;
 
   GLuint mShader;
   const GLchar* mShaderSource;
 
-  // reads in a shader from file
   const GLchar* ReadShader(const std::string& filename);
-
   bool VerifyShaderCompilation(std::string errorMessage) const;
-
 };
 
 } // End of Elba namespace

@@ -23,6 +23,7 @@ GLuint OpenGLShader::GetShaderId()
   return mShader;
 }
 
+
 const GLchar* OpenGLShader::ReadShader(const std::string& filename)
 {
   std::string source;
