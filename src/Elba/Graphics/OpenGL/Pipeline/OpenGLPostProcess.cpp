@@ -27,7 +27,7 @@ void OpenGLPostProcess::Initialize()
 GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
 {
   // add the asset path to the given file path
-  std::string fullPath = Utils::GetAssetsDirectory() + "Shaders/" + filename;
+  std::string fullPath = Utils::GetAssetsDirectory() + "Shaders/Compute/" + filename;
 
   UniquePtr<OpenGLProgram> program = NewUnique<OpenGLProgram>("compute");
 
