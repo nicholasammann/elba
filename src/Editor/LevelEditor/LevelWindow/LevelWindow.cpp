@@ -78,9 +78,6 @@ void Editor::LevelWindow::Initialize()
   {
     glModule->InitializePostProcessing();
     Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
-    postProcess->AddComputeShader("noeffect.comp");
-    postProcess->AddComputeShader("redshift.comp");
-    //postProcess->AddComputeShader("noeffect.comp");
   }
 
   Elba::ResizeEvent resize;
@@ -148,7 +145,7 @@ void Editor::LevelWindow::RenderNow()
 
     // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 0.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     transform->SetWorldScale(glm::vec3(1.0f));
 

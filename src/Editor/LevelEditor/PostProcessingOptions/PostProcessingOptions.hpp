@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qtreewidget.h>
+
 #include "Editor/Framework/Widget.hpp"
 
 namespace Editor
@@ -15,10 +17,9 @@ public:
 
 private:
 
-  void OnUsePostProcessingChanged(int value);
-  void OnEdgeDetectionChanged(int value);
-  void OnBlurChanged(int value);
-
+  QTreeWidget* mTree;
+  void OnContextMenu(const QPoint& point);
+  //void OnUsePostProcessingChanged(int value);
 };
 
 } // End of Editor namespace

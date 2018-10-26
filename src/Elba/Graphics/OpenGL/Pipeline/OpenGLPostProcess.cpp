@@ -27,7 +27,7 @@ void OpenGLPostProcess::Initialize()
 GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
 {
   // add the asset path to the given file path
-  std::string fullPath = Utils::GetAssetsDirectory() + "Shaders/" + filename;
+  std::string fullPath = Utils::GetAssetsDirectory() + "Shaders/Compute/" + filename;
 
   UniquePtr<OpenGLProgram> program = NewUnique<OpenGLProgram>("compute");
 
@@ -36,8 +36,6 @@ GlobalKey OpenGLPostProcess::AddComputeShader(std::string filename)
   GlobalKey shaderKey = program->AttachShader(std::move(shader));
 
   program->Link();
-
-  program->Use();
 
   mComputeShaders.push_back(std::make_pair(shaderKey.ToStdString(), std::move(program)));
 
@@ -58,11 +56,13 @@ void OpenGLPostProcess::DispatchComputeShaders()
 
   for (auto& pair : mComputeShaders)
   {
+    std::swap(output, input);
     pair.second->Use();
     OpenGLComputeShader* shader = static_cast<OpenGLComputeShader*>(pair.second->GetShader(pair.first));
     shader->SetOutputTexture(output);
     shader->SetInputTexture(input);
     shader->BindTextures(pair.second.get());
+    pair.second->BindUniforms();
     shader->Dispatch();
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -76,6 +76,23 @@ void OpenGLPostProcess::DispatchComputeShaders()
 PostProcessTexture* OpenGLPostProcess::GetOutputTexture()
 {
   return mFinalTexture;
+}
+
+OpenGLProgram* OpenGLPostProcess::GetComputeProgram(const GlobalKey& key)
+{
+  auto res = std::find_if(
+    mComputeShaders.begin(),
+    mComputeShaders.end(), 
+    [key](const std::pair<std::string, Elba::UniquePtr<OpenGLProgram> >& item) {
+      return key.ToStdString() == item.first;
+    }
+  );
+
+  if (res != mComputeShaders.end())
+  {
+    return res->second.get();
+  }
+  return nullptr;
 }
 
 PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)

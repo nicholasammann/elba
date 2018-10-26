@@ -7,28 +7,27 @@
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
+#include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"
 
 namespace Editor
 {
 PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
   : Widget(workspace)
 {
-  QVBoxLayout* layout = new QVBoxLayout();
+  QVBoxLayout* layout = new QVBoxLayout(this);
 
-  QCheckBox* postProcessing = new QCheckBox("Use Post Processing");
-  connect(postProcessing, &QCheckBox::stateChanged,
-    this, &PostProcessingOptions::OnUsePostProcessingChanged);
-  layout->addWidget(postProcessing);
+  //QCheckBox* postProcessing = new QCheckBox("Use Post Processing");
+  //postProcessing->setChecked(true);
+  //connect(postProcessing, &QCheckBox::stateChanged,
+  //  this, &PostProcessingOptions::OnUsePostProcessingChanged);
+  //layout->addWidget(postProcessing);
 
-  QCheckBox* edgeDetection = new QCheckBox("Edge Detection");
-  connect(edgeDetection, &QCheckBox::stateChanged,
-          this, &PostProcessingOptions::OnEdgeDetectionChanged);
-  layout->addWidget(edgeDetection);
+  mTree = new QTreeWidget(this);
+  mTree->setHeaderLabel("Post Processing Pipeline");
+  mTree->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(mTree, &QWidget::customContextMenuRequested, this, &PostProcessingOptions::OnContextMenu);
 
-  QCheckBox* blur= new QCheckBox("Blur");
-  connect(blur, &QCheckBox::stateChanged,
-          this, &PostProcessingOptions::OnBlurChanged);
-  layout->addWidget(blur);
+  layout->addWidget(mTree);
 
   layout->setAlignment(Qt::AlignTop);
 
@@ -45,6 +44,14 @@ Framework::Widget::DockArea PostProcessingOptions::GetAllowedDockAreas() const
   return DockArea::All;
 }
 
+void PostProcessingOptions::OnContextMenu(const QPoint& point)
+{
+  AddEffectContextMenu* menu = new AddEffectContextMenu(GetWorkspace<LevelEditor>(), this);
+  QPoint globalPos = mTree->mapToGlobal(point);
+  menu->exec(globalPos);
+}
+
+/*
 void PostProcessingOptions::OnUsePostProcessingChanged(int value)
 {
   LevelEditor* levelEditor = GetWorkspace<LevelEditor>();
@@ -80,6 +87,7 @@ void PostProcessingOptions::OnBlurChanged(int value)
 
   //buffer->SetBlur(value);
 }
+*/
 
 } // End of Editor namespace
 

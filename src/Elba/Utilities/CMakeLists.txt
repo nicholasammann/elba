@@ -1,3 +1,5 @@
+add_subdirectory(Math)
+
 target_sources(elba
 PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/GlobalKey.cpp
