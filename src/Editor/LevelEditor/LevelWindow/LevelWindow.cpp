@@ -147,7 +147,7 @@ void Editor::LevelWindow::RenderNow()
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
     transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 0.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    transform->SetWorldScale(glm::vec3(1.0f));
+    transform->SetWorldScale(glm::vec3(1.2f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");
