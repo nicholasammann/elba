@@ -194,6 +194,17 @@ void OpenGLFramebuffer::SetValueGamma(float value)
   mValueGamma = value;
 }
 
+void OpenGLFramebuffer::ResizeWithCurrentDimensions()
+{
+  ResizeEvent event;
+  event.newSize.x = mWidth;
+  event.newSize.y = mHeight;
+  event.oldSize.x = mWidth;
+  event.oldSize.y = mHeight;
+
+  OnResize(event);
+}
+
 void OpenGLFramebuffer::OnResize(const ResizeEvent& event)
 {
   mWidth = static_cast<int>(event.newSize[0]);

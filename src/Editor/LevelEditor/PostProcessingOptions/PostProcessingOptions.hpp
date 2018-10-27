@@ -15,6 +15,10 @@ public:
   Framework::Widget::DockArea GetDefaultDockArea() const final;
   Framework::Widget::DockArea GetAllowedDockAreas() const final;
 
+  QTreeWidgetItem* AddItem(QString header);
+
+  QTreeWidget* GetTree();
+
 private:
 
   QTreeWidget* mTree;

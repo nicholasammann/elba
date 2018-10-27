@@ -44,6 +44,19 @@ Framework::Widget::DockArea PostProcessingOptions::GetAllowedDockAreas() const
   return DockArea::All;
 }
 
+QTreeWidgetItem* PostProcessingOptions::AddItem(QString header)
+{
+  QTreeWidgetItem* result = new QTreeWidgetItem(mTree);
+  result->setText(0, header);
+  mTree->addTopLevelItem(result);
+  return result;
+}
+
+QTreeWidget* PostProcessingOptions::GetTree()
+{
+  return mTree;
+}
+
 void PostProcessingOptions::OnContextMenu(const QPoint& point)
 {
   AddEffectContextMenu* menu = new AddEffectContextMenu(GetWorkspace<LevelEditor>(), this);

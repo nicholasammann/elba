@@ -27,6 +27,7 @@ Connected component labeling
 #include "Editor/Framework/Menu.hpp"
 
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
 namespace Editor
 {
@@ -38,6 +39,7 @@ public:
   AddEffectContextMenu(Framework::Workspace* workspace, PostProcessingOptions* options);
 private:
   PostProcessingOptions* mOptionsPanel;
+  Elba::OpenGLModule* mGraphics;
   Elba::OpenGLPostProcess* mPostProcess;
 
   void AddBlur();
@@ -49,5 +51,6 @@ private:
   void AddScratchedFilm();
   void AddToneChange();
   void AddHueChange();
+  void ClearEffects();
 };
 } // End of Editor namespace

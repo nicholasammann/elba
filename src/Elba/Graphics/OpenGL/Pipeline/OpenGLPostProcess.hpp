@@ -33,6 +33,8 @@ public:
 
   OpenGLProgram* GetComputeProgram(const GlobalKey& key);
 
+  void RemoveAllComputeShaders();
+
 private:
   OpenGLModule* mGraphics;
 
