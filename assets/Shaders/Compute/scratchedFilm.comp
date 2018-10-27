@@ -5,48 +5,38 @@ layout(rgba32f, binding = 1) uniform image2D img_output;
 
 const float offset = 1.0f;
 
+const int lineWidth = 3;
+const int patternWidth = 313;
+
 void main()
 {
   // get index in global work group, i.e. x,y position
   ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
-  // calculations
-  ivec2 offsets[9] = ivec2[](
-        ivec2(-offset,  offset), // top-left
-        ivec2( 0.0f,    offset), // top-center
-        ivec2( offset,  offset), // top-right
-        ivec2(-offset,  0.0f),   // center-left
-        ivec2( 0.0f,    0.0f),   // center-center
-        ivec2( offset,  0.0f),   // center-right
-        ivec2(-offset, -offset), // bottom-left
-        ivec2( 0.0f,   -offset), // bottom-center
-        ivec2( offset, -offset)  // bottom-right    
-    );
+  vec3 pixel = vec3(imageLoad(img_input, pixel_coords));
 
-    float sharpen[9] = float[](
-        -1, -1, -1,
-        -1,  9, -1,
-        -1, -1, -1
-    );
+  float xCoord = pixel_coords.x;
+  while (xCoord > patternWidth)
+  {
+    xCoord -= patternWidth;
+  }
 
-    float blur[9] = float[](
-    1.0 / 16, 2.0 / 16, 1.0 / 16,
-    2.0 / 16, 4.0 / 16, 2.0 / 16,
-    1.0 / 16, 2.0 / 16, 1.0 / 16  
-    );
+  int exponent = int(xCoord);
+  
+  exponent -= (313 - 35);
 
-    vec3 sampleTex[9];
-    for(int i = 0; i < 9; i++)
-    {
-      sampleTex[i] = vec3(imageLoad(img_input, pixel_coords + offsets[i]));
-    }
+  float closestBand = pow(2, exponent);
 
-    vec3 col = vec3(0.0);
+  while (closestBand < xCoord)
+  {
+    closestBand = 2 * closestBand;
+  }
 
-    for(int i = 0; i < 9; i++)
-    {
-      col += sampleTex[i] * blur[i];
-    }
+  int range = min(closestBand - int(xCoord), lineWidth);
+
+  vec3 lineColor = vec3(0.6 * (lineWidth - range) / lineWidth);
+
+  vec3 col = pixel + lineColor;
 
   // output to a specific pixel in the image
   imageStore(img_output, pixel_coords, vec4(col, 1.0));
