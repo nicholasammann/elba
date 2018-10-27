@@ -6,8 +6,9 @@
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
-#include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"
+#include "Editor/LevelEditor/PostProcessingOptions/EffectItemWidget.hpp"
+#include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
 
 namespace Editor
 {
@@ -42,6 +43,26 @@ Framework::Widget::DockArea PostProcessingOptions::GetDefaultDockArea() const
 Framework::Widget::DockArea PostProcessingOptions::GetAllowedDockAreas() const
 {
   return DockArea::All;
+}
+
+EffectItemWidget* PostProcessingOptions::AddItem(QString header, Elba::OpenGLComputeShader* shader)
+{
+  QTreeWidgetItem* item = new QTreeWidgetItem(mTree);
+  item->setText(0, header);
+  mTree->addTopLevelItem(item);
+
+  QTreeWidgetItem* child = new QTreeWidgetItem(item);
+  item->addChild(child);
+
+  EffectItemWidget* result = new EffectItemWidget(header, shader, this);
+  mTree->setItemWidget(child, 0, result);
+
+  return result;
+}
+
+QTreeWidget* PostProcessingOptions::GetTree()
+{
+  return mTree;
 }
 
 void PostProcessingOptions::OnContextMenu(const QPoint& point)

@@ -95,6 +95,17 @@ OpenGLProgram* OpenGLPostProcess::GetComputeProgram(const GlobalKey& key)
   return nullptr;
 }
 
+OpenGLComputeShader* OpenGLPostProcess::GetComputeShader(const GlobalKey& key)
+{
+  Elba::OpenGLProgram* program = GetComputeProgram(key);
+  return static_cast<Elba::OpenGLComputeShader*>(program->GetShader(key.ToStdString()));
+}
+
+void OpenGLPostProcess::RemoveAllComputeShaders()
+{
+  mComputeShaders.clear();
+}
+
 PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
 {
   PostProcessTexture texture;

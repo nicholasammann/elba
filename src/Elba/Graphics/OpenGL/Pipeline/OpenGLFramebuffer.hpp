@@ -37,6 +37,8 @@ public:
   void SetValueC(float value);
   void SetValueGamma(float value);
 
+  void ResizeWithCurrentDimensions();
+
 private:
   OpenGLModule* mGraphicsModule;
 

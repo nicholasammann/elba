@@ -2,10 +2,11 @@
 
 #include "Elba/Core/CoreModule.hpp"
 
+#include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp" // must be included before LevelWindow.hpp
+
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
 #include "Editor/LevelEditor/ObjectBrowser/ObjectBrowser.hpp"
-#include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
 
 namespace Editor
 {

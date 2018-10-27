@@ -18,8 +18,8 @@ int main(int argc, char** argv)
   SetDarkTheme(app);
 
   Framework::MainWindow* mainWindow = new Editor::Framework::MainWindow();
-  //LevelEditor* editor = mainWindow->LoadWorkspace<LevelEditor>(mainWindow);
-  ImageEditor* editor = mainWindow->LoadWorkspace<ImageEditor>(mainWindow);
+  LevelEditor* editor = mainWindow->LoadWorkspace<LevelEditor>(mainWindow);
+  //ImageEditor* editor = mainWindow->LoadWorkspace<ImageEditor>(mainWindow);
 
   mainWindow->resize(1280, 800);
   mainWindow->show();
@@ -46,10 +46,9 @@ void SetDarkTheme(QApplication& app)
   darkPalette.setColor(QPalette::ButtonText, Qt::white);
   darkPalette.setColor(QPalette::BrightText, Qt::red);
   darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
-
   darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
   darkPalette.setColor(QPalette::HighlightedText, Qt::black);
-
+  
   app.setPalette(darkPalette);
   app.setStyleSheet("QToolTip { color: #101010; background-color: #2a82da; border: 1px solid white; }");
 }

@@ -1,0 +1,37 @@
+#version 430
+layout(local_size_x = 1, local_size_y = 1) in;
+layout(rgba32f, binding = 0) uniform image2D img_input;
+layout(rgba32f, binding = 1) uniform image2D img_output;
+
+const float offset = 1.0f;
+
+uniform float threshold;
+
+void main()
+{
+  // get index in global work group, i.e. x,y position
+  ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
+
+    vec3 pixel = vec3(imageLoad(img_input, pixel_coords));
+
+    vec3 col = vec3(0.0);
+
+    // grayscale
+    float intensity = 0.3 * pixel[0] + 0.59 * pixel[1] + 0.11 * pixel[2];
+
+    if (intensity < threshold)
+    {
+      intensity = 0.0;
+    }
+    else
+    {
+      intensity = 1.0;
+    }
+
+    col[0] = intensity;
+    col[1] = intensity;
+    col[2] = intensity;
+
+  // output to a specific pixel in the image
+  imageStore(img_output, pixel_coords, vec4(col, 1.0));
+}
