@@ -23,7 +23,7 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   AddAction<AddEffectContextMenu>("Tone Change: Black & White", &AddEffectContextMenu::AddToneChangeBlackWhite, this, "Changes tone of the color space to Black and White");
   AddAction<AddEffectContextMenu>("Hue Change", &AddEffectContextMenu::AddHueChange, this, "Changes dominant hue of the color space using RGB to HSV");
   addSeparator();
-  AddAction<AddEffectContextMenu>("Random Tier 2", &AddEffectContextMenu::AddHueChange, this, "");
+  AddAction<AddEffectContextMenu>("Motion Blur", &AddEffectContextMenu::AddMotionBlur, this, "Implements motion blur");
   addSeparator();
   AddAction<AddEffectContextMenu>("Clear Effects", &AddEffectContextMenu::ClearEffects, this, "Removes all post processing effects");
 
@@ -51,6 +51,11 @@ void AddEffectContextMenu::AddBlur()
 void AddEffectContextMenu::AddWeightedBlur()
 {
   AddEffect("weightedBlur", "Weighted Blur");
+}
+
+void AddEffectContextMenu::AddMotionBlur()
+{
+  AddEffect("motionBlur", "Motion Blur");
 }
 
 void AddEffectContextMenu::AddEdgeDetection()
