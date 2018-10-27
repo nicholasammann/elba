@@ -32,6 +32,7 @@ Connected component labeling
 namespace Editor
 {
 class PostProcessingOptions;
+class EffectItemWidget;
 
 class AddEffectContextMenu : public Framework::Menu
 {
@@ -42,6 +43,8 @@ private:
   Elba::OpenGLModule* mGraphics;
   Elba::OpenGLPostProcess* mPostProcess;
 
+  EffectItemWidget* AddEffect(std::string shaderName, std::string itemName);
+
   void AddBlur();
   void AddWeightedBlur();
   void AddEdgeDetection();
@@ -49,7 +52,9 @@ private:
   void AddAdditiveNoise();
   void AddRGBtoHSV();
   void AddScratchedFilm();
-  void AddToneChange();
+  void AddToneChangeSepia();
+  void AddToneChangeGrayscale();
+  void AddToneChangeBlackWhite();
   void AddHueChange();
   void ClearEffects();
 };
