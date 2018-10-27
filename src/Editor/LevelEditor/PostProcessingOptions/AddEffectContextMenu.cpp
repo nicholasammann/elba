@@ -2,6 +2,7 @@
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"
+#include "Editor/LevelEditor/PostProcessingOptions/EffectItemWidget.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
 
 namespace Editor
@@ -17,7 +18,9 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   AddAction<AddEffectContextMenu>("Additive Noise", &AddEffectContextMenu::AddAdditiveNoise, this, "Additive Gaussian noise to simulate aging or malfunction");
   AddAction<AddEffectContextMenu>("RGB to HSV", &AddEffectContextMenu::AddRGBtoHSV, this, "Changes rendered scene from RGB to HSV, then back to RGB");
   AddAction<AddEffectContextMenu>("Scratched Film Effect", &AddEffectContextMenu::AddScratchedFilm, this, "Adds a pattern of scratches on film");
-  AddAction<AddEffectContextMenu>("Tone Change", &AddEffectContextMenu::AddToneChange, this, "Changes tone of the color space");
+  AddAction<AddEffectContextMenu>("Tone Change: Sepia", &AddEffectContextMenu::AddToneChangeSepia, this, "Changes tone of the color space to Sepia");
+  AddAction<AddEffectContextMenu>("Tone Change: Grayscale", &AddEffectContextMenu::AddToneChangeGrayscale, this, "Changes tone of the color space to Grayscale");
+  AddAction<AddEffectContextMenu>("Tone Change: Black & White", &AddEffectContextMenu::AddToneChangeBlackWhite, this, "Changes tone of the color space to Black and White");
   AddAction<AddEffectContextMenu>("Hue Change", &AddEffectContextMenu::AddHueChange, this, "Changes dominant hue of the color space using RGB to HSV");
   addSeparator();
   AddAction<AddEffectContextMenu>("Random Tier 2", &AddEffectContextMenu::AddHueChange, this, "");
@@ -33,58 +36,66 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   setStyleSheet("QMenu::separator { background-color: gray; }");
 }
 
+EffectItemWidget* AddEffectContextMenu::AddEffect(std::string shaderName, std::string itemName)
+{
+  Elba::GlobalKey key = mPostProcess->AddComputeShader(shaderName + ".comp");
+  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
+  return mOptionsPanel->AddItem(itemName.c_str(), shader);
+}
+
 void AddEffectContextMenu::AddBlur()
 {
-  Elba::GlobalKey key = mPostProcess->AddComputeShader("blur.comp");
-  mOptionsPanel->AddItem("Blur");
+  AddEffect("blur", "Uniform Blur");
 }
 
 void AddEffectContextMenu::AddWeightedBlur()
 {
-  mPostProcess->AddComputeShader("weightedBlur.comp");
-  mOptionsPanel->AddItem("Weighted Blur");
+  AddEffect("weightedBlur", "Weighted Blur");
 }
 
 void AddEffectContextMenu::AddEdgeDetection()
 {
-  mPostProcess->AddComputeShader("edgeDetection.comp");
-  mOptionsPanel->AddItem("Edge Detection");
+  AddEffect("edgeDetection", "Edge Detection");
 }
 
 void AddEffectContextMenu::AddBloom()
 {
-  mPostProcess->AddComputeShader("bloom.comp");
-  mOptionsPanel->AddItem("Bloom");
+  AddEffect("bloom", "Bloom");
 }
 
 void AddEffectContextMenu::AddAdditiveNoise()
 {
-  mPostProcess->AddComputeShader("additiveNoise.comp");
-  mOptionsPanel->AddItem("Additive Noise");
+  AddEffect("additiveNoise", "Additive Noise");
 }
 
 void AddEffectContextMenu::AddRGBtoHSV()
 {
-  mPostProcess->AddComputeShader("rgbToHsv.comp");
-  mOptionsPanel->AddItem("RGB To HSV");
+  AddEffect("rgbToHsv", "RGB To HSV");
 }
 
 void AddEffectContextMenu::AddScratchedFilm()
 {
-  mPostProcess->AddComputeShader("scratchedFilm.comp");
-  mOptionsPanel->AddItem("Scratched Film Effect");
+  AddEffect("scratchedFilm", "Scratched Film Effect");
 }
 
-void AddEffectContextMenu::AddToneChange()
+void AddEffectContextMenu::AddToneChangeSepia()
 {
-  mPostProcess->AddComputeShader("toneChange.comp");
-  mOptionsPanel->AddItem("Tone Change");
+  AddEffect("toneChangeSepia", "Tone Change: Sepia");
+}
+
+void AddEffectContextMenu::AddToneChangeGrayscale()
+{
+  AddEffect("toneChangeGrayscale", "Tone Change: Grayscale");
+}
+
+void AddEffectContextMenu::AddToneChangeBlackWhite()
+{
+  AddEffect("toneChangeBlackWhite", "Tone Change: Black & White");
 }
 
 void AddEffectContextMenu::AddHueChange()
 {
-  mPostProcess->AddComputeShader("hueChange.comp");
-  mOptionsPanel->AddItem("Hue Change");
+  AddEffect("hueChange", "Hue Change");
 }
 
 void AddEffectContextMenu::ClearEffects()
