@@ -95,6 +95,11 @@ OpenGLProgram* OpenGLPostProcess::GetComputeProgram(const GlobalKey& key)
   return nullptr;
 }
 
+void OpenGLPostProcess::RemoveAllComputeShaders()
+{
+  mComputeShaders.clear();
+}
+
 PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
 {
   PostProcessTexture texture;

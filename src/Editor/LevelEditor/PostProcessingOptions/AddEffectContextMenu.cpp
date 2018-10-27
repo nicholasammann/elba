@@ -1,5 +1,4 @@
 #include "Elba/Engine.hpp"
-#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"
@@ -20,57 +19,77 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   AddAction<AddEffectContextMenu>("Scratched Film Effect", &AddEffectContextMenu::AddScratchedFilm, this, "Adds a pattern of scratches on film");
   AddAction<AddEffectContextMenu>("Tone Change", &AddEffectContextMenu::AddToneChange, this, "Changes tone of the color space");
   AddAction<AddEffectContextMenu>("Hue Change", &AddEffectContextMenu::AddHueChange, this, "Changes dominant hue of the color space using RGB to HSV");
+  addSeparator();
+  AddAction<AddEffectContextMenu>("Random Tier 2", &AddEffectContextMenu::AddHueChange, this, "");
+  addSeparator();
+  AddAction<AddEffectContextMenu>("Clear Effects", &AddEffectContextMenu::ClearEffects, this, "Removes all post processing effects");
 
   LevelEditor* editor = mOptionsPanel->GetWorkspace<LevelEditor>();
   Elba::Engine* engine = editor->GetEngine();
   Elba::GraphicsModule* graphics = engine->GetGraphicsModule();
-  Elba::OpenGLModule* glModule = static_cast<Elba::OpenGLModule*>(graphics);
-  mPostProcess = glModule->GetPostProcess();
+  mGraphics = static_cast<Elba::OpenGLModule*>(graphics);
+  mPostProcess = mGraphics->GetPostProcess();
+
+  setStyleSheet("QMenu::separator { background-color: gray; }");
 }
 
 void AddEffectContextMenu::AddBlur()
 {
   Elba::GlobalKey key = mPostProcess->AddComputeShader("blur.comp");
-  //Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
+  mOptionsPanel->AddItem("Blur");
 }
 
 void AddEffectContextMenu::AddWeightedBlur()
 {
   mPostProcess->AddComputeShader("weightedBlur.comp");
+  mOptionsPanel->AddItem("Weighted Blur");
 }
 
 void AddEffectContextMenu::AddEdgeDetection()
 {
   mPostProcess->AddComputeShader("edgeDetection.comp");
+  mOptionsPanel->AddItem("Edge Detection");
 }
 
 void AddEffectContextMenu::AddBloom()
 {
   mPostProcess->AddComputeShader("bloom.comp");
+  mOptionsPanel->AddItem("Bloom");
 }
 
 void AddEffectContextMenu::AddAdditiveNoise()
 {
   mPostProcess->AddComputeShader("additiveNoise.comp");
+  mOptionsPanel->AddItem("Additive Noise");
 }
 
 void AddEffectContextMenu::AddRGBtoHSV()
 {
   mPostProcess->AddComputeShader("rgbToHsv.comp");
+  mOptionsPanel->AddItem("RGB To HSV");
 }
 
 void AddEffectContextMenu::AddScratchedFilm()
 {
   mPostProcess->AddComputeShader("scratchedFilm.comp");
+  mOptionsPanel->AddItem("Scratched Film Effect");
 }
 
 void AddEffectContextMenu::AddToneChange()
 {
   mPostProcess->AddComputeShader("toneChange.comp");
+  mOptionsPanel->AddItem("Tone Change");
 }
 
 void AddEffectContextMenu::AddHueChange()
 {
   mPostProcess->AddComputeShader("hueChange.comp");
+  mOptionsPanel->AddItem("Hue Change");
+}
+
+void AddEffectContextMenu::ClearEffects()
+{
+  mPostProcess->RemoveAllComputeShaders();
+  mOptionsPanel->GetTree()->clear();
 }
 } // End of Editor namespace
