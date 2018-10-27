@@ -34,6 +34,7 @@ void Transform::Initialize()
 void Transform::SetWorldTranslation(const glm::vec3& worldTrans)
 {
   mPhysicsTransform->SetWorldTranslation(worldTrans);
+  DispatchTransformChanged();
 }
 
 const glm::vec3& Transform::GetWorldTranslation() const
@@ -44,6 +45,7 @@ const glm::vec3& Transform::GetWorldTranslation() const
 void Transform::SetWorldScale(const glm::vec3& worldScale)
 {
   mPhysicsTransform->SetWorldScale(worldScale);
+  DispatchTransformChanged();
 }
 
 const glm::vec3& Transform::GetWorldScale() const
@@ -54,6 +56,7 @@ const glm::vec3& Transform::GetWorldScale() const
 void Transform::SetWorldRotation(const glm::quat& worldRot)
 {
   mPhysicsTransform->SetWorldRotation(worldRot);
+  DispatchTransformChanged();
 }
 
 const glm::quat& Transform::GetWorldRotation() const
