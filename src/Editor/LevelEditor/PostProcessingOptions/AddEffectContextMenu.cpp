@@ -102,14 +102,28 @@ void AddEffectContextMenu::AddToneChangeBlackWhite()
     [prg](const QString& value)
     { 
       Elba::OpenGLUniformFloat uniform("threshold", value.toFloat());
-      prg->SetUniform(uniform); 
+      prg->SetUniform(uniform);
     }
   );
 }
 
 void AddEffectContextMenu::AddHueChange()
 {
-  AddEffect("hueChange", "Hue Change");
+  Elba::GlobalKey key = mPostProcess->AddComputeShader("hueChange.comp");
+  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
+  EffectItemWidget* item = mOptionsPanel->AddItem("Hue Change", shader);
+
+  Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
+  Elba::OpenGLUniformFloat uniform("Hue", 0.0f);
+  prg->SetUniform(uniform);
+
+  item->AddProperty<float>("Hue", 0.0f,
+    [prg](const QString& value)
+  {
+    Elba::OpenGLUniformFloat uniform("hue", value.toFloat());
+    prg->SetUniform(uniform);
+  }
+  );
 }
 
 void AddEffectContextMenu::ClearEffects()
