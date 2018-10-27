@@ -21,9 +21,7 @@ void main()
     xCoord -= patternWidth;
   }
 
-  int exponent = int(xCoord);
-  
-  exponent -= (313 - 35);
+  float exponent = min(patternWidth - xCoord, 6.0);
 
   float closestBand = pow(2, exponent);
 
@@ -32,7 +30,7 @@ void main()
     closestBand = 2 * closestBand;
   }
 
-  int range = min(closestBand - int(xCoord), lineWidth);
+  float range = min(closestBand - int(xCoord), lineWidth);
 
   vec3 lineColor = vec3(0.6 * (lineWidth - range) / lineWidth);
 
