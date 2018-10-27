@@ -55,7 +55,21 @@ void AddEffectContextMenu::AddWeightedBlur()
 
 void AddEffectContextMenu::AddMotionBlur()
 {
-  AddEffect("motionBlur", "Motion Blur");
+  Elba::GlobalKey key = mPostProcess->AddComputeShader("motionBlur.comp");
+  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
+  EffectItemWidget* item = mOptionsPanel->AddItem("Motion Blur", shader);
+
+  Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
+  Elba::OpenGLUniformFloat uniform("threshold", 0.2f);
+  prg->SetUniform(uniform);
+
+  item->AddProperty<float>("Threshold", 0.2f,
+    [prg](const QString& value)
+  {
+    Elba::OpenGLUniformFloat uniform("threshold", value.toFloat());
+    prg->SetUniform(uniform);
+  }
+  );
 }
 
 void AddEffectContextMenu::AddEdgeDetection()

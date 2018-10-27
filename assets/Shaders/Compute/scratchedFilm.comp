@@ -6,7 +6,8 @@ layout(rgba32f, binding = 1) uniform image2D img_output;
 const float offset = 1.0f;
 
 const int lineWidth = 3;
-const int patternWidth = 313;
+const int patternWidth = 431;
+const int minPatternWidth = 123;
 
 void main()
 {
@@ -16,12 +17,15 @@ void main()
   vec3 pixel = vec3(imageLoad(img_input, pixel_coords));
 
   float xCoord = pixel_coords.x;
-  while (xCoord > patternWidth)
+
+  float tempPatternWidth = max(300.0 * float(patternWidth) / xCoord, minPatternWidth);
+
+  while (xCoord > tempPatternWidth)
   {
-    xCoord -= patternWidth;
+    xCoord -= tempPatternWidth;
   }
 
-  float exponent = min(patternWidth - xCoord, 6.0);
+  float exponent = min(tempPatternWidth - xCoord, 5.0);
 
   float closestBand = pow(2, exponent);
 
@@ -32,7 +36,7 @@ void main()
 
   float range = min(closestBand - int(xCoord), lineWidth);
 
-  vec3 lineColor = vec3(0.6 * (lineWidth - range) / lineWidth);
+  vec3 lineColor = vec3((0.3 * pixel_coords.x / xCoord * range / lineWidth) * (lineWidth - range) / lineWidth);
 
   vec3 col = pixel + lineColor;
 
