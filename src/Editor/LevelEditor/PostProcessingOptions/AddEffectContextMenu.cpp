@@ -90,7 +90,21 @@ void AddEffectContextMenu::AddToneChangeGrayscale()
 
 void AddEffectContextMenu::AddToneChangeBlackWhite()
 {
-  AddEffect("toneChangeBlackWhite", "Tone Change: Black & White");
+  Elba::GlobalKey key = mPostProcess->AddComputeShader("toneChangeBlackWhite.comp");
+  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
+  EffectItemWidget* item = mOptionsPanel->AddItem("Tone Change: Black & White", shader);
+  
+  Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
+  Elba::OpenGLUniformFloat uniform("threshold", 0.2f);
+  prg->SetUniform(uniform);
+
+  item->AddProperty<float>("Threshold", 0.2f, 
+    [prg](const QString& value)
+    { 
+      Elba::OpenGLUniformFloat uniform("threshold", value.toFloat());
+      prg->SetUniform(uniform); 
+    }
+  );
 }
 
 void AddEffectContextMenu::AddHueChange()

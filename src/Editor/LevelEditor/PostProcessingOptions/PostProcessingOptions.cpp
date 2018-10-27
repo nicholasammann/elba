@@ -48,10 +48,14 @@ Framework::Widget::DockArea PostProcessingOptions::GetAllowedDockAreas() const
 EffectItemWidget* PostProcessingOptions::AddItem(QString header, Elba::OpenGLComputeShader* shader)
 {
   QTreeWidgetItem* item = new QTreeWidgetItem(mTree);
+  item->setText(0, header);
   mTree->addTopLevelItem(item);
 
+  QTreeWidgetItem* child = new QTreeWidgetItem(item);
+  item->addChild(child);
+
   EffectItemWidget* result = new EffectItemWidget(header, shader, this);
-  mTree->setItemWidget(item, 0, result);
+  mTree->setItemWidget(child, 0, result);
 
   return result;
 }
