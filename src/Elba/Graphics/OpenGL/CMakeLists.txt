@@ -1,4 +1,3 @@
-add_subdirectory(CS370)
 add_subdirectory(Pipeline)
 
 target_sources(elba

@@ -60,4 +60,38 @@ const glm::quat& Transform::GetWorldRotation() const
 {
   return mPhysicsTransform->GetWorldRotation();
 }
+
+void Transform::DispatchTransformChanged()
+{
+  for (auto callback : mTransformChangedListeners)
+  {
+    callback.second(mPhysicsTransform.get());
+  }
+}
+
+void Transform::RegisterForTransformChanged(GlobalKey key, TransformChangedCallback callback)
+{
+  mTransformChangedListeners.emplace_back(std::make_pair(key, callback));
+}
+
+bool Transform::DeregisterForTransformChanged(GlobalKey key)
+{
+  auto result = std::find_if(mTransformChangedListeners.begin(), mTransformChangedListeners.end(),
+    [key](const std::pair<GlobalKey, TransformChangedCallback>& pair)
+  {
+    if (key.ToStdString() == pair.first.ToStdString())
+    {
+      return true;
+    }
+    return false;
+  });
+
+  if (result != mTransformChangedListeners.end())
+  {
+    mTransformChangedListeners.erase(result);
+    return true;
+  }
+
+  return false;
+}
 } // End of Elba namespace

@@ -1,9 +1,17 @@
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "Elba/Engine.hpp"
+#include "Elba/Core/CoreModule.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/EffectItemWidget.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/PostProcessingOptions.hpp"
+
 
 namespace Editor
 {
@@ -68,7 +76,22 @@ void AddEffectContextMenu::AddMotionBlur()
   EffectItemWidget* item;
   Elba::OpenGLProgram* prg;
   AddEffect("motionBlur", "Motion Blur", &item, &prg);
-  AddUniform<float>(item, prg, "threshold", "Threshold", 0.2f);
+
+  // find transform component and register for changed event
+  LevelEditor* editor = mOptionsPanel->GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::Transform* transform = object->GetComponent<Elba::Transform>();
+  transform->RegisterForTransformChanged(Elba::GlobalKey(), 
+    [this, prg](const Elba::PhysicsTransform* tr)
+    {
+      this->OnTransformChanged(tr, prg);
+    }
+  );
 }
 
 void AddEffectContextMenu::AddEdgeDetection()
@@ -131,5 +154,17 @@ void AddEffectContextMenu::ClearEffects()
 {
   mPostProcess->RemoveAllComputeShaders();
   mOptionsPanel->GetTree()->clear();
+}
+
+void AddEffectContextMenu::OnTransformChanged(const Elba::PhysicsTransform* transform, Elba::OpenGLProgram* prg)
+{
+  glm::mat4 scale = glm::scale(transform->GetWorldScale());
+  glm::mat4 rotate = glm::toMat4(transform->GetWorldRotation());
+  glm::mat4 translate = glm::translate(transform->GetWorldTranslation());
+
+  glm::mat4 modelMat = translate * rotate * scale;
+
+  Elba::OpenGLUniformMat4 uniform("transform", modelMat);
+  prg->SetUniform(uniform);
 }
 } // End of Editor namespace

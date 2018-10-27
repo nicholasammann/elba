@@ -9,6 +9,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <functional>
 
 #include "Elba/Utilities/StdTypedefs.hpp"
 
@@ -18,6 +19,9 @@
 
 namespace Elba
 {
+
+typedef std::function<void(const PhysicsTransform*)> TransformChangedCallback;
+
 /**
 * \brief Interface for communicating with a transform object in the physics module.
 */
@@ -71,9 +75,13 @@ public:
   */
   const glm::quat& GetWorldRotation() const;
 
+  void DispatchTransformChanged();
+  void RegisterForTransformChanged(GlobalKey key, TransformChangedCallback callback);
+  bool DeregisterForTransformChanged(GlobalKey key);
+
 private:
   UniquePtr<PhysicsTransform> mPhysicsTransform;
-
+  std::vector<std::pair<GlobalKey, TransformChangedCallback> > mTransformChangedListeners;
 };
 
 } // End of Elba namespace
