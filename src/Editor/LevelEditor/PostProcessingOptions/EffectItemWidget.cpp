@@ -8,7 +8,12 @@ EffectItemWidget::EffectItemWidget(QString header, Elba::OpenGLComputeShader* sh
   : QWidget(parent)
   , mLayout(new QVBoxLayout(this))
 {
-  mLayout->addWidget(new QLabel(header));
+  //mLayout->addWidget(new QLabel(header));
+}
+
+Elba::OpenGLComputeShader* EffectItemWidget::GetShader()
+{
+  return mShader;
 }
 
 

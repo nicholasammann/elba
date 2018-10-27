@@ -5,6 +5,8 @@ layout(rgba32f, binding = 1) uniform image2D img_output;
 
 const float offset = 1.0f;
 
+uniform float threshold;
+
 void main()
 {
   // get index in global work group, i.e. x,y position
@@ -17,7 +19,7 @@ void main()
     // grayscale
     float intensity = 0.3 * pixel[0] + 0.59 * pixel[1] + 0.11 * pixel[2];
 
-    if (intensity < 0.2)
+    if (intensity < threshold)
     {
       intensity = 0.0;
     }
