@@ -43,7 +43,10 @@ private:
   Elba::OpenGLModule* mGraphics;
   Elba::OpenGLPostProcess* mPostProcess;
 
-  EffectItemWidget* AddEffect(std::string shaderName, std::string itemName);
+  void AddEffect(std::string shaderName, std::string itemName, EffectItemWidget** resultItem = nullptr, Elba::OpenGLProgram** resultPrg = nullptr);
+  
+  template <typename T>
+  void AddUniform(EffectItemWidget* item, Elba::OpenGLProgram* prg, std::string uniformName, std::string label, T value);
 
   void AddBlur();
   void AddWeightedBlur();
@@ -59,4 +62,40 @@ private:
   void AddHueChange();
   void ClearEffects();
 };
+
+template<typename T>
+inline void AddEffectContextMenu::AddUniform(EffectItemWidget* item, Elba::OpenGLProgram* prg, std::string uniformName, std::string label, T value)
+{
+  if (std::is_same<int, T>())
+  {
+    Elba::OpenGLUniformInt uniform(uniformName, value);
+    prg->SetUniform(uniform);
+
+    item->AddProperty<int>(label.c_str(), value,
+      [prg, uniformName](const QString& changedValue)
+      {
+        Elba::OpenGLUniformInt uniform(uniformName.c_str(), changedValue.toInt());
+        prg->SetUniform(uniform);
+      }
+    );
+  }
+  else if (std::is_same<float, T>())
+  {
+    Elba::OpenGLUniformFloat uniform(uniformName, value);
+    prg->SetUniform(uniform);
+
+    item->AddProperty<int>(label.c_str(), value,
+      [prg, uniformName](const QString& changedValue)
+      {
+        Elba::OpenGLUniformFloat uniform(uniformName.c_str(), changedValue.toFloat());
+        prg->SetUniform(uniform);
+      }
+    );
+  }
+  else
+  {
+    // WE DON'T SUPPORT THAT TYPE YET
+    assert(true);
+  }
+}
 } // End of Editor namespace

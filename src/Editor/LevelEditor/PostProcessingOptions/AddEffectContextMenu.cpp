@@ -36,11 +36,21 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   setStyleSheet("QMenu::separator { background-color: gray; }");
 }
 
-EffectItemWidget* AddEffectContextMenu::AddEffect(std::string shaderName, std::string itemName)
+void AddEffectContextMenu::AddEffect(std::string shaderName, std::string itemName, EffectItemWidget** resultItem, Elba::OpenGLProgram** resultPrg)
 {
   Elba::GlobalKey key = mPostProcess->AddComputeShader(shaderName + ".comp");
   Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
-  return mOptionsPanel->AddItem(itemName.c_str(), shader);
+  EffectItemWidget* item = mOptionsPanel->AddItem(itemName.c_str(), shader);
+
+  if (resultPrg)
+  {
+    *resultPrg = mPostProcess->GetComputeProgram(key);
+  }
+
+  if (resultItem)
+  {
+    *resultItem = item;
+  }
 }
 
 void AddEffectContextMenu::AddBlur()
@@ -55,21 +65,10 @@ void AddEffectContextMenu::AddWeightedBlur()
 
 void AddEffectContextMenu::AddMotionBlur()
 {
-  Elba::GlobalKey key = mPostProcess->AddComputeShader("motionBlur.comp");
-  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
-  EffectItemWidget* item = mOptionsPanel->AddItem("Motion Blur", shader);
-
-  Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
-  Elba::OpenGLUniformFloat uniform("threshold", 0.2f);
-  prg->SetUniform(uniform);
-
-  item->AddProperty<float>("Threshold", 0.2f,
-    [prg](const QString& value)
-  {
-    Elba::OpenGLUniformFloat uniform("threshold", value.toFloat());
-    prg->SetUniform(uniform);
-  }
-  );
+  EffectItemWidget* item;
+  Elba::OpenGLProgram* prg;
+  AddEffect("motionBlur", "Motion Blur", &item, &prg);
+  AddUniform<float>(item, prg, "threshold", "Threshold", 0.2f);
 }
 
 void AddEffectContextMenu::AddEdgeDetection()
@@ -94,7 +93,12 @@ void AddEffectContextMenu::AddRGBtoHSV()
 
 void AddEffectContextMenu::AddScratchedFilm()
 {
-  AddEffect("scratchedFilm", "Scratched Film Effect");
+  EffectItemWidget* item;
+  Elba::OpenGLProgram* prg;
+  AddEffect("scratchedFilm", "Scratched Film Effect", &item, &prg);
+  AddUniform<int>(item, prg, "lineWidth", "Line Width", 3);
+  AddUniform<int>(item, prg, "patternWidth", "Pattern Width", 431);
+  AddUniform<int>(item, prg, "minPatternWidth", "Minimum Pattern Width", 233);
 }
 
 void AddEffectContextMenu::AddToneChangeSepia()
@@ -109,40 +113,18 @@ void AddEffectContextMenu::AddToneChangeGrayscale()
 
 void AddEffectContextMenu::AddToneChangeBlackWhite()
 {
-  Elba::GlobalKey key = mPostProcess->AddComputeShader("toneChangeBlackWhite.comp");
-  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
-  EffectItemWidget* item = mOptionsPanel->AddItem("Tone Change: Black & White", shader);
-  
-  Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
-  Elba::OpenGLUniformFloat uniform("threshold", 0.2f);
-  prg->SetUniform(uniform);
-
-  item->AddProperty<float>("Threshold", 0.2f, 
-    [prg](const QString& value)
-    { 
-      Elba::OpenGLUniformFloat uniform("threshold", value.toFloat());
-      prg->SetUniform(uniform);
-    }
-  );
+  EffectItemWidget* item;
+  Elba::OpenGLProgram* prg;
+  AddEffect("toneChangeBlackWhite", "Tone Change: Black & White", &item, &prg);
+  AddUniform<float>(item, prg, "threshold", "Threshold", 0.2f);
 }
 
 void AddEffectContextMenu::AddHueChange()
 {
-  Elba::GlobalKey key = mPostProcess->AddComputeShader("hueChange.comp");
-  Elba::OpenGLComputeShader* shader = mPostProcess->GetComputeShader(key);
-  EffectItemWidget* item = mOptionsPanel->AddItem("Hue Change", shader);
-
-  Elba::OpenGLProgram* prg = mPostProcess->GetComputeProgram(key);
-  Elba::OpenGLUniformFloat uniform("Hue", 0.0f);
-  prg->SetUniform(uniform);
-
-  item->AddProperty<float>("Hue", 0.0f,
-    [prg](const QString& value)
-  {
-    Elba::OpenGLUniformFloat uniform("hue", value.toFloat());
-    prg->SetUniform(uniform);
-  }
-  );
+  EffectItemWidget* item;
+  Elba::OpenGLProgram* prg;
+  AddEffect("hueChange", "Hue Change", &item, &prg);
+  AddUniform<float>(item, prg, "hue", "Hue", 0.0f);
 }
 
 void AddEffectContextMenu::ClearEffects()

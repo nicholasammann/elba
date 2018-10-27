@@ -5,9 +5,9 @@ layout(rgba32f, binding = 1) uniform image2D img_output;
 
 const float offset = 1.0f;
 
-const int lineWidth = 3;
-const int patternWidth = 431;
-const int minPatternWidth = 123;
+uniform int lineWidth;
+uniform int patternWidth;
+uniform int minPatternWidth;
 
 void main()
 {
@@ -18,14 +18,14 @@ void main()
 
   float xCoord = pixel_coords.x;
 
-  float tempPatternWidth = max(300.0 * float(patternWidth) / xCoord, minPatternWidth);
+  float tempPatternWidth = max(400.0 * float(patternWidth) / xCoord, minPatternWidth);
 
   while (xCoord > tempPatternWidth)
   {
     xCoord -= tempPatternWidth;
   }
 
-  float exponent = min(tempPatternWidth - xCoord, 5.0);
+  float exponent = min(tempPatternWidth - xCoord, 6.0);
 
   float closestBand = pow(2, exponent);
 
@@ -36,7 +36,12 @@ void main()
 
   float range = min(closestBand - int(xCoord), lineWidth);
 
-  vec3 lineColor = vec3((0.3 * pixel_coords.x / xCoord * range / lineWidth) * (lineWidth - range) / lineWidth);
+  // bell curve
+  //float colorScalar = 20.0 * (lineWidth - range) * 0.0035940745982111052 * pow(2.71828, (-(pixel_coords.x - 1060)^2) / 7200);
+  float colorScalar = (lineWidth - range) / lineWidth * pow(2.71828, (-pow((xCoord - 410), 2)) / 40000);
+
+  //float color = max(((0.7 * pixel_coords.x / xCoord) * (lineWidth - range) / lineWidth) - 0.001 * pixel_coords.x, 0);
+  vec3 lineColor = vec3(colorScalar);
 
   vec3 col = pixel + lineColor;
 
