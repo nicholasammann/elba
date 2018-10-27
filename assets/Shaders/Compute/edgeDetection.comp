@@ -24,15 +24,9 @@ void main()
     );
 
     float sharpen[9] = float[](
-        -1, -1, -1,
-        -1,  9, -1,
-        -1, -1, -1
-    );
-
-    float blur[9] = float[](
-    1.0 / 16, 2.0 / 16, 1.0 / 16,
-    2.0 / 16, 4.0 / 16, 2.0 / 16,
-    1.0 / 16, 2.0 / 16, 1.0 / 16  
+         1, 1, 1,
+         1,  -8, 1,
+         1,  1,  1
     );
 
     vec3 sampleTex[9];
@@ -45,7 +39,7 @@ void main()
 
     for(int i = 0; i < 9; i++)
     {
-      col += sampleTex[i] * blur[i];
+      col += sampleTex[i] * sharpen[i];
     }
 
   // output to a specific pixel in the image
