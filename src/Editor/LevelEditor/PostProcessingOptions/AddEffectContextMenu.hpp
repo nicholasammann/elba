@@ -47,6 +47,7 @@ private:
 
   void AddBlur();
   void AddWeightedBlur();
+  void AddMotionBlur();
   void AddEdgeDetection();
   void AddBloom();
   void AddAdditiveNoise();
