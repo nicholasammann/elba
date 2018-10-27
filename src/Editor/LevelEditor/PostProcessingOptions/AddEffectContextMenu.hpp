@@ -29,6 +29,8 @@ Connected component labeling
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
+#include "Elba/Core/Components/Transform.hpp"
+
 namespace Editor
 {
 class PostProcessingOptions;
@@ -61,6 +63,8 @@ private:
   void AddToneChangeBlackWhite();
   void AddHueChange();
   void ClearEffects();
+
+  void OnTransformChanged(const Elba::PhysicsTransform* transform, Elba::OpenGLProgram* prg);
 };
 
 template<typename T>
