@@ -23,31 +23,52 @@ void main()
         ivec2( offset, -offset)  // bottom-right    
     );
 
-    float sharpen[9] = float[](
-        -1, -1, -1,
-        -1,  9, -1,
-        -1, -1, -1
+    float edgeKernel[9] = float[](
+         1, 1, 1,
+         1,  -8, 1,
+         1,  1,  1
     );
 
-    float blur[9] = float[](
+    float gaussianKernel[9] = float[](
     1.0 / 16, 2.0 / 16, 1.0 / 16,
     2.0 / 16, 4.0 / 16, 2.0 / 16,
     1.0 / 16, 2.0 / 16, 1.0 / 16  
     );
 
     vec3 sampleTex[9];
+    vec3 blurTex[9];
+    vec3 edgeTex[9];
     for(int i = 0; i < 9; i++)
     {
       sampleTex[i] = vec3(imageLoad(img_input, pixel_coords + offsets[i]));
+      blurTex[i] = sampleTex[i];
+      edgeTex[i] = sampleTex[i];
     }
 
-    vec3 col = vec3(0.0);
+    vec3 edgeCol = vec3(0.0);
+    vec3 blurCol = vec3(0.0);
+    vec3 finalCol = vec3(0.0);
 
-    for(int i = 0; i < 9; i++)
-    {
-      col += sampleTex[i] * blur[i];
-    }
+      for(int i = 0; i < 9; i++)
+      {
+        edgeTex[i] +=  sampleTex[i] * edgeKernel[i];
+      }
+
+      for(int j = 0; j < 5; ++j)
+      {
+        for(int i = 0; i < 9; ++i)
+        {
+          blurTex[i] +=  blurTex[i] * gaussianKernel[i];
+        }
+      }
+
+      for(int i = 0; i < 9; ++i)
+      {
+        finalCol += edgeTex[i] * sampleTex[i] * blurTex[i];
+      }
+
+
 
   // output to a specific pixel in the image
-  imageStore(img_output, pixel_coords, vec4(col, 1.0));
+  imageStore(img_output, pixel_coords, vec4(finalCol, 1.0));
 }
