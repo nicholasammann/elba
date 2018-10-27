@@ -9,6 +9,7 @@
 namespace Elba
 {
 class OpenGLModule;
+class OpenGLComputeShader;
 
 struct PostProcessTexture
 {
@@ -32,6 +33,9 @@ public:
   PostProcessTexture* GetOutputTexture();
 
   OpenGLProgram* GetComputeProgram(const GlobalKey& key);
+  OpenGLComputeShader* GetComputeShader(const GlobalKey& key);
+
+  void RemoveAllComputeShaders();
 
 private:
   OpenGLModule* mGraphics;
