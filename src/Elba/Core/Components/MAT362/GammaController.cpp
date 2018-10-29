@@ -39,7 +39,7 @@ void GammaController::Initialize()
   piecewise.AddPoint(150.0f, 0.0f);
   piecewise.AddPoint(200.0f, 1.0f);
   piecewise.AddPoint(255.0f, 1.0f);
-  mFuzzySystem.AddRule(piecewise, [](float x) { return  x + 0.01f; });
+  mFuzzySystem.AddRule(piecewise, [](float x) { return  1.00001f - (0.65f * x); });
 }
 
 void GammaController::Update(double dt)
