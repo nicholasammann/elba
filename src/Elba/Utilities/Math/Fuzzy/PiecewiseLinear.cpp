@@ -13,7 +13,7 @@ float PiecewiseLinear::ValueAt(float x) const
 {
   for (int i = 0; i < mPoints.size() - 1; ++i)
   {
-    if (x > mPoints[i].x)
+    if (x > mPoints[i].x && x < mPoints[i + 1].x)
     {
       // calculate the line from i to i+1
       float slope = (mPoints[i + 1].y - mPoints[i].y) / (mPoints[i + 1].x - mPoints[i].x);
@@ -38,6 +38,11 @@ void PiecewiseLinear::AddPoint(glm::vec2 point)
   {
     throw "Trying to add invalid point, y < 0";
   }
+}
+
+void PiecewiseLinear::AddPoint(float x, float y)
+{
+  AddPoint(glm::vec2(x, y));
 }
 
 void PiecewiseLinear::ClearPoints()

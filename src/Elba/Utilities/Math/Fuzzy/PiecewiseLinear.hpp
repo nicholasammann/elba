@@ -12,6 +12,7 @@ public:
   float ValueAt(float x) const;
 
   void AddPoint(glm::vec2 point);
+  void AddPoint(float x, float y);
   void ClearPoints();
 
   unsigned int GetNumPoints() const;

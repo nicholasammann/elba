@@ -7,6 +7,7 @@
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Components/CS370/ResizeHandler.hpp"
 #include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
+#include "Elba/Core/Components/MAT362/GammaController.hpp"
 
 #include "Elba/Engine.hpp"
 
@@ -174,6 +175,9 @@ void ImageWindow::RenderNow()
 
       it->LoadTexture(texture);
     }
+
+    Elba::GammaController* gammaControl = object->AddComponent<Elba::GammaController>();
+    gammaControl->Initialize();
 
     ////////////////////////
   }
