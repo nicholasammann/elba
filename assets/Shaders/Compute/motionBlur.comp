@@ -3,13 +3,13 @@ layout(local_size_x = 1, local_size_y = 1) in;
 layout(rgba32f, binding = 0) uniform image2D img_input;
 layout(rgba32f, binding = 1) uniform image2D img_output;
 
+uniform mat4 transform;
+
 const float offset = 1.0f;
+const float prevOffset = 0.25f;
 
 void main()
 {
-
-   vec2 MotionVector = texture(prevTexture, TexCoord0).xy / 2.0;
-
   // get index in global work group, i.e. x,y position
   ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 
@@ -26,23 +26,41 @@ void main()
         ivec2( offset, -offset)  // bottom-right    
     );
 
+      ivec2 prevOffsets[9] = ivec2[](
+        ivec2(-prevOffset,  prevOffset), // top-left
+        ivec2( 0.0f,    prevOffset), // top-center
+        ivec2( prevOffset,  prevOffset), // top-right
+        ivec2(-prevOffset,  0.0f),   // center-left
+        ivec2( 0.0f,    0.0f),   // center-center
+        ivec2( prevOffset,  0.0f),   // center-right
+        ivec2(-prevOffset, -prevOffset), // bottom-left
+        ivec2( 0.0f,   -prevOffset), // bottom-center
+        ivec2( prevOffset, -prevOffset)  // bottom-right    
+    );
+
+        float motionBlur[9] = float[](
+         0, 0, 0,
+         0.4, 0.4, 0.4,
+         0,  0,  0
+    );
+
     vec3 sampleTex[9];
+    vec3 prevTex[9];
     for(int i = 0; i < 9; i++)
     {
       sampleTex[i] = vec3(imageLoad(img_input, pixel_coords + offsets[i]));
+      prevTex[i] = vec3(imageLoad(img_input, pixel_coords + prevOffsets[i]));
+
     }
 
     vec3 col = vec3(0.0);
+    int j = 8;
 
-    vec2 TexCoord = TexCoord0;
-
-    col += texture(gCurrentTexture, TexCoord) * 0.4;
-    TexCoord -= MotionVector;
-    col += texture(gCurrentTexture, TexCoord) * 0.3;
-    TexCoord -= MotionVector;
-    col += texture(gCurrentTexture, TexCoord) * 0.2;
-    TexCoord -= MotionVector;
-    col += texture(gCurrentTexture, TexCoord) * 0.1;
+    for(int i = 0; i < 9; ++i)
+    {
+      col += sampleTex[i] * sampleTex[j];
+      j--;
+    }
 
   // output to a specific pixel in the image
   imageStore(img_output, pixel_coords, vec4(col, 1.0));
