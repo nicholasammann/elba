@@ -25,7 +25,7 @@ void GammaController::Initialize()
   piecewise.AddPoint(0.0f, 1.0f);
   piecewise.AddPoint(55.0f, 1.0f);
   piecewise.AddPoint(110.0f, 0.0f);
-  mFuzzySystem.AddRule(piecewise, [](float x) { return 1.0f + log2(3.0f * (1 - x));});
+  mFuzzySystem.AddRule(piecewise, [](float x) { return 1.0f + log2(3.0f * (1.0001f - x));});
 
   // if average intensity is [90, 170], gamma should be one (g = 1). --->  if x is[90, 170] then g = 1
   piecewise.ClearPoints();
