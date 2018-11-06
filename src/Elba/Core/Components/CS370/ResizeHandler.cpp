@@ -122,6 +122,10 @@ void ResizeHandler::SetUseHistogramEqualization(bool useHistogram)
   Interpolate(mScreenWidth, mScreenHeight);
 }
 
+void ResizeHandler::UseFourierTransform(Fourier method)
+{
+}
+
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
 {
   mMasterWidth = event.newTexture->GetWidth();
@@ -168,6 +172,34 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
         image = mMasterImage;
         w = mMasterWidth;
         h = mMasterHeight;
+        break;
+      }
+    }
+
+    // DO THE FOURIER THING OMG
+    switch (mFourierMethod)
+    {
+      case Fourier::None:
+      {
+        // Do nothing
+        break;
+      }
+
+      case Fourier::DirectMethod:
+      {
+        DirectFourier(image);
+        break;
+      }
+
+      case Fourier::SeparableMethod:
+      {
+        SeparableFourier(image);
+        break;
+      }
+
+      case Fourier::FastFourier:
+      {
+        FastFourier(image);
         break;
       }
     }
