@@ -8,6 +8,8 @@
 
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 
+#include "Elba/Utilities/Math/Fourier/FourierTransform.hpp"
+
 namespace Elba
 {
 
@@ -122,7 +124,7 @@ void ResizeHandler::SetUseHistogramEqualization(bool useHistogram)
   Interpolate(mScreenWidth, mScreenHeight);
 }
 
-void ResizeHandler::UseFourierTransform(Fourier method)
+void ResizeHandler::UseFourierTransform(FourierMethod method)
 {
 }
 
@@ -179,27 +181,27 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
     // DO THE FOURIER THING OMG
     switch (mFourierMethod)
     {
-      case Fourier::None:
+      case FourierMethod::None:
       {
         // Do nothing
         break;
       }
 
-      case Fourier::DirectMethod:
+      case FourierMethod::DirectMethod:
       {
-        DirectFourier(image);
+        DirectFourier(image, w, h);
         break;
       }
 
-      case Fourier::SeparableMethod:
+      case FourierMethod::SeparableMethod:
       {
-        SeparableFourier(image);
+        SeparableFourier(image, w, h);
         break;
       }
 
-      case Fourier::FastFourier:
+      case FourierMethod::FastFourier:
       {
-        FastFourier(image);
+        FastFourier(image, w, h);
         break;
       }
     }
@@ -364,6 +366,45 @@ void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
     pixel.g = roundedMapping[pixel.g];
     pixel.b = roundedMapping[pixel.b];
   }
+}
+
+void ResizeHandler::DirectFourier(std::vector<Pixel>& image, int w, int h)
+{
+  Fourier::SpatialImage spatialImage;
+  spatialImage.resize(h);
+
+  int index = 0;
+
+  for (int y = 0; y < h; ++y)
+  {
+    spatialImage[y].resize(w);
+    for (int x = 0; x < w; ++x)
+    {
+      spatialImage[y][x] = 0.3 * image[index].r + 0.59 * image[index].g + 0.11 * image[index].b;
+      index++;
+    }
+  }
+
+  Fourier::FrequencyImage freqImage;
+  Fourier::Direct(spatialImage, freqImage);
+
+  index = 0;
+
+  for (int y = 0; y < h; ++y)
+  {
+    for (int x = 0; x < w; ++x)
+    {
+      image[index++]
+    }
+  }
+}
+
+void ResizeHandler::SeparableFourier(std::vector<Pixel>& image, int w, int h)
+{
+}
+
+void ResizeHandler::FastFourier(std::vector<Pixel>& image, int w, int h)
+{
 }
 
 } // End of Elba namespace
