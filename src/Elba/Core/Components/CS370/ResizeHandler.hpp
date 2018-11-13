@@ -29,7 +29,7 @@ public:
     Bilinear
   };
 
-  enum Fourier
+  enum FourierMethod
   {
     None,
     DirectMethod,
@@ -50,7 +50,7 @@ public:
 
   void SetUseHistogramEqualization(bool useHistogram);
 
-  void UseFourierTransform(Fourier method);
+  void UseFourierTransform(FourierMethod method);
 
 private:
   Transform* mTransform;
@@ -77,10 +77,10 @@ private:
   bool mUseHistogramEqualization;
   void HistogramEqualization(std::vector<Pixel>& image);
 
-  Fourier mFourierMethod;
-  void DirectFourier(std::vector<Pixel>& image);
-  void SeparableFourier(std::vector<Pixel>& image);
-  void FastFourier(std::vector<Pixel>& image);
+  FourierMethod mFourierMethod;
+  void DirectFourier(std::vector<Pixel>& image, int w, int h);
+  void SeparableFourier(std::vector<Pixel>& image, int w, int h);
+  void FastFourier(std::vector<Pixel>& image, int w, int h);
 };
 
 } // End of Elba namespace
