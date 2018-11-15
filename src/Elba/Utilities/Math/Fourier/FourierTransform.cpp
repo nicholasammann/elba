@@ -1,6 +1,5 @@
 #include "Elba/Utilities/Math/Fourier/FourierTransform.hpp"
 
-
 namespace Elba
 {
 namespace Fourier
@@ -29,7 +28,7 @@ void Direct(const SpatialImage& input, FrequencyImage& output)
 
       for (int spatialY = 0; spatialY < input.size(); spatialY++)
       {
-        for (int spatialX = 0; spatialX < input.size(); spatialX++)
+        for (int spatialX = 0; spatialX < input[freqY].size(); spatialX++)
         {
           output[freqY][freqX].real += input[spatialY][spatialX] * cos(exp * (freqY * spatialY + freqX * spatialX));
           output[freqY][freqX].imaginary -= input[spatialY][spatialX] * sin(exp * (freqY * spatialY + freqX * spatialX));
@@ -44,11 +43,10 @@ void Separable(const SpatialImage& input, FrequencyImage& output)
   FrequencyImage temp;
   temp.resize(input.size());
 
-  double exp = 0.5 * pi;
-
   for (int y = 0; y < input.size(); ++y)
   {
-    temp.resize(input[y].size());
+    double exp = (2.0 * pi) / static_cast<double>(input[y].size());
+    temp[y].resize(input[y].size());
     for (int x = 0; x < input[y].size(); ++x)
     {
       temp[y][x] = ComplexNumber(0, 0);
@@ -57,6 +55,7 @@ void Separable(const SpatialImage& input, FrequencyImage& output)
     }
   }
 
+  double exp = (2.0 * pi) / static_cast<double>(input.size());
   output.resize(input.size());
   for (int y = 0; y < input.size(); ++y)
   {
@@ -64,10 +63,15 @@ void Separable(const SpatialImage& input, FrequencyImage& output)
     for (int x = 0; x < input[y].size(); ++x)
     {
       output[y][x] = ComplexNumber(0, 0);
-      output[y][x].real += cos(exp * x * y) * temp[y][x];
-      output[y][x].imaginary -= sin(exp * x * y) * temp[y][x];
+      output[y][x].real += cos(exp * x * y) * temp[y][x].real;
+      output[y][x].imaginary -= sin(exp * x * y) * temp[y][x].imaginary;
     }
   }
+}
+
+void Fast(const SpatialImage & input, FrequencyImage & output)
+{
+
 }
 } // End of Fourier namespace
 } // End of Elba namespace

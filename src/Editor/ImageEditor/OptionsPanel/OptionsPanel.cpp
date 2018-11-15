@@ -47,9 +47,43 @@ OptionsPanel::OptionsPanel(ImageEditor* workspace)
   histLayout->addWidget(mUseHistogramCheckbox);
   connect(mUseHistogramCheckbox, &QCheckBox::stateChanged, this, &OptionsPanel::OnUseHistogramChange);
 
+  // Fourier widgets
+  QWidget* fourierWidg = new QWidget(this);
+  QGridLayout* fourierLayout = new QGridLayout(this);
+  fourierWidg->setLayout(fourierLayout);
+
+  QLabel* methodLabel = new QLabel("Fourier Method");
+  mFourierMethodCombo = new QComboBox(this);
+  mFourierMethodCombo->addItem("None");
+  mFourierMethodCombo->addItem("Direct");
+  mFourierMethodCombo->addItem("Separable");
+  mFourierMethodCombo->addItem("Fast");
+  connect(mFourierMethodCombo,
+    QOverload<int>::of(&QComboBox::currentIndexChanged),
+    this,
+    &OptionsPanel::OnFourierMethodChange);
+  mFourierMethodCombo->setCurrentIndex(0);
+
+  QLabel* imageLabel = new QLabel("Fourier Image");
+  mFourierImageSelectionCombo = new QComboBox(this);
+  mFourierImageSelectionCombo->addItem("Original");
+  mFourierImageSelectionCombo->addItem("Frequency");
+  mFourierImageSelectionCombo->addItem("Transformed");
+  connect(mFourierImageSelectionCombo,
+    QOverload<int>::of(&QComboBox::currentIndexChanged),
+    this,
+    &OptionsPanel::OnFourierImageChange);
+  mFourierImageSelectionCombo->setCurrentIndex(0);
+
+  fourierLayout->addWidget(methodLabel, 0, 0);
+  fourierLayout->addWidget(mFourierMethodCombo, 0, 1);
+  fourierLayout->addWidget(imageLabel, 1, 0);
+  fourierLayout->addWidget(mFourierImageSelectionCombo, 1, 1);
+
   // Add widgets to layout
   mLayout->addWidget(mInterpolationCombo);
   mLayout->addWidget(histWidg);
+  mLayout->addWidget(fourierWidg);
   
   // Set alignment of our widgets in the layout
   mLayout->setAlignment(Qt::AlignTop);
@@ -79,6 +113,28 @@ void OptionsPanel::OnUseHistogramChange(int value)
   {
     Elba::ResizeHandler* resizer = obj->GetComponent<Elba::ResizeHandler>();
     resizer->SetUseHistogramEqualization(static_cast<bool>(value));
+  }
+}
+
+void OptionsPanel::OnFourierMethodChange(int index)
+{
+  Elba::Object* obj = GetObject();
+
+  if (obj)
+  {
+    Elba::ResizeHandler* resizer = obj->GetComponent<Elba::ResizeHandler>();
+    resizer->SetFourierMethod(static_cast<Elba::ResizeHandler::FourierMethod>(index));
+  }
+}
+
+void OptionsPanel::OnFourierImageChange(int index)
+{
+  Elba::Object* obj = GetObject();
+
+  if (obj)
+  {
+    Elba::ResizeHandler* resizer = obj->GetComponent<Elba::ResizeHandler>();
+    resizer->SetCurrentImage(static_cast<Elba::ResizeHandler::CurrentImage>(index));
   }
 }
 

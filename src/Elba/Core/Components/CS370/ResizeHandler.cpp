@@ -8,7 +8,6 @@
 
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 
-#include "Elba/Utilities/Math/Fourier/FourierTransform.hpp"
 
 namespace Elba
 {
@@ -23,6 +22,8 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mScreenWidth(800)
   , mScreenHeight(600)
   , mUseHistogramEqualization(true)
+  , mFourierMethod(FourierMethod::None)
+  , mCurrentImage(CurrentImage::Original)
 {
 }
 
@@ -124,8 +125,15 @@ void ResizeHandler::SetUseHistogramEqualization(bool useHistogram)
   Interpolate(mScreenWidth, mScreenHeight);
 }
 
-void ResizeHandler::UseFourierTransform(FourierMethod method)
+void ResizeHandler::SetFourierMethod(FourierMethod method)
 {
+  mFourierMethod = method;
+  Resize(mScreenWidth, mScreenHeight);
+}
+
+void ResizeHandler::SetCurrentImage(CurrentImage image)
+{
+  mCurrentImage = image;
 }
 
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
@@ -371,40 +379,68 @@ void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
 void ResizeHandler::DirectFourier(std::vector<Pixel>& image, int w, int h)
 {
   Fourier::SpatialImage spatialImage;
-  spatialImage.resize(h);
+  CopyToSpatialImage(image, spatialImage, w, h);
+
+  Fourier::FrequencyImage freqImage;
+  Fourier::Direct(spatialImage, freqImage);
+
+  CopyFromFrequencyImage(freqImage, image, w, h);
+}
+
+void ResizeHandler::SeparableFourier(std::vector<Pixel>& image, int w, int h)
+{
+  Fourier::SpatialImage spatialImage;
+  CopyToSpatialImage(image, spatialImage, w, h);
+
+  Fourier::FrequencyImage freqImage;
+  Fourier::Separable(spatialImage, freqImage);
+
+  CopyFromFrequencyImage(freqImage, image, w, h);
+}
+
+void ResizeHandler::FastFourier(std::vector<Pixel>& image, int w, int h)
+{
+  Fourier::SpatialImage spatialImage;
+  CopyToSpatialImage(image, spatialImage, w, h);
+
+  Fourier::FrequencyImage freqImage;
+  Fourier::Fast(spatialImage, freqImage);
+  
+  CopyFromFrequencyImage(freqImage, image, w, h);
+}
+
+void ResizeHandler::CopyToSpatialImage(const std::vector<Pixel>& image, Fourier::SpatialImage& spatial, int w, int h)
+{
+  spatial.resize(h);
 
   int index = 0;
 
   for (int y = 0; y < h; ++y)
   {
-    spatialImage[y].resize(w);
+    spatial[y].resize(w);
     for (int x = 0; x < w; ++x)
     {
-      spatialImage[y][x] = 0.3 * image[index].r + 0.59 * image[index].g + 0.11 * image[index].b;
+      spatial[y][x] = 0.3 * image[index].r + 0.59 * image[index].g + 0.11 * image[index].b;
       index++;
     }
   }
+}
 
-  Fourier::FrequencyImage freqImage;
-  Fourier::Direct(spatialImage, freqImage);
-
-  index = 0;
+void ResizeHandler::CopyFromFrequencyImage(const Fourier::FrequencyImage& frequency, std::vector<Pixel>& image, int w, int h)
+{
+  int index = 0;
 
   for (int y = 0; y < h; ++y)
   {
     for (int x = 0; x < w; ++x)
     {
-      image[index++]
+      int val = sqrt(frequency[y][x].real * frequency[y][x].real + frequency[y][x].imaginary * frequency[y][x].imaginary);
+      image[index].r = val;
+      image[index].g = val;
+      image[index].b = val;
+      index++;
     }
   }
-}
-
-void ResizeHandler::SeparableFourier(std::vector<Pixel>& image, int w, int h)
-{
-}
-
-void ResizeHandler::FastFourier(std::vector<Pixel>& image, int w, int h)
-{
 }
 
 } // End of Elba namespace
