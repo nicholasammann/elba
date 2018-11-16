@@ -175,10 +175,6 @@ void ImageWindow::RenderNow()
 
       it->LoadTexture(texture);
     }
-
-    Elba::GammaController* gammaControl = object->AddComponent<Elba::GammaController>();
-    gammaControl->Initialize();
-
     ////////////////////////
   }
 }
