@@ -48,6 +48,9 @@ void Direct(const SpatialImage& input, FrequencyImage& output)
           output[freqY][freqX].imaginary += term * (sinCol * cosRow + sinRow * cosCol);
         }
       }
+
+      output[freqY][freqX].real /= static_cast<double>(N * M);
+      output[freqY][freqX].imaginary /= static_cast<double>(N * M);
     }
   }
 }
@@ -58,38 +61,46 @@ void Separable(const SpatialImage& input, FrequencyImage& output)
   size_t colSize = input.size();
   temp.resize(colSize);
 
-  for (int y = 0; y < colSize; ++y)
+  for (int v = 0; v < colSize; ++v)
   {
-    size_t rowSize = input[y].size();
-    double exp = (2.0 * pi) / static_cast<double>(rowSize);
-    temp[y].resize(rowSize);
+    size_t rowSize = input[v].size();
+    double exp = (2.0 * pi) / static_cast<double>(colSize);
+    temp[v].resize(rowSize);
 
-    for (int v = 0; v < rowSize; ++v)
+    for (int x = 0; x < rowSize; ++x)
     {
-      temp[y][v] = ComplexNumber(0, 0);
+      temp[v][x] = ComplexNumber(0, 0);
 
-      for (int x = 0; x < rowSize; ++x)
+      for (int y = 0; y < rowSize; ++y)
       {
-        temp[y][v].real += input[y][x] * cos(exp * x * v);
-        temp[y][v].imaginary -= input[y][x] * sin(exp * x * v);
+        temp[v][x].real += input[y][x] * cos(exp * v * y);
+        temp[v][x].imaginary += input[y][x] * -sin(exp * v * y);
       }
+
+      temp[v][x].real /= static_cast<double>(colSize);
+      temp[v][x].imaginary /= static_cast<double>(colSize);
     }
   }
 
-  double exp = (2.0 * pi) / static_cast<double>(input.size());
-  output.resize(input.size());
-  for (int u = 0; u < input.size(); ++u)
+  output.resize(colSize);
+  for (int v = 0; v < colSize; ++v)
   {
-    output[u].resize(input[u].size());
-    for (int v = 0; v < input[u].size(); ++v)
+    size_t rowSize = input[v].size();
+    double exp = (2.0 * pi) / static_cast<double>(rowSize);
+    output[v].resize(rowSize);
+    for (int u = 0; u < rowSize; ++u)
     {
-      output[u][v] = ComplexNumber(0, 0);
+      output[v][u] = ComplexNumber(0, 0);
       
-      for (int x = 0; x < input[u].size(); ++x)
+      for (int x = 0; x < rowSize; ++x)
       {
-        output[u][v].real = (cos(exp * x * y) * temp[y][x].real - sin(exp * x * y) * temp[y][x].imaginary);
-        output[u][v].imaginary = (cos(exp * x * y) * temp[y][x].imaginary + temp[y][x].real * -sin(exp * x * y));
+        double term = exp * u * x;
+        output[v][u].real += (cos(term) * temp[v][x].real - sin(term) * temp[v][x].imaginary);
+        output[v][u].imaginary += (cos(term) * temp[v][x].imaginary + temp[v][x].real * -sin(term));
       }
+
+      output[v][u].real /= static_cast<double>(rowSize);
+      output[v][u].imaginary /= static_cast<double>(rowSize);
     }
   }
 }
