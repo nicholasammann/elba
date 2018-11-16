@@ -428,12 +428,14 @@ void ResizeHandler::CopyToSpatialImage(const std::vector<Pixel>& image, Fourier:
 
 void ResizeHandler::CopyFromFrequencyImage(const Fourier::FrequencyImage& frequency, std::vector<Pixel>& image, int w, int h)
 {
-  int index = 0;
-
   for (int y = 0; y < h; ++y)
   {
     for (int x = 0; x < w; ++x)
     {
+      int shiftedY = (y + h / 2) % h;
+      int shiftedX = (x + w / 2) % w;
+      int index = shiftedY * w + shiftedX;
+
       int val = sqrt(frequency[y][x].real * frequency[y][x].real + frequency[y][x].imaginary * frequency[y][x].imaginary);
       image[index].r = val;
       image[index].g = val;
