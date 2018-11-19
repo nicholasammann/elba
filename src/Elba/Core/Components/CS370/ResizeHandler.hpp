@@ -96,6 +96,9 @@ private:
   void CopyToSpatialImage(const std::vector<Pixel>& image, Fourier::SpatialImage& spatial, int w, int h);
   void CopyFromFrequencyImage(const Fourier::FrequencyImage& frequency, std::vector<Pixel>& image, int w, int h);
 
+  std::vector<Pixel> mOriginalImage;
+  std::vector<Pixel> mFrequencyImage;
+  std::vector<Pixel> mTransformedImage;
 };
 
 } // End of Elba namespace
