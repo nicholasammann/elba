@@ -134,6 +134,67 @@ void ResizeHandler::SetFourierMethod(FourierMethod method)
 void ResizeHandler::SetCurrentImage(CurrentImage image)
 {
   mCurrentImage = image;
+
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
+
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
+  {
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+    std::vector<Pixel> imagePixels;
+    int w = mMasterHeight;
+    int h = mMasterWidth;
+
+    switch (mCurrentImage)
+    {
+      case CurrentImage::Original:
+      {
+        imagePixels = mOriginalImage;
+        break;
+      }
+
+      case CurrentImage::Frequency:
+      {
+        imagePixels = mFrequencyImage;
+        break;
+      }
+
+      case CurrentImage::Transformed:
+      {
+        imagePixels = mTransformedImage;
+        break;
+      }
+    }
+
+    // do some form of interpolation
+    switch (mInterpolationMode)
+    {
+      case InterpolationMode::NearestNeighbor:
+      {
+        NearestNeighborInterpolation(texture, w, h, imagePixels);
+        break;
+      }
+
+      case InterpolationMode::Bilinear:
+      {
+        BilinearInterpolation(texture, w, h, imagePixels);
+        break;
+      }
+    }
+
+    if (mUseHistogramEqualization)
+    {
+      // do histogram equalization
+      HistogramEqualization(imagePixels);
+    }
+
+    // update the image on the texture
+    texture->SetImage(imagePixels, w, h);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
+  }
 }
 
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
@@ -378,35 +439,44 @@ void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
 
 void ResizeHandler::DirectFourier(std::vector<Pixel>& image, int w, int h)
 {
+  mOriginalImage = image;
+
   Fourier::SpatialImage spatialImage;
   CopyToSpatialImage(image, spatialImage, w, h);
 
   Fourier::FrequencyImage freqImage;
-  Fourier::Direct(spatialImage, freqImage);
+  Fourier::SpatialImage transformed;
+  Fourier::Direct(spatialImage, freqImage, transformed);
 
-  CopyFromFrequencyImage(freqImage, image, w, h);
+  CopyFromFrequencyImage(freqImage, mFrequencyImage, w, h);
 }
 
 void ResizeHandler::SeparableFourier(std::vector<Pixel>& image, int w, int h)
 {
+  mOriginalImage = image;
+
   Fourier::SpatialImage spatialImage;
   CopyToSpatialImage(image, spatialImage, w, h);
-
+  
   Fourier::FrequencyImage freqImage;
-  Fourier::Separable(spatialImage, freqImage);
+  Fourier::SpatialImage transformed;
+  Fourier::Separable(spatialImage, freqImage, transformed);
 
-  CopyFromFrequencyImage(freqImage, image, w, h);
+  CopyFromFrequencyImage(freqImage, mFrequencyImage, w, h);
 }
 
 void ResizeHandler::FastFourier(std::vector<Pixel>& image, int w, int h)
 {
+  mOriginalImage = image;
+
   Fourier::SpatialImage spatialImage;
   CopyToSpatialImage(image, spatialImage, w, h);
 
   Fourier::FrequencyImage freqImage;
-  Fourier::Fast(spatialImage, freqImage);
+  Fourier::SpatialImage transformed;
+  Fourier::Fast(spatialImage, freqImage, transformed);
   
-  CopyFromFrequencyImage(freqImage, image, w, h);
+  CopyFromFrequencyImage(freqImage, mFrequencyImage, w, h);
 }
 
 void ResizeHandler::CopyToSpatialImage(const std::vector<Pixel>& image, Fourier::SpatialImage& spatial, int w, int h)
@@ -428,6 +498,8 @@ void ResizeHandler::CopyToSpatialImage(const std::vector<Pixel>& image, Fourier:
 
 void ResizeHandler::CopyFromFrequencyImage(const Fourier::FrequencyImage& frequency, std::vector<Pixel>& image, int w, int h)
 {
+  image.resize(w * h);
+
   for (int y = 0; y < h; ++y)
   {
     for (int x = 0; x < w; ++x)
