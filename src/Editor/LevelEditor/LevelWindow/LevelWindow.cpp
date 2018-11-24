@@ -152,7 +152,7 @@ void Editor::LevelWindow::RenderNow()
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");
-    model->LoadShader("simple");
+    model->LoadShader("textured");
 
     //Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
 
