@@ -7,6 +7,8 @@
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
+#include "Elba/Utilities/Math/Fourier/FourierTransform.hpp"
+
 namespace Elba
 {
 
@@ -22,11 +24,26 @@ public:
 
   void Resize(int screenWidth, int screenHeight);
 
-  enum InterpolationMode
+  enum class InterpolationMode
   {
     None,
     NearestNeighbor,
     Bilinear
+  };
+
+  enum class FourierMethod
+  {
+    None,
+    DirectMethod,
+    SeparableMethod,
+    FastFourier
+  };
+
+  enum class CurrentImage
+  {
+    Original,
+    Frequency,
+    Transformed
   };
 
   void SetInterpolationMode(InterpolationMode mode);
@@ -41,6 +58,9 @@ public:
   void SetImage(const std::vector<Pixel>& image, int width, int height);
 
   void SetUseHistogramEqualization(bool useHistogram);
+
+  void SetFourierMethod(FourierMethod method);
+  void SetCurrentImage(CurrentImage image);
 
 private:
   Transform* mTransform;
@@ -66,6 +86,19 @@ private:
 
   bool mUseHistogramEqualization;
   void HistogramEqualization(std::vector<Pixel>& image);
+
+  FourierMethod mFourierMethod;
+  CurrentImage mCurrentImage;
+  void DirectFourier(std::vector<Pixel>& image, int w, int h);
+  void SeparableFourier(std::vector<Pixel>& image, int w, int h);
+  void FastFourier(std::vector<Pixel>& image, int w, int h);
+
+  void CopyToSpatialImage(const std::vector<Pixel>& image, Fourier::SpatialImage& spatial, int w, int h);
+  void CopyFromFrequencyImage(const Fourier::FrequencyImage& frequency, std::vector<Pixel>& image, int w, int h);
+
+  std::vector<Pixel> mOriginalImage;
+  std::vector<Pixel> mFrequencyImage;
+  std::vector<Pixel> mTransformedImage;
 };
 
 } // End of Elba namespace

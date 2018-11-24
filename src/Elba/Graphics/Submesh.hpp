@@ -10,6 +10,8 @@
 #include <vector>
 #include <glm/mat4x4.hpp>
 
+#include "Elba/Graphics/PointLight.hpp"
+
 namespace Elba
 {
 
@@ -21,6 +23,7 @@ struct Vertex
   glm::vec3 mPos;
   glm::vec3 mColor;
   glm::vec2 mTexCoords;
+  glm::vec3 mNormal;
 
   Vertex() : mPos(glm::vec3()), mColor(glm::vec3()), mTexCoords(glm::vec2()) { }
 };
@@ -64,7 +67,7 @@ public:
   * \param view The view matrix.
   * \param model The model matrix.
   */
-  virtual void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) = 0;
+  virtual void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model, const PointLight& light) = 0;
 
   /**
   * \brief Adds a Vertex to the Submesh.

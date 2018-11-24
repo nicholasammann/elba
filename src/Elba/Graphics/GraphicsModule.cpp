@@ -81,4 +81,9 @@ void GraphicsModule::OnResize(const ResizeEvent& event)
   }
 }
 
+const PointLight& GraphicsModule::GetLight() const
+{
+  return mPointLight;
+}
+
 } // End of Elba namespace

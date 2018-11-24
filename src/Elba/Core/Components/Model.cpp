@@ -49,7 +49,7 @@ void Model::LoadMesh(std::string name)
 
       glm::mat4 modelMat = translate * rotate * scale;
 
-      mMesh->Draw(drawEvent.proj, drawEvent.view, modelMat);
+      mMesh->Draw(drawEvent.proj, drawEvent.view, modelMat, drawEvent.light);
     }
   );
 }

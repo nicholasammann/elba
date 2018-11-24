@@ -54,6 +54,9 @@ void OpenGLPostProcess::DispatchComputeShaders()
   PostProcessTexture* output = &mTextures[0];
   PostProcessTexture* input =  &mTextures[1];
 
+  static float timeSince = 0.0f;
+  timeSince += 0.01667f;
+
   for (auto& pair : mComputeShaders)
   {
     std::swap(output, input);
@@ -63,6 +66,8 @@ void OpenGLPostProcess::DispatchComputeShaders()
     shader->SetInputTexture(input);
     shader->BindTextures(pair.second.get());
     pair.second->BindUniforms();
+    pair.second->SetUniform("timeSince", timeSince);
+
     shader->Dispatch();
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);

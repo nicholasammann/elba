@@ -27,12 +27,16 @@ private:
   QVBoxLayout* mLayout;
   QComboBox* mInterpolationCombo;
   QCheckBox* mUseHistogramCheckbox;
+  QComboBox* mFourierMethodCombo;
+  QComboBox* mFourierImageSelectionCombo;
 
   Elba::CoreModule* mCore;
   Elba::OpenGLModule* mGraphics;
 
   void OnInterpolationChange(int index);
   void OnUseHistogramChange(int value);
+  void OnFourierMethodChange(int index);
+  void OnFourierImageChange(int index);
 
   Elba::Object* GetObject();
 };

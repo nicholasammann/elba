@@ -63,6 +63,11 @@ void OpenGLProgram::SetUniform(const std::string& name, float value)
   glUniform1f(glGetUniformLocation(mProgram, name.c_str()), value);
 }
 
+void OpenGLProgram::SetUniform(const std::string& name, glm::vec3 value)
+{
+  glUniform3f(glGetUniformLocation(mProgram, name.c_str()), value.x, value.y, value.z);
+}
+
 void OpenGLProgram::SetUniform(const std::string& name, glm::mat4x4 value)
 {
   GLuint loc = glGetUniformLocation(mProgram, name.c_str());

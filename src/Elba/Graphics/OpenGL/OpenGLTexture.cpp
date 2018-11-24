@@ -195,6 +195,16 @@ void OpenGLTexture::SetHeight(int height)
   mHeight = height;
 }
 
+void OpenGLTexture::SetUniformName(std::string name)
+{
+  mUniformName = name;
+}
+
+std::string OpenGLTexture::GetUniformName() const
+{
+  return mUniformName;
+}
+
 void OpenGLTexture::LoadPPM(std::string path)
 {
   // GONNA DO ALL THE PPM LOADING YEEEEEEAAAHHH!!!!

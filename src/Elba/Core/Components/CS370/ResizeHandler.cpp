@@ -8,6 +8,7 @@
 
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 
+
 namespace Elba
 {
 
@@ -21,6 +22,8 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mScreenWidth(800)
   , mScreenHeight(600)
   , mUseHistogramEqualization(true)
+  , mFourierMethod(FourierMethod::None)
+  , mCurrentImage(CurrentImage::Original)
 {
 }
 
@@ -122,6 +125,78 @@ void ResizeHandler::SetUseHistogramEqualization(bool useHistogram)
   Interpolate(mScreenWidth, mScreenHeight);
 }
 
+void ResizeHandler::SetFourierMethod(FourierMethod method)
+{
+  mFourierMethod = method;
+  Resize(mScreenWidth, mScreenHeight);
+}
+
+void ResizeHandler::SetCurrentImage(CurrentImage image)
+{
+  mCurrentImage = image;
+
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
+
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
+  {
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+    std::vector<Pixel> imagePixels;
+    int w = mMasterHeight;
+    int h = mMasterWidth;
+
+    switch (mCurrentImage)
+    {
+      case CurrentImage::Original:
+      {
+        imagePixels = mOriginalImage;
+        break;
+      }
+
+      case CurrentImage::Frequency:
+      {
+        imagePixels = mFrequencyImage;
+        break;
+      }
+
+      case CurrentImage::Transformed:
+      {
+        imagePixels = mTransformedImage;
+        break;
+      }
+    }
+
+    // do some form of interpolation
+    switch (mInterpolationMode)
+    {
+      case InterpolationMode::NearestNeighbor:
+      {
+        NearestNeighborInterpolation(texture, w, h, imagePixels);
+        break;
+      }
+
+      case InterpolationMode::Bilinear:
+      {
+        BilinearInterpolation(texture, w, h, imagePixels);
+        break;
+      }
+    }
+
+    if (mUseHistogramEqualization)
+    {
+      // do histogram equalization
+      HistogramEqualization(imagePixels);
+    }
+
+    // update the image on the texture
+    texture->SetImage(imagePixels, w, h);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
+  }
+}
+
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
 {
   mMasterWidth = event.newTexture->GetWidth();
@@ -168,6 +243,34 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
         image = mMasterImage;
         w = mMasterWidth;
         h = mMasterHeight;
+        break;
+      }
+    }
+
+    // DO THE FOURIER THING OMG
+    switch (mFourierMethod)
+    {
+      case FourierMethod::None:
+      {
+        // Do nothing
+        break;
+      }
+
+      case FourierMethod::DirectMethod:
+      {
+        DirectFourier(image, w, h);
+        break;
+      }
+
+      case FourierMethod::SeparableMethod:
+      {
+        SeparableFourier(image, w, h);
+        break;
+      }
+
+      case FourierMethod::FastFourier:
+      {
+        FastFourier(image, w, h);
         break;
       }
     }
@@ -224,7 +327,7 @@ Pixel ResizeHandler::NearestNeighborValue(int x, int y, int width, int height, f
     sY -= height;
   }
 
-  return src[sY * width + sX];
+  return src[static_cast<int>(sY) * width + static_cast<int>(sX)];
 }
 
 void ResizeHandler::BilinearInterpolation(OpenGLTexture* texture, int screenWidth, int screenHeight, std::vector<Pixel>& result)
@@ -251,16 +354,16 @@ Pixel ResizeHandler::BilinearValue(int x, int y, int width, int height, float wi
   float tX = x * widthRatio;
   float tY = y * heightRatio;
 
-  int x1 = floor(tX);
-  int x2 = floor(tX + 1);
+  int x1 = static_cast<int>(floor(tX));
+  int x2 = static_cast<int>(floor(tX + 1));
   
   if (x2 >= width)
   {
     x2 = 0;
   }
 
-  int y1 = floor(tY);
-  int y2 = floor(tY + 1);
+  int y1 = static_cast<int>(floor(tY));
+  int y2 = static_cast<int>(floor(tY + 1));
 
   if (y2 >= height)
   {
@@ -277,15 +380,15 @@ Pixel ResizeHandler::BilinearValue(int x, int y, int width, int height, float wi
   float beta = (tY - y1) / (y2 - y1);
   float fxy1 = (1.0f - alpha) * src[y1 * width + x1].r + alpha * src[y1 * width + x2].r;
   float fxy2 = (1.0f - alpha) * src[y2 * width + x1].r + alpha * src[y2 * width + x2].r;
-  result.r = (1.0f - beta) * fxy1 + beta * fxy2;
+  result.r = static_cast<unsigned char>((1.0f - beta) * fxy1 + beta * fxy2);
 
   fxy1 = (1.0f - alpha) * src[y1 * width + x1].g + alpha * src[y1 * width + x2].g;
   fxy2 = (1.0f - alpha) * src[y2 * width + x1].g + alpha * src[y2 * width + x2].g;
-  result.g = (1.0f - beta) * fxy1 + beta * fxy2;
+  result.g = static_cast<unsigned char>((1.0f - beta) * fxy1 + beta * fxy2);
 
   fxy1 = (1.0f - alpha) * src[y1 * width + x1].b + alpha * src[y1 * width + x2].b;
   fxy2 = (1.0f - alpha) * src[y2 * width + x1].b + alpha * src[y2 * width + x2].b;
-  result.b = (1.0f - beta) * fxy1 + beta * fxy2;
+  result.b = static_cast<unsigned char>((1.0f - beta) * fxy1 + beta * fxy2);
 
   result.a = 255;
 
@@ -294,7 +397,7 @@ Pixel ResizeHandler::BilinearValue(int x, int y, int width, int height, float wi
 
 void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
 {
-  int total = image.size();
+  size_t total = image.size();
 
   // first pass to count intensities
   int redHgram[256] = { 0 };
@@ -322,7 +425,7 @@ void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
   for (int i = 0; i < 256; ++i)
   {
     float current = 255.0f * probs[i] + prev;
-    roundedMapping[i] = std::round(current);
+    roundedMapping[i] = static_cast<int>(std::round(current));
     prev = current;
   }
 
@@ -331,6 +434,86 @@ void ResizeHandler::HistogramEqualization(std::vector<Pixel>& image)
     pixel.r = roundedMapping[pixel.r];
     pixel.g = roundedMapping[pixel.g];
     pixel.b = roundedMapping[pixel.b];
+  }
+}
+
+void ResizeHandler::DirectFourier(std::vector<Pixel>& image, int w, int h)
+{
+  mOriginalImage = image;
+
+  Fourier::SpatialImage spatialImage;
+  CopyToSpatialImage(image, spatialImage, w, h);
+
+  Fourier::FrequencyImage freqImage;
+  Fourier::SpatialImage transformed;
+  Fourier::Direct(spatialImage, freqImage, transformed);
+
+  CopyFromFrequencyImage(freqImage, mFrequencyImage, w, h);
+}
+
+void ResizeHandler::SeparableFourier(std::vector<Pixel>& image, int w, int h)
+{
+  mOriginalImage = image;
+
+  Fourier::SpatialImage spatialImage;
+  CopyToSpatialImage(image, spatialImage, w, h);
+  
+  Fourier::FrequencyImage freqImage;
+  Fourier::SpatialImage transformed;
+  Fourier::Separable(spatialImage, freqImage, transformed);
+
+  CopyFromFrequencyImage(freqImage, mFrequencyImage, w, h);
+}
+
+void ResizeHandler::FastFourier(std::vector<Pixel>& image, int w, int h)
+{
+  mOriginalImage = image;
+
+  Fourier::SpatialImage spatialImage;
+  CopyToSpatialImage(image, spatialImage, w, h);
+
+  Fourier::FrequencyImage freqImage;
+  Fourier::SpatialImage transformed;
+  Fourier::Fast(spatialImage, freqImage, transformed);
+  
+  CopyFromFrequencyImage(freqImage, mFrequencyImage, w, h);
+}
+
+void ResizeHandler::CopyToSpatialImage(const std::vector<Pixel>& image, Fourier::SpatialImage& spatial, int w, int h)
+{
+  spatial.resize(h);
+
+  int index = 0;
+
+  for (int y = 0; y < h; ++y)
+  {
+    spatial[y].resize(w);
+    for (int x = 0; x < w; ++x)
+    {
+      spatial[y][x] = static_cast<int>(0.3 * image[index].r + 0.59 * image[index].g + 0.11 * image[index].b);
+      index++;
+    }
+  }
+}
+
+void ResizeHandler::CopyFromFrequencyImage(const Fourier::FrequencyImage& frequency, std::vector<Pixel>& image, int w, int h)
+{
+  image.resize(w * h);
+
+  for (int y = 0; y < h; ++y)
+  {
+    for (int x = 0; x < w; ++x)
+    {
+      int shiftedY = (y + h / 2) % h;
+      int shiftedX = (x + w / 2) % w;
+      int index = shiftedY * w + shiftedX;
+
+      int val = static_cast<int>(sqrt(frequency[y][x].real * frequency[y][x].real + frequency[y][x].imaginary * frequency[y][x].imaginary));
+      image[index].r = val;
+      image[index].g = val;
+      image[index].b = val;
+      index++;
+    }
   }
 }
 
