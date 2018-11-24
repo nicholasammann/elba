@@ -18,13 +18,13 @@ ComplexNumber::ComplexNumber(int r, int i)
 void Direct(const SpatialImage& input, FrequencyImage& frequencyOut, SpatialImage& transformedOut)
 {
   double exp = 2.0 * pi;
-  int N = input.size();
+  size_t N = input.size();
   frequencyOut.resize(N);
 
   // for each element in the frequency domain
   for (int freqY = 0; freqY < N; ++freqY)
   {
-    int M = input[freqY].size();
+    size_t M = input[freqY].size();
     frequencyOut[freqY].resize(M);
 
     for (int freqX = 0; freqX < M; ++freqX)
@@ -59,7 +59,7 @@ void Direct(const SpatialImage& input, FrequencyImage& frequencyOut, SpatialImag
   // IDFT
   for (int spatialY = 0; spatialY < N; spatialY++)
   {
-    int M = frequencyOut[spatialY].size();
+    size_t M = frequencyOut[spatialY].size();
     transformedOut[spatialY].resize(M);
 
     for (int spatialX = 0; spatialX < M; spatialX++)
@@ -81,11 +81,11 @@ void Direct(const SpatialImage& input, FrequencyImage& frequencyOut, SpatialImag
           double real = (cosRow * cosCol + sinRow * sinCol);
           double imaginary = (sinCol * cosRow + sinRow * cosCol);
           
-          transformedOut[spatialX][spatialY] += real * frequencyOut[freqY][freqX].real - imaginary * frequencyOut[freqY][freqX].imaginary;
+          transformedOut[spatialX][spatialY] += static_cast<int>(real * frequencyOut[freqY][freqX].real - imaginary * frequencyOut[freqY][freqX].imaginary);
         }
       }
 
-      transformedOut[spatialX][spatialY] *= N * M;
+      transformedOut[spatialX][spatialY] *= static_cast<int>(N * M);
     }
   }
 }
@@ -158,10 +158,10 @@ void Separable(const SpatialImage& input, FrequencyImage& frequencyOut, SpatialI
         double real = cos(exp * v * y);
         double imaginary = -sin(exp * v * y);
         
-        spatialTemp[y][u] += frequencyOut[v][u].real * real - frequencyOut[v][u].imaginary * imaginary;
+        spatialTemp[y][u] += static_cast<int>(frequencyOut[v][u].real * real - frequencyOut[v][u].imaginary * imaginary);
       }
 
-      spatialTemp[y][u] *= colSize;
+      spatialTemp[y][u] *= static_cast<int>(colSize);
     }
   }
 
@@ -208,7 +208,7 @@ void Fast(SpatialImage& input, FrequencyImage& frequencyOut, SpatialImage& trans
 
     for (int i = 0; i < rowPadded; i++)
     {
-      int revIndex = Fourier::ReverseBits(i, rowPadded);
+      int revIndex = Fourier::ReverseBits(i, static_cast<int>(rowPadded));
 
       if (revIndex > i)
       {
@@ -222,7 +222,7 @@ void Fast(SpatialImage& input, FrequencyImage& frequencyOut, SpatialImage& trans
   {
     size_t rowPadded = input[j].size();
     
-    int revIndex = Fourier::ReverseBits(j, rowPadded);
+    int revIndex = Fourier::ReverseBits(j, static_cast<int>(rowPadded));
 
     if (revIndex > j)
     {
@@ -254,7 +254,7 @@ size_t FindNextPowerOfTwo(size_t value)
     power = power << 1;
   }
 
-  return pow(2, count);
+  return static_cast<size_t>(pow(2, count));
 }
 
 int ReverseBits(int value, int range)

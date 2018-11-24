@@ -129,6 +129,7 @@ void OpenGLModule::Render(int screenWidth, int screenHeight)
 
   event.proj = mCamera->ConstructProjMatrix(screenWidth, screenHeight);
   event.view = mCamera->ConstructViewMatrix();
+  event.light = mPointLight;
 
   for (auto& pair : mDrawCallbacks)
   {

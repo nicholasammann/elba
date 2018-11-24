@@ -51,8 +51,12 @@ public:
   void SetWidth(int width);
   void SetHeight(int height);
 
+  void SetUniformName(std::string name);
+  std::string GetUniformName() const;
+
 private:
   std::string mPath;
+  std::string mUniformName;
 
   // gl texture
   GLuint mTexture;

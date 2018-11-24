@@ -2,6 +2,7 @@
 #include <qlayout.h>
 
 #include "Elba/Engine.hpp"
+#include "Elba/Core/CoreModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 
@@ -17,11 +18,11 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
 {
   QVBoxLayout* layout = new QVBoxLayout(this);
 
-  //QCheckBox* postProcessing = new QCheckBox("Use Post Processing");
-  //postProcessing->setChecked(true);
-  //connect(postProcessing, &QCheckBox::stateChanged,
-  //  this, &PostProcessingOptions::OnUsePostProcessingChanged);
-  //layout->addWidget(postProcessing);
+  QCheckBox* hatching = new QCheckBox("Use Hatching");
+  hatching->setChecked(true);
+  connect(hatching, &QCheckBox::stateChanged,
+    this, &PostProcessingOptions::OnUseHatchingChanged);
+  layout->addWidget(hatching);
 
   mTree = new QTreeWidget(this);
   mTree->setHeaderLabel("Post Processing Pipeline");
@@ -70,6 +71,27 @@ void PostProcessingOptions::OnContextMenu(const QPoint& point)
   AddEffectContextMenu* menu = new AddEffectContextMenu(GetWorkspace<LevelEditor>(), this);
   QPoint globalPos = mTree->mapToGlobal(point);
   menu->exec(globalPos);
+}
+
+void PostProcessingOptions::OnUseHatchingChanged(int value)
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::Model* model = object->GetComponent<Elba::Model>();
+
+  if (value)
+  {
+    model->LoadShader("hatching");
+  }
+  else
+  {
+    model->LoadShader("textured");
+  }
 }
 
 /*

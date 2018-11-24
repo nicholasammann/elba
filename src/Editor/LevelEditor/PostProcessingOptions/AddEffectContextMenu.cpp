@@ -18,6 +18,7 @@ namespace Editor
 AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, PostProcessingOptions* options)
   : Framework::Menu("Add Effect", workspace)
   , mOptionsPanel(options)
+  , mTimeElapsed(0.0f)
 {
   AddAction<AddEffectContextMenu>("Blur", &AddEffectContextMenu::AddBlur, this, "Uniform blurring / averaging operation");
   AddAction<AddEffectContextMenu>("Weighted Blur", &AddEffectContextMenu::AddWeightedBlur, this, "Blur based on anisotropic kernel");
@@ -122,6 +123,7 @@ void AddEffectContextMenu::AddScratchedFilm()
   AddUniform<int>(item, prg, "lineWidth", "Line Width", 3);
   AddUniform<int>(item, prg, "patternWidth", "Pattern Width", 431);
   AddUniform<int>(item, prg, "minPatternWidth", "Minimum Pattern Width", 233);
+  AddUniform<float>(item, prg, "timeSince", "Time Since", 1.0f);
 }
 
 void AddEffectContextMenu::AddToneChangeSepia()

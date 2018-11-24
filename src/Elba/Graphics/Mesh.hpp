@@ -18,6 +18,7 @@
 
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
+#include "Elba/Graphics/PointLight.hpp"
 #include "Elba/Graphics/Submesh.hpp"
 
 namespace Elba
@@ -44,7 +45,7 @@ public:
   * \param view The view matrix.
   * \param model The model matrix.
   */
-  virtual void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) = 0;
+  virtual void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model, const PointLight& light) = 0;
 
   virtual void LoadMesh(std::string path) = 0;
 

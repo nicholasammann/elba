@@ -34,11 +34,11 @@ void OpenGLMesh::Initialize()
   }
 }
 
-void OpenGLMesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void OpenGLMesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model, const PointLight& light)
 {
   for (OpenGLSubmesh& submesh : mSubmeshes)
   {
-    submesh.Draw(proj, view, model);
+    submesh.Draw(proj, view, model, light);
   }
 }
 
@@ -52,20 +52,25 @@ void OpenGLMesh::LoadShader(std::string name)
   std::string fragPath = assetsDir + "Shaders/" + name + ".frag";
   UniquePtr<OpenGLFragmentShader> fragShader = NewUnique<OpenGLFragmentShader>(fragPath);
 
-  OpenGLProgram* program = new OpenGLProgram(name.c_str());
-  program->AttachShader(std::move(vertShader));
-  program->AttachShader(std::move(fragShader));
-  program->Link();
+  mShaderProgram = std::make_shared<OpenGLProgram>(name.c_str());
+  mShaderProgram->AttachShader(std::move(vertShader));
+  mShaderProgram->AttachShader(std::move(fragShader));
+  mShaderProgram->Link();
 
   for (OpenGLSubmesh& submesh : mSubmeshes)
   {
-    submesh.SetShaders(program);
+    submesh.SetShaders(mShaderProgram);
   }
 }
 
 std::vector<OpenGLSubmesh>& OpenGLMesh::GetSubmeshes()
 {
   return mSubmeshes;
+}
+
+OpenGLProgram* OpenGLMesh::GetShaderProgram() const
+{
+  return mShaderProgram.get();
 }
 
 void OpenGLMesh::LoadMesh(std::string path)
@@ -116,9 +121,9 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
     vertex.mPos.z = mesh->mVertices[i].z;
 
     // normal
-    //vertex.mNormal.x = mesh->mNormals[i].x;
-    //vertex.mNormal.y = mesh->mNormals[i].y;
-    //vertex.mNormal.z = mesh->mNormals[i].z;
+    vertex.mNormal.x = mesh->mNormals[i].x;
+    vertex.mNormal.y = mesh->mNormals[i].y;
+    vertex.mNormal.z = mesh->mNormals[i].z;
 
     // texture coordinates
     if (mesh->mTextureCoords[0])

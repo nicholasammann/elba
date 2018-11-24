@@ -14,6 +14,8 @@
 
 #include "Elba/Graphics/GraphicsFactory.hpp"
 
+#include "Elba/Graphics/PointLight.hpp"
+
 namespace Elba
 {
 class Engine;
@@ -22,6 +24,7 @@ struct DrawEvent
 {
   glm::mat4 proj;
   glm::mat4 view;
+  PointLight light;
 };
 typedef std::function<void(const DrawEvent&)> DrawCallback;
 
@@ -74,12 +77,16 @@ public:
 
   void OnResize(const ResizeEvent& event);
 
+  const PointLight& GetLight() const;
+
 protected:
   std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
   std::vector<std::pair<GlobalKey, ResizeCallback> > mResizeCallbacks;
   
   unsigned int mScreenWidth;
   unsigned int mScreenHeight;
+
+  PointLight mPointLight;
 };
 
 } // End of Elba namespace

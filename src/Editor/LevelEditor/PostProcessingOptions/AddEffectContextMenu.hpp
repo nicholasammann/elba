@@ -65,6 +65,8 @@ private:
   void ClearEffects();
 
   void OnTransformChanged(const Elba::PhysicsTransform* transform, Elba::OpenGLProgram* prg);
+
+  float mTimeElapsed;
 };
 
 template<typename T>
