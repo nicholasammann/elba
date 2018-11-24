@@ -146,22 +146,22 @@ void Editor::LevelWindow::RenderNow()
 
     // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 1.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    transform->SetWorldScale(glm::vec3(4.0f));
+    transform->SetWorldScale(glm::vec3(1.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
-    model->LoadMesh("sphere.obj");
+    model->LoadMesh("crysis/nanosuit.obj");
     model->LoadShader("simple");
 
-    Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
+    //Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
 
     Elba::RealtimeHatching* hatching = object->AddComponent<Elba::RealtimeHatching>();
 
     // Initialize components
     transform->Initialize();
     model->Initialize();
-    rotate->Initialize();
+    //rotate->Initialize();
     hatching->Initialize();
   }
 }

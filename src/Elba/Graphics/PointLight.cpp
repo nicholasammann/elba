@@ -10,11 +10,7 @@ PointLight::PointLight()
 
 void PointLight::SetIntensity(float value)
 {
-  if (value > 1.0f)
-  {
-    value = 1.0f;
-  }
-  else if (value < 0.0f)
+  if (value < 0.0f)
   {
     value = 0.0f;
   }

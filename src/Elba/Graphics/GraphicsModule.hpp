@@ -79,6 +79,8 @@ public:
 
   const PointLight& GetLight() const;
 
+  void SetLightIntensity(float value);
+
 protected:
   std::vector<std::pair<GlobalKey, DrawCallback> > mDrawCallbacks;
   std::vector<std::pair<GlobalKey, ResizeCallback> > mResizeCallbacks;
