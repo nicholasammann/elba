@@ -16,6 +16,21 @@ RealtimeHatching::RealtimeHatching(Object* parent)
 
 void RealtimeHatching::Initialize()
 {
+  LoadHatchingTextures();
+}
+
+GLuint RealtimeHatching::GetLightTextures() const
+{
+  return mLightTexturesId;
+}
+
+GLuint RealtimeHatching::GetDarkTextures() const
+{
+  return mDarkTexturesId;
+}
+
+void RealtimeHatching::LoadHatchingTextures()
+{
   std::string assetDir = Utils::GetAssetsDirectory();
   std::string hatchDir = assetDir + "Textures/Hatching/";
 
@@ -60,7 +75,7 @@ void RealtimeHatching::Initialize()
   mLightTextures->SetUniformName("lightToneTextures");
   mLightTextures->SetImage(mToneTexturesLight, width, height);
   mLightTextures->GenerateTexture();
-  
+
   mDarkTextures = new OpenGLTexture();
   mLightTextures->SetUniformName("darkToneTextures");
   mDarkTextures->SetImage(mToneTexturesDark, width, height);
@@ -76,19 +91,5 @@ void RealtimeHatching::Initialize()
     subm.AddTexture(mLightTextures);
     subm.AddTexture(mDarkTextures);
   }
-}
-
-GLuint RealtimeHatching::GetLightTextures() const
-{
-  return mLightTexturesId;
-}
-
-GLuint RealtimeHatching::GetDarkTextures() const
-{
-  return mDarkTexturesId;
-}
-
-void RealtimeHatching::LoadHatchingTextures()
-{
 }
 } // End of Elba namespace
