@@ -8,7 +8,7 @@ uniform sampler2D darkToneTextures;
 
 void main(void)
 {
-    vec4 pixel = vec4(texture(screenTexture, TexCoords.st).xyz, 1.0);
-
-    FragColor = pixel;
+  float col = texture(lightToneTextures, TexCoords.st).z;
+  vec4 pixel = vec4(col, col, col, 1.0);
+  FragColor = pixel;
 }

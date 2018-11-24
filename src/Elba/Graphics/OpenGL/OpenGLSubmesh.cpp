@@ -98,7 +98,7 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
 
   for (OpenGLTexture* texture : mExtraTextures)
   {
-    texture->SetUniform(prg, texture->GetUniformName, usedTextures);
+    texture->SetUniform(prg, texture->GetUniformName(), usedTextures);
     texture->Bind(usedTextures++);
   }
 
