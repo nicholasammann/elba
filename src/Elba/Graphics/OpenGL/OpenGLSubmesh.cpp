@@ -68,10 +68,13 @@ void OpenGLSubmesh::Initialize()
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mTexCoords));
 
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mNormal));
+
   glBindVertexArray(0);
 }
 
-void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model, const PointLight& light)
 {
   // Can't draw anything without a shader
   if (!mProgram)
@@ -82,13 +85,21 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   mProgram->Use();
   GLuint prg = mProgram->Get();
 
+  unsigned int usedTextures = 0;
+
   for (int i = 0; i < TextureType::TypeCount; ++i)
   {
     if (mTextures[i])
     {
-      mTextures[i]->SetUniform(prg, uniformNames[i], i);
-      mTextures[i]->Bind(i);
+      mTextures[i]->SetUniform(prg, uniformNames[i], usedTextures);
+      mTextures[i]->Bind(usedTextures++);
     }
+  }
+
+  for (OpenGLTexture* texture : mExtraTextures)
+  {
+    texture->SetUniform(prg, texture->GetUniformName, usedTextures);
+    texture->Bind(usedTextures++);
   }
 
   /*
@@ -113,6 +124,8 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   mProgram->SetUniform("view", view);
   mProgram->SetUniform("projection", proj);
   mProgram->SetUniform("model", model);
+  mProgram->SetUniform("pointLight.position", light.GetPosition());
+  mProgram->SetUniform("pointLight.intensity", light.GetIntensity());
 
   glBindVertexArray(mVAO);
   glDrawElements(GL_TRIANGLES, static_cast<int>(mFaces.size()) * 3, GL_UNSIGNED_INT, 0);
@@ -125,9 +138,14 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
       mTextures[i]->Unbind();
     }
   }
+
+  for (OpenGLTexture* texture : mExtraTextures)
+  {
+    texture->Unbind();
+  }
 }
 
-void OpenGLSubmesh::SetShaders(OpenGLProgram* program)
+void OpenGLSubmesh::SetShaders(std::shared_ptr<OpenGLProgram> program)
 {
   mProgram = program;
 }
@@ -210,6 +228,11 @@ bool OpenGLSubmesh::DeregisterForTextureChange(Elba::GlobalKey key)
   }
 
   return false;
+}
+
+void OpenGLSubmesh::AddTexture(OpenGLTexture* texture)
+{
+  mExtraTextures.push_back(texture);
 }
 
 } // End of Elba namespace

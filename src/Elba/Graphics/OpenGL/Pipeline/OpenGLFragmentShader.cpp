@@ -2,7 +2,6 @@
 
 namespace Elba
 {
-
 OpenGLFragmentShader::OpenGLFragmentShader(std::string path)
   : OpenGLShader(path)
 {
@@ -17,5 +16,4 @@ OpenGLFragmentShader::OpenGLFragmentShader(std::string path)
 
   VerifyShaderCompilation("Fragment shader failed to compile");
 }
-
 } // End of Elba namespace

@@ -8,6 +8,7 @@ const float offset = 1.0f;
 uniform int lineWidth;
 uniform int patternWidth;
 uniform int minPatternWidth;
+uniform float timeSince;
 
 void main()
 {
@@ -18,7 +19,7 @@ void main()
 
   float xCoord = pixel_coords.x;
 
-  float tempPatternWidth = max(400.0 * float(patternWidth) / xCoord, minPatternWidth);
+  float tempPatternWidth = max(300.0 * float(patternWidth) / xCoord + 100.0 + 200.0 * sin(timeSince) * sin(0.5 * timeSince) * sin(2.0 * timeSince), minPatternWidth);
 
   while (xCoord > tempPatternWidth)
   {

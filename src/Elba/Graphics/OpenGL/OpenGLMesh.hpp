@@ -18,6 +18,7 @@
 #include "Elba/Graphics/GraphicsForwardDeclarations.hpp"
 
 #include "Elba/Graphics/Mesh.hpp"
+#include "Elba/Graphics/PointLight.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
@@ -45,7 +46,7 @@ public:
   * \param view The view matrix.
   * \param model The model matrix.
   */
-  void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model) final;
+  void Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model, const PointLight& light) final;
 
   /**
   * \brief Loads the mesh file at the given path.
@@ -57,10 +58,14 @@ public:
 
   std::vector<OpenGLSubmesh>& GetSubmeshes();
 
+  OpenGLProgram* GetShaderProgram() const;
+
 private:
   std::vector<OpenGLSubmesh> mSubmeshes;
 
   std::string mDirectory;
+
+  std::shared_ptr<OpenGLProgram> mShaderProgram;
 
   /**
   * \brief Processes one node in the assimp tree.

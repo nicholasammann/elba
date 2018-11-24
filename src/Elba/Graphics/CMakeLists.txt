@@ -6,6 +6,7 @@ PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsFactory.cpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsModule.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Mesh.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PointLight.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Submesh.cpp
 
 PUBLIC
@@ -14,5 +15,6 @@ PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsForwardDeclarations.hpp
   ${CMAKE_CURRENT_LIST_DIR}/GraphicsModule.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Mesh.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/PointLight.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Submesh.hpp
 )
