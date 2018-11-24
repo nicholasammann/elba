@@ -16,9 +16,6 @@ public:
 
   void Initialize() final;
 
-  GLuint GetLightTextures() const;
-  GLuint GetDarkTextures() const;
-
 private:
   void LoadHatchingTextures();
 
@@ -30,8 +27,5 @@ private:
 
   OpenGLTexture* mLightTextures;
   OpenGLTexture* mDarkTextures;
-
-  GLuint mLightTexturesId;
-  GLuint mDarkTexturesId;
 };
 } // End of Elba namespace

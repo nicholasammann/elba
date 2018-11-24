@@ -146,9 +146,9 @@ void Editor::LevelWindow::RenderNow()
 
     // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    transform->SetWorldScale(glm::vec3(1.2f));
+    transform->SetWorldScale(glm::vec3(4.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("sphere.obj");
