@@ -39,7 +39,7 @@ float CalculateLightWeight()
   // calculate light source attenuation
   vec4 d = lightVec;
   float dL = sqrt(d.x*d.x + d.y*d.y + d.z*d.z);
-  float lightAtt = min( 1.0 / (2.0 + 1.0*dL + 0.1*dL*dL), 1);
+  float lightAtt = min( 1.0 / (0.3 + 0.1*dL + 0.0005*dL*dL), 1);
   
   float lightWeight = lightAtt * diffuseFactor;
 
@@ -58,6 +58,8 @@ void main(void)
 
   vec4 lightPix = texture(diffuseTex, TexCoords.st);
   vec4 darkPix = texture(specularTex, TexCoords.st);
+
+  col = mix(darkPix.r, lightPix.b, 0.5);
 
   if (toneLevel < 1.0)
   {

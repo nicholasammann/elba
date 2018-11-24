@@ -31,8 +31,8 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mUseFramebuffer(true)
   , mPostProcess(NewUnique<OpenGLPostProcess>(this))
 {
-  mPointLight.SetIntensity(0.0f);
-  mPointLight.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+  mPointLight.SetIntensity(1.0f);
+  mPointLight.SetPosition(glm::vec3(1.0f, 2.0f, 5.0f));
 }
 
 void OpenGLModule::Initialize()
