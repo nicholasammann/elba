@@ -19,16 +19,6 @@ void RealtimeHatching::Initialize()
   LoadHatchingTextures();
 }
 
-GLuint RealtimeHatching::GetLightTextures() const
-{
-  return mLightTexturesId;
-}
-
-GLuint RealtimeHatching::GetDarkTextures() const
-{
-  return mDarkTexturesId;
-}
-
 void RealtimeHatching::LoadHatchingTextures()
 {
   std::string assetDir = Utils::GetAssetsDirectory();
@@ -63,21 +53,21 @@ void RealtimeHatching::LoadHatchingTextures()
     int index = i / 3;
 
     mToneTexturesLight[index].r = tone1[i];
-    mToneTexturesLight[index].g = tone2[i + 1];
-    mToneTexturesLight[index].b = tone3[i + 2];
+    mToneTexturesLight[index].g = tone2[i];
+    mToneTexturesLight[index].b = tone3[i];
+    mToneTexturesLight[index].a = 255;
 
     mToneTexturesDark[index].r = tone4[i];
-    mToneTexturesDark[index].g = tone5[i + 1];
-    mToneTexturesDark[index].b = tone6[i + 2];
+    mToneTexturesDark[index].g = tone5[i];
+    mToneTexturesDark[index].b = tone6[i];
+    mToneTexturesDark[index].a = 255;
   }
 
   mLightTextures = new OpenGLTexture();
-  mLightTextures->SetUniformName("lightToneTextures");
   mLightTextures->SetImage(mToneTexturesLight, width, height);
   mLightTextures->GenerateTexture();
 
   mDarkTextures = new OpenGLTexture();
-  mLightTextures->SetUniformName("darkToneTextures");
   mDarkTextures->SetImage(mToneTexturesDark, width, height);
   mDarkTextures->GenerateTexture();
 
@@ -88,8 +78,8 @@ void RealtimeHatching::LoadHatchingTextures()
 
   for (OpenGLSubmesh& subm : submeshes)
   {
-    subm.AddTexture(mLightTextures);
-    subm.AddTexture(mDarkTextures);
+    subm.LoadTexture(mLightTextures, Elba::TextureType::Diffuse);
+    subm.LoadTexture(mDarkTextures, Elba::TextureType::Specular);
   }
 }
 } // End of Elba namespace

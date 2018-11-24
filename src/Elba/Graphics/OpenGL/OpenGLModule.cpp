@@ -3,7 +3,6 @@
 
 namespace Elba
 {
-
 int oldWidth = 800;
 int oldHeight = 600;
 int g_width = 800;
@@ -32,6 +31,8 @@ OpenGLModule::OpenGLModule(Engine* engine)
   , mUseFramebuffer(true)
   , mPostProcess(NewUnique<OpenGLPostProcess>(this))
 {
+  mPointLight.SetIntensity(0.0f);
+  mPointLight.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 void OpenGLModule::Initialize()

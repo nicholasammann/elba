@@ -9,50 +9,13 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec2 TexCoords;
-
-// point lights
-struct PointLight
-{
-  vec3 position;
-  float intensity;
-};
-
-uniform PointLight pointLight;
-
-float CalculateLightWeight()
-{
-  vec4 viewPos = view * vec4(aPos, 1.0);
-  vec4 pos = vec4(pointLight.position, 1.0);
-
-  // calculate light vector in view space
-  vec4 lightVec = (view * pos) - viewPos;
-  vec4 lightUnitVec = normalize(lightVec);
-
-  vec4 viewNorm = view * vec4(aNorm, 1.0);
-
-  // calculate diffuse color
-  float diffuseFactor = pointLight.intensity * max(dot(viewNorm, lightUnitVec), 0);
-
-  // calculate light source attenuation
-  vec4 d = lightVec;
-  float dL = sqrt(d.x*d.x + d.y*d.y + d.z*d.z);
-  float lightAtt = min( 1.0 / (0.5 + 0.01*dL + 0.001*dL*dL), 1);
-  
-  float lightWeight = lightAtt * diffuseFactor;
-
-  return lightWeight;
-}
+out vec3 pos;
+out vec3 norm;
 
 void main(void)
 {
-  // calculate diffuse contribution (0 to 1)
-  float diffuseFactor = CalculateLightWeight();
-
-  // multiply by 6 to choose tone level (which texture to use, light to dark hatching, 0 to 6)
-  float toneLevel = 6.0 * diffuseFactor;
-
-  // find floor and ceiling texture for vertex, supply normalized weights for those two textures
-
+  pos = aPos;
+  norm = aNorm;
   TexCoords = aTexCoords;
-  gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+  gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
