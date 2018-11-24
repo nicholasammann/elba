@@ -85,22 +85,24 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   mProgram->Use();
   GLuint prg = mProgram->Get();
 
+  unsigned int usedTextures = 0;
+
   for (int i = 0; i < TextureType::TypeCount; ++i)
   {
     if (mTextures[i])
     {
-      mTextures[i]->SetUniform(prg, uniformNames[i], i);
-      mTextures[i]->Bind(i);
+      mTextures[i]->SetUniform(prg, uniformNames[i], usedTextures);
+      mTextures[i]->Bind(usedTextures++);
     }
   }
 
-  /*
   for (OpenGLTexture* texture : mExtraTextures)
   {
     texture->SetUniform(prg, texture->GetUniformName(), usedTextures);
     texture->Bind(usedTextures++);
   }
 
+  /*
   unsigned int shdrPrg = mShader->GetShaderProgram();
 
   unsigned int matLoc = glGetUniformLocation(shdrPrg, "Material.ambient");
@@ -137,10 +139,10 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
     }
   }
 
-  //for (OpenGLTexture* texture : mExtraTextures)
-  //{
-  //  texture->Unbind();
-  //}
+  for (OpenGLTexture* texture : mExtraTextures)
+  {
+    texture->Unbind();
+  }
 }
 
 void OpenGLSubmesh::SetShaders(std::shared_ptr<OpenGLProgram> program)

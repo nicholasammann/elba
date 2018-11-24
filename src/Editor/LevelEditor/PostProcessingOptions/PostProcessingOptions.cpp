@@ -92,10 +92,12 @@ void PostProcessingOptions::OnUseHatchingChanged(int value)
   if (value)
   {
     model->LoadShader("hatching");
+    // load hatching textures to mesh
   }
   else
   {
     model->LoadShader("textured");
+    // load regular textures to mesh
   }
 }
 

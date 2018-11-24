@@ -6,10 +6,10 @@ in vec3 pos;
 in vec3 norm;
 
 // light textures
-uniform sampler2D diffuseTex;
+uniform sampler2D lightTextures;
 
 // dark textures
-uniform sampler2D specularTex;
+uniform sampler2D darkTextures;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -56,8 +56,8 @@ void main(void)
 
   float col = 0.0;
 
-  vec4 lightPix = texture(diffuseTex, TexCoords.st);
-  vec4 darkPix = texture(specularTex, TexCoords.st);
+  vec4 lightPix = texture(lightTextures, TexCoords.st);
+  vec4 darkPix = texture(darkTextures, TexCoords.st);
 
   col = mix(darkPix.r, lightPix.b, 0.5);
 
