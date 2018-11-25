@@ -26,22 +26,22 @@ void RealtimeHatching::LoadHatchingTextures()
 
   int width, height, channels;
 
-  std::string tone1Dir = hatchDir + "default03.bmp";
+  std::string tone1Dir = hatchDir + "default02.bmp";
   unsigned char* tone1 = stbi_load(tone1Dir.c_str(), &width, &height, &channels, 3);
 
-  std::string tone2Dir = hatchDir + "default13.bmp";
+  std::string tone2Dir = hatchDir + "default12.bmp";
   unsigned char* tone2 = stbi_load(tone2Dir.c_str(), &width, &height, &channels, 3);
 
-  std::string tone3Dir = hatchDir + "default23.bmp";
+  std::string tone3Dir = hatchDir + "default22.bmp";
   unsigned char* tone3 = stbi_load(tone3Dir.c_str(), &width, &height, &channels, 3);
 
-  std::string tone4Dir = hatchDir + "default33.bmp";
+  std::string tone4Dir = hatchDir + "default32.bmp";
   unsigned char* tone4 = stbi_load(tone4Dir.c_str(), &width, &height, &channels, 3);
 
-  std::string tone5Dir = hatchDir + "default43.bmp";
+  std::string tone5Dir = hatchDir + "default42.bmp";
   unsigned char* tone5 = stbi_load(tone5Dir.c_str(), &width, &height, &channels, 3);
 
-  std::string tone6Dir = hatchDir + "default53.bmp";
+  std::string tone6Dir = hatchDir + "default52.bmp";
   unsigned char* tone6 = stbi_load(tone6Dir.c_str(), &width, &height, &channels, 3);
 
   mToneTexturesLight.resize(height * width);
@@ -64,10 +64,12 @@ void RealtimeHatching::LoadHatchingTextures()
   }
 
   mLightTextures = new OpenGLTexture();
+  mLightTextures->SetUniformName("lightTextures");
   mLightTextures->SetImage(mToneTexturesLight, width, height);
   mLightTextures->GenerateTexture();
 
   mDarkTextures = new OpenGLTexture();
+  mDarkTextures->SetUniformName("darkTextures");
   mDarkTextures->SetImage(mToneTexturesDark, width, height);
   mDarkTextures->GenerateTexture();
 
@@ -78,8 +80,8 @@ void RealtimeHatching::LoadHatchingTextures()
 
   for (OpenGLSubmesh& subm : submeshes)
   {
-    subm.LoadTexture(mLightTextures, Elba::TextureType::Diffuse);
-    subm.LoadTexture(mDarkTextures, Elba::TextureType::Specular);
+    subm.AddTexture(mLightTextures);
+    subm.AddTexture(mDarkTextures);
   }
 }
 } // End of Elba namespace

@@ -28,6 +28,7 @@ private:
   QTreeWidget* mTree;
   void OnContextMenu(const QPoint& point);
   void OnUseHatchingChanged(int value);
+  void OnLightIntensityChanged(const QString& value);
 };
 
 } // End of Editor namespace

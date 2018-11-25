@@ -125,7 +125,13 @@ void OpenGLTexture::Bind(char slot)
 void OpenGLTexture::SetUniform(unsigned int shaderPrg, std::string uniform, char slot)
 {
   int loc = glGetUniformLocation(shaderPrg, uniform.c_str());
-  glUniform1i(loc, GL_TEXTURE0 + slot);
+
+  if (loc == -1)
+  {
+
+  }
+
+  glUniform1i(loc, slot);
 }
 
 void OpenGLTexture::Unbind()

@@ -86,4 +86,9 @@ const PointLight& GraphicsModule::GetLight() const
   return mPointLight;
 }
 
+void GraphicsModule::SetLightIntensity(float value)
+{
+  mPointLight.SetIntensity(value);
+}
+
 } // End of Elba namespace

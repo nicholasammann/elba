@@ -24,6 +24,11 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
     this, &PostProcessingOptions::OnUseHatchingChanged);
   layout->addWidget(hatching);
 
+  QLineEdit* lightIntensity = new QLineEdit();
+  lightIntensity->setValidator(new QDoubleValidator());
+  connect(lightIntensity, &QLineEdit::textEdited, this, &PostProcessingOptions::OnLightIntensityChanged);
+  layout->addWidget(lightIntensity);
+
   mTree = new QTreeWidget(this);
   mTree->setHeaderLabel("Post Processing Pipeline");
   mTree->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -87,11 +92,21 @@ void PostProcessingOptions::OnUseHatchingChanged(int value)
   if (value)
   {
     model->LoadShader("hatching");
+    // load hatching textures to mesh
   }
   else
   {
     model->LoadShader("textured");
+    // load regular textures to mesh
   }
+}
+
+void PostProcessingOptions::OnLightIntensityChanged(const QString& value)
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::GraphicsModule* graphics = engine->GetGraphicsModule();
+  graphics->SetLightIntensity(value.toFloat());
 }
 
 /*
