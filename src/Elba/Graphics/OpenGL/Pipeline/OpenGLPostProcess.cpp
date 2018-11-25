@@ -76,14 +76,14 @@ void OpenGLPostProcess::DispatchComputeShaders()
     shader->SetInputTexture(input);
     shader->BindTextures(pair.second.get());
 
-    glBindImageTexture(2, mPreviousRender.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-    pair.second.get()->SetUniform("previous_render", 2);
-    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindImageTexture(mPreviousRender.slot, mPreviousRender.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    pair.second.get()->SetUniform("previous_render", static_cast<int>(mPreviousRender.slot));
+    glActiveTexture(GL_TEXTURE0 + mPreviousRender.slot);
     glBindTexture(GL_TEXTURE_2D, mPreviousRender.id);
 
-    glBindImageTexture(3, mTransitionTexture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-    pair.second.get()->SetUniform("transition_texture", 3);
-    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindImageTexture(mTransitionTexture.slot, mTransitionTexture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    pair.second.get()->SetUniform("transition_texture", static_cast<int>(mTransitionTexture.slot));
+    glActiveTexture(GL_TEXTURE0 + mTransitionTexture.slot);
     glBindTexture(GL_TEXTURE_2D, mTransitionTexture.id);
 
     pair.second->BindUniforms();
@@ -95,10 +95,10 @@ void OpenGLPostProcess::DispatchComputeShaders()
 
     shader->UnbindTextures();
 
-    glActiveTexture(GL_TEXTURE0 + 2);
+    glActiveTexture(GL_TEXTURE0 + mPreviousRender.slot);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glActiveTexture(GL_TEXTURE0 + 3);
+    glActiveTexture(GL_TEXTURE0 + mTransitionTexture.slot);
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
@@ -141,6 +141,33 @@ OpenGLComputeShader* OpenGLPostProcess::GetComputeShader(const GlobalKey& key)
 void OpenGLPostProcess::RemoveAllComputeShaders()
 {
   mComputeShaders.clear();
+}
+
+void OpenGLPostProcess::SetTransitionTexture(std::vector<Pixel>& image, int width, int height)
+{
+  std::vector<glm::vec4> floatImage;
+
+  for (auto& pixel : image)
+  {
+    glm::vec4 fPix;
+    fPix.r = static_cast<float>(pixel.r) / 255.0f;
+    fPix.g = static_cast<float>(pixel.g) / 255.0f;
+    fPix.b = static_cast<float>(pixel.b) / 255.0f;
+    fPix.a = static_cast<float>(pixel.a) / 255.0f;
+    floatImage.push_back(fPix);
+  }
+
+  glActiveTexture(GL_TEXTURE0 + mTransitionTexture.slot);
+  glBindTexture(GL_TEXTURE_2D, mTransitionTexture.id);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, floatImage.data());
+
+  glBindImageTexture(mTransitionTexture.slot, mTransitionTexture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 }
 
 PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
