@@ -21,6 +21,8 @@ void main()
   // load pixel from transition texture
   vec3 transitionPixel = vec3(imageLoad(transition_texture, pixel_coords));
 
+  vec3 color = vec3(0.0);
+
   // transition type A (wipe left to right?)
   if (transitionMode == 0)
   {
@@ -28,8 +30,7 @@ void main()
 
     float luma = transitionPixel.x;
     float t = mix(0.0, 1 + softness, transitionAmount);
-    
-    vec3 color = vec3(0.0);
+
     if(luma <= t - softness)
     {
       color = transitionPixel;

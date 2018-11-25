@@ -6,6 +6,7 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/CS370/VideoTransitions.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"
@@ -103,7 +104,19 @@ void AddEffectContextMenu::AddAntiAliasing()
 
 void AddEffectContextMenu::AddVideoTransitions()
 {
-  AddEffect("videoTransitions", "Video Transitions");
+  Elba::OpenGLProgram* prg;
+  EffectItemWidget* item;
+  AddEffect("videoTransitions", "Video Transitions", &item, &prg);
+
+  LevelEditor* editor = mOptionsPanel->GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::VideoTransitions* video = object->GetComponent<Elba::VideoTransitions>();
+  video->SetProgram(prg);
 }
 
 void AddEffectContextMenu::AddEdgeDetection()

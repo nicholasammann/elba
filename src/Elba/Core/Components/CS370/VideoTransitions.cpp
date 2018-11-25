@@ -82,5 +82,6 @@ void VideoTransitions::TriggerTransitionToStaticImage()
 
 void VideoTransitions::SetMode(int mode)
 {
+  mTransitionMode = mode;
 }
 } // End of Elba namespace
