@@ -5,6 +5,7 @@ layout(rgba32f, binding = 1) uniform image2D img_output;
 layout(rgba32f, binding = 3) uniform image2D transition_texture;
 
 const float offset = 1.0f;
+const float softness = 0.5f;
 
 uniform float transitionAmount;
 uniform int transitionMode;
@@ -23,7 +24,25 @@ void main()
   // transition type A (wipe left to right?)
   if (transitionMode == 0)
   {
+    vec3 inputPixel = vec3(imageLoad(img_input, pixel_coords));
 
+    float luma = transitionPixel.x;
+    float t = mix(0.0, 1 + softness, transitionAmount);
+    
+    vec3 color = vec3(0.0);
+    if(luma <= t - softness)
+    {
+      color = transitionPixel;
+    }
+    else if(luma >= t)
+    {
+      color = inputPixel;
+    }
+    else
+    {
+      float alpha = (t - luma) / softness;
+      color = mix(inputPixel, transitionPixel, alpha);
+    }
   }
   // transition type B (fade from 1 to the other?)
   else if (transitionMode == 1)
@@ -37,5 +56,5 @@ void main()
   }
 
   // output to a specific pixel in the image
-  imageStore(img_output, pixel_coords, vec4(transitionPixel, 1.0));
+  imageStore(img_output, pixel_coords, vec4(color, 1.0));
 }
