@@ -154,14 +154,14 @@ void Editor::LevelWindow::RenderNow()
     model->LoadMesh("crysis/nanosuit.obj");
     model->LoadShader("textured");
 
-    //Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
+    Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
 
     Elba::RealtimeHatching* hatching = object->AddComponent<Elba::RealtimeHatching>();
 
     // Initialize components
     transform->Initialize();
     model->Initialize();
-    //rotate->Initialize();
+    rotate->Initialize();
     hatching->Initialize();
   }
 }

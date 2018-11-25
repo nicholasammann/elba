@@ -20,7 +20,7 @@ void Rotate::Update(double dt)
 {
   glm::quat rot = mTransform->GetWorldRotation();
 
-  glm::quat change(glm::vec3(0.0f, static_cast<float>(dt), 0.0f));
+  glm::quat change(glm::vec3(0.0f, static_cast<float>(.08), 0.0f));
 
   rot *= change;
 
