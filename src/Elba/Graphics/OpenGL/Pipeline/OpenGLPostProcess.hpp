@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "Elba/Graphics/GraphicsModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLProgram.hpp"
 
 #include "Elba/Utilities/GlobalKey.hpp"
@@ -36,6 +39,8 @@ public:
   OpenGLComputeShader* GetComputeShader(const GlobalKey& key);
 
   void RemoveAllComputeShaders();
+
+  void SetTransitionTexture(std::vector<Pixel>& image, int width, int height);
 
 private:
   OpenGLModule* mGraphics;

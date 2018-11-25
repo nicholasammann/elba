@@ -24,11 +24,15 @@ public:
   QTreeWidget* GetTree();
 
 private:
-
   QTreeWidget* mTree;
   void OnContextMenu(const QPoint& point);
   void OnUseHatchingChanged(int value);
   void OnLightIntensityChanged(const QString& value);
+
+  // Video options
+  void OnTransitionToRealTime();
+  void OnTransitionToStaticImage();
+  void OnTransitionModeChanged(int value);
 };
 
 } // End of Editor namespace

@@ -103,11 +103,7 @@ void AddEffectContextMenu::AddAntiAliasing()
 
 void AddEffectContextMenu::AddVideoTransitions()
 {
-  EffectItemWidget* item;
-  Elba::OpenGLProgram* prg;
-  AddEffect("videoTransitions", "Video Transitions", &item, &prg);
-  AddUniform<float>(item, prg, "transitionAmount", "Transition Amount", 0.0f);
-  AddUniform<int>(item, prg, "transitionMode", "Transition Mode", 0);
+  AddEffect("videoTransitions", "Video Transitions");
 }
 
 void AddEffectContextMenu::AddEdgeDetection()

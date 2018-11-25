@@ -37,5 +37,5 @@ void main()
   }
 
   // output to a specific pixel in the image
-  imageStore(img_output, pixel_coords, vec4(pixel, 1.0));
+  imageStore(img_output, pixel_coords, vec4(transitionPixel, 1.0));
 }
