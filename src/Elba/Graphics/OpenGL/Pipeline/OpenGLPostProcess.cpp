@@ -145,7 +145,7 @@ void OpenGLPostProcess::RemoveAllComputeShaders()
 
 void OpenGLPostProcess::SetTransitionTexture(std::vector<Pixel>& image, int width, int height)
 {
-  std::vector<glm::vec4> floatImage;
+  std::vector<glm::vec4> floatImage(image.size());
 
   for (int i = 0; i < image.size(); i++)
   {
@@ -154,16 +154,14 @@ void OpenGLPostProcess::SetTransitionTexture(std::vector<Pixel>& image, int widt
     fPix.g = static_cast<float>(image[i].g) / 255.0f;
     fPix.b = static_cast<float>(image[i].b) / 255.0f;
     fPix.a = static_cast<float>(image[i].a) / 255.0f;
-    floatImage[i] = fPix;
+    floatImage[image.size() - i - 1] = fPix;
   }
 
   glActiveTexture(GL_TEXTURE0 + mTransitionTexture.slot);
   glBindTexture(GL_TEXTURE_2D, mTransitionTexture.id);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, floatImage.data());
 
