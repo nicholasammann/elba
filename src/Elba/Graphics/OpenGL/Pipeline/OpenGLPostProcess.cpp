@@ -147,14 +147,14 @@ void OpenGLPostProcess::SetTransitionTexture(std::vector<Pixel>& image, int widt
 {
   std::vector<glm::vec4> floatImage;
 
-  for (auto& pixel : image)
+  for (int i = 0; i < image.size(); i++)
   {
     glm::vec4 fPix;
-    fPix.r = static_cast<float>(pixel.r) / 255.0f;
-    fPix.g = static_cast<float>(pixel.g) / 255.0f;
-    fPix.b = static_cast<float>(pixel.b) / 255.0f;
-    fPix.a = static_cast<float>(pixel.a) / 255.0f;
-    floatImage.push_back(fPix);
+    fPix.r = static_cast<float>(image[i].r) / 255.0f;
+    fPix.g = static_cast<float>(image[i].g) / 255.0f;
+    fPix.b = static_cast<float>(image[i].b) / 255.0f;
+    fPix.a = static_cast<float>(image[i].a) / 255.0f;
+    floatImage[i] = fPix;
   }
 
   glActiveTexture(GL_TEXTURE0 + mTransitionTexture.slot);
