@@ -7,6 +7,7 @@
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Components/Rotate.hpp"
 #include "Elba/Core/Components/CS370/RealtimeHatching.hpp"
+#include "Elba/Core/Components/CS370/VideoTransitions.hpp"
 
 #include "Elba/Engine.hpp"
 
@@ -157,12 +158,14 @@ void Editor::LevelWindow::RenderNow()
     Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
 
     Elba::RealtimeHatching* hatching = object->AddComponent<Elba::RealtimeHatching>();
+    Elba::VideoTransitions* video = object->AddComponent<Elba::VideoTransitions>();
 
     // Initialize components
     transform->Initialize();
     model->Initialize();
     rotate->Initialize();
     hatching->Initialize();
+    video->Initialize();
   }
 }
 

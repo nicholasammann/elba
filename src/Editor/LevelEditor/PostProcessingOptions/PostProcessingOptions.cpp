@@ -1,8 +1,11 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
 
 #include "Elba/Engine.hpp"
 #include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/CS370/VideoTransitions.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 
@@ -17,6 +20,39 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
   : Widget(workspace)
 {
   QVBoxLayout* layout = new QVBoxLayout(this);
+
+  // VIDEO CONTROLS
+  QWidget* videoControls = new QWidget(this);
+  QVBoxLayout* videoLayout = new QVBoxLayout(videoControls);
+  videoControls->setLayout(videoLayout);
+
+  QWidget* videoButtons = new QWidget(videoControls);
+  QHBoxLayout* buttonsLayout = new QHBoxLayout(videoButtons);
+  videoButtons->setLayout(buttonsLayout);
+  QPushButton* toRealTime = new QPushButton("To Real Time");
+  connect(toRealTime, &QPushButton::pressed, this, &PostProcessingOptions::OnTransitionToRealTime);
+  QPushButton* toStaticImage = new QPushButton("To Static Image");
+  connect(toStaticImage, &QPushButton::pressed, this, &PostProcessingOptions::OnTransitionToStaticImage);
+  buttonsLayout->addWidget(toRealTime);
+  buttonsLayout->addWidget(toStaticImage);
+
+  QWidget* modeSelect = new QWidget(videoControls);
+  QHBoxLayout* modeLayout = new QHBoxLayout(modeSelect);
+  modeSelect->setLayout(modeLayout);
+  QLabel* modeLabel = new QLabel("Transition Mode");
+  QComboBox* modeCombo = new QComboBox(modeSelect);
+  modeCombo->addItem("Transition A");
+  modeCombo->addItem("Transition B");
+  modeCombo->addItem("Transition C");
+  connect(modeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PostProcessingOptions::OnTransitionModeChanged);
+  modeLayout->addWidget(modeLabel);
+  modeLayout->addWidget(modeCombo);
+
+  videoLayout->addWidget(videoButtons);
+  videoLayout->addWidget(modeSelect);
+  layout->addWidget(videoControls);
+  //////////////////
+
 
   QCheckBox* hatching = new QCheckBox("Use Hatching");
   hatching->setChecked(true);
@@ -107,6 +143,57 @@ void PostProcessingOptions::OnLightIntensityChanged(const QString& value)
   Elba::Engine* engine = editor->GetEngine();
   Elba::GraphicsModule* graphics = engine->GetGraphicsModule();
   graphics->SetLightIntensity(value.toFloat());
+}
+
+void PostProcessingOptions::OnTransitionToRealTime()
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::VideoTransitions* comp = object->GetComponent<Elba::VideoTransitions>();
+
+  if (comp)
+  {
+    comp->TriggerTransitionToRealTime();
+  }
+}
+
+void PostProcessingOptions::OnTransitionToStaticImage()
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::VideoTransitions* comp = object->GetComponent<Elba::VideoTransitions>();
+
+  if (comp)
+  {
+    comp->TriggerTransitionToStaticImage();
+  }
+}
+
+void PostProcessingOptions::OnTransitionModeChanged(int value)
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::VideoTransitions* comp = object->GetComponent<Elba::VideoTransitions>();
+
+  if (comp)
+  {
+    comp->SetMode(value);
+  }
 }
 
 /*
