@@ -33,6 +33,7 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   AddAction<AddEffectContextMenu>("Hue Change", &AddEffectContextMenu::AddHueChange, this, "Changes dominant hue of the color space using RGB to HSV");
   addSeparator();
   AddAction<AddEffectContextMenu>("Motion Blur", &AddEffectContextMenu::AddMotionBlur, this, "Implements motion blur");
+  AddAction<AddEffectContextMenu>("Video Transitions", &AddEffectContextMenu::AddVideoTransitions, this, "Adds video transitions shader.");
   addSeparator();
   AddAction<AddEffectContextMenu>("Clear Effects", &AddEffectContextMenu::ClearEffects, this, "Removes all post processing effects");
 
@@ -93,6 +94,20 @@ void AddEffectContextMenu::AddMotionBlur()
       this->OnTransformChanged(tr, prg);
     }
   );
+}
+
+void AddEffectContextMenu::AddAntiAliasing()
+{
+  AddEffect("antiAliasing", "Anti-Aliasing");
+}
+
+void AddEffectContextMenu::AddVideoTransitions()
+{
+  EffectItemWidget* item;
+  Elba::OpenGLProgram* prg;
+  AddEffect("videoTransitions", "Video Transitions", &item, &prg);
+  AddUniform<float>(item, prg, "transitionAmount", "Transition Amount", 0.0f);
+  AddUniform<int>(item, prg, "transitionMode", "Transition Mode", 0);
 }
 
 void AddEffectContextMenu::AddEdgeDetection()

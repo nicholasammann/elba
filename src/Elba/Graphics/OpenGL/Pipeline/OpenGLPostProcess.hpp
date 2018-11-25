@@ -53,6 +53,7 @@ private:
   PostProcessTexture mPreviousRender;
   PostProcessTexture mPreviousRenderTemp;
 
+  PostProcessTexture mTransitionTexture;
 };
 
 } // End of Elba namespace

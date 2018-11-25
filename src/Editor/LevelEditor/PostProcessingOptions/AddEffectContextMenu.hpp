@@ -52,7 +52,6 @@ private:
 
   void AddBlur();
   void AddWeightedBlur();
-  void AddMotionBlur();
   void AddEdgeDetection();
   void AddBloom();
   void AddAdditiveNoise();
@@ -63,6 +62,10 @@ private:
   void AddToneChangeBlackWhite();
   void AddHueChange();
   void ClearEffects();
+
+  void AddMotionBlur();
+  void AddAntiAliasing();
+  void AddVideoTransitions();
 
   void OnTransformChanged(const Elba::PhysicsTransform* transform, Elba::OpenGLProgram* prg);
 

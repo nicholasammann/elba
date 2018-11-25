@@ -24,6 +24,8 @@ void OpenGLPostProcess::Initialize()
   mPreviousRender = CreateTexture(2);
   mPreviousRenderTemp = CreateTexture(3);
 
+  mTransitionTexture = CreateTexture(4);
+
   mGraphics->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event) { this->OnResize(event); });
 }
 
@@ -76,8 +78,13 @@ void OpenGLPostProcess::DispatchComputeShaders()
 
     glBindImageTexture(2, mPreviousRender.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     pair.second.get()->SetUniform("previous_render", 2);
-    glActiveTexture(GL_TEXTURE0 + 3);
+    glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D, mPreviousRender.id);
+
+    glBindImageTexture(3, mTransitionTexture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    pair.second.get()->SetUniform("transition_texture", 3);
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, mTransitionTexture.id);
 
     pair.second->BindUniforms();
     pair.second->SetUniform("timeSince", timeSince);
@@ -87,6 +94,12 @@ void OpenGLPostProcess::DispatchComputeShaders()
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     shader->UnbindTextures();
+
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, 0);
   }
 
   // copy this frame's pre-postprocessed render as next frame's "previous"
