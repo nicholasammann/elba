@@ -50,6 +50,9 @@ private:
 
   void OnResize(const ResizeEvent& event);
 
+  PostProcessTexture mPreviousRender;
+  PostProcessTexture mPreviousRenderTemp;
+
 };
 
 } // End of Elba namespace
