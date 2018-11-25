@@ -21,6 +21,9 @@ void OpenGLPostProcess::Initialize()
   // create empty second texture to write to
   mTextures[1] = CreateTexture(1);
 
+  mPreviousRender = CreateTexture(2);
+  mPreviousRenderTemp = CreateTexture(3);
+
   mGraphics->RegisterForResize(GlobalKey(), [this](const ResizeEvent& event) { this->OnResize(event); });
 }
 
@@ -50,6 +53,11 @@ void OpenGLPostProcess::DispatchComputeShaders()
                      mTextures[0].id, GL_TEXTURE_2D, 0, 0, 0, 0, 
                      dim.first, dim.second, 1);
 
+  // store clean version of the regular output, copy into real previous buffer after compute shaders run
+  glCopyImageSubData(framebuffer->GetTexture(), GL_TEXTURE_2D, 0, 0, 0, 0,
+                     mPreviousRenderTemp.id, GL_TEXTURE_2D, 0, 0, 0, 0, 
+                     dim.first, dim.second, 1);
+
   // start with the texture ptrs flipped, so after the first swap they will be correct
   PostProcessTexture* output = &mTextures[0];
   PostProcessTexture* input =  &mTextures[1];
@@ -65,6 +73,12 @@ void OpenGLPostProcess::DispatchComputeShaders()
     shader->SetOutputTexture(output);
     shader->SetInputTexture(input);
     shader->BindTextures(pair.second.get());
+
+    glBindImageTexture(2, mPreviousRender.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    pair.second.get()->SetUniform("previous_render", 2);
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, mPreviousRender.id);
+
     pair.second->BindUniforms();
     pair.second->SetUniform("timeSince", timeSince);
 
@@ -74,6 +88,11 @@ void OpenGLPostProcess::DispatchComputeShaders()
 
     shader->UnbindTextures();
   }
+
+  // copy this frame's pre-postprocessed render as next frame's "previous"
+  glCopyImageSubData(mPreviousRenderTemp.id, GL_TEXTURE_2D, 0, 0, 0, 0,
+                     mPreviousRender.id, GL_TEXTURE_2D, 0, 0, 0, 0, 
+                     dim.first, dim.second, 1);
 
   mFinalTexture = output;
 }
