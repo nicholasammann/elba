@@ -33,17 +33,17 @@ void main()
     float luma = transitionPixel.x;
     float t = mix(0.0, 1 + softness, transitionAmount);
 
-    if(luma <= transitionAmount - softness)
+    if(luma <= t - softness)
     {
       color = transitionPixel;
     }
-    else if(luma >= transitionAmount)
+    else if(luma >= t)
     {
       color = inputPixel;
     }
     else
     {
-      float alpha = (transitionAmount - luma) / softness;
+      float alpha = (t - luma) / softness;
       color = mix(inputPixel, transitionPixel, alpha);
     }
   }
@@ -70,7 +70,7 @@ void main()
         {
           uv = ivec2(x, y - 1);
         }
-        color = vec3(imageLoad(transition_texture, pixel_coords - uv));
+        color = vec3(imageLoad(transition_texture, pixel_coords));
       }
     }
     else if(x <= 0 && y <= 0)
@@ -90,13 +90,13 @@ void main()
         {
           uv = ivec2(x, y + 1);
         }
-        color = vec3(imageLoad(transition_texture, pixel_coords - uv));
+        color = vec3(imageLoad(transition_texture, pixel_coords));
       }
 
     }
     else
     {
-      color = vec3(0.0);
+      color = transitionPixel;
     }
     
   }
