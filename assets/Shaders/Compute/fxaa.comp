@@ -1,0 +1,255 @@
+#version 430
+layout(local_size_x = 1, local_size_y = 1) in;
+layout(rgba32f, binding = 0) uniform image2D img_input;
+layout(rgba32f, binding = 1) uniform image2D img_output;
+
+const float EdgeThresholdMin = 0.0312;
+const float EdgeThresholdMax = 0.125;
+
+float Luma(vec3 rgb)
+{
+  return sqrt(dot(rgb, vec3(0.299, 0.587, 0.114)));
+}
+
+int Quality(int i)
+{
+  if (i < 11)
+  {
+    if (i < 10)
+    {
+      if (i < 6)
+      {
+        return 1;
+      }
+      return 2;
+    }
+    return 4;
+  }
+  return 8;
+}
+
+void main()
+{
+  // get index in global work group, i.e. x,y position
+  ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
+
+  // pixel color from image
+  vec3 pixCenter = imageLoad(img_input, uv).rgb;
+  vec3 pixNorth = imageLoad(img_input, ivec2(uv.x, uv.y + 1)).rgb;
+  vec3 pixSouth = imageLoad(img_input, ivec2(uv.x, uv.y - 1)).rgb;
+  vec3 pixEast = imageLoad(img_input, ivec2(uv.x + 1, uv.y)).rgb;
+  vec3 pixWest = imageLoad(img_input, ivec2(uv.x - 1, uv.y)).rgb;
+
+  // calculate luma values for center and 4-connected neighbors
+  float lumaC = Luma(pixCenter);
+  float lumaN = Luma(pixNorth);
+  float lumaS = Luma(pixSouth);
+  float lumaE = Luma(pixEast);
+  float lumaW = Luma(pixWest);
+
+  // find max and max of luma values
+  float minLuma = min(lumaC, min(lumaN, min(lumaS, min(lumaE, lumaW))));
+  float maxLuma = max(lumaC, max(lumaN, max(lumaS, max(lumaE, lumaW))));
+
+  // range of luma values
+  float lumaRange = maxLuma - minLuma;
+
+  if (lumaRange < max(EdgeThresholdMin, maxLuma * EdgeThresholdMax))
+  {
+    imageStore(img_output, uv, vec4(pixCenter, 1.0));
+    return;
+  }
+
+  // get diagonal pixels
+  vec3 pixNW = imageLoad(img_input, ivec2(uv.x - 1, uv.y + 1)).rgb;
+  vec3 pixNE = imageLoad(img_input, ivec2(uv.x + 1, uv.y + 1)).rgb;
+  vec3 pixSE = imageLoad(img_input, ivec2(uv.x + 1, uv.y - 1)).rgb;
+  vec3 pixSW = imageLoad(img_input, ivec2(uv.x - 1, uv.y - 1)).rgb;
+
+  // luma of diagonal pixels
+  float lumaNW = Luma(pixNW);
+  float lumaNE = Luma(pixNE);
+  float lumaSE = Luma(pixSE);
+  float lumaSW = Luma(pixSW);
+
+  // combine the edge lumas
+  float lumaNS = lumaN + lumaS;
+  float lumaWE = lumaW + lumaE;
+
+  // combine corner lumas
+  float lumaCornersN = lumaNW + lumaNE;
+  float lumaCornersS = lumaSW + lumaSE;
+  float lumaCornersE = lumaSE + lumaNE;
+  float lumaCornersW = lumaNW + lumaSW;
+
+  // calculate gradient for vertical and horizontal edges
+  float edgeH =  abs(-2.0 * lumaW + lumaCornersW) + abs(-2.0 * lumaC + lumaNS) * 2.0 + abs(-2.0 * lumaE + lumaCornersE);
+  float edgeV =  abs(-2.0 * lumaN + lumaCornersN) + abs(-2.0 * lumaC + lumaWE) * 2.0 + abs(-2.0 * lumaS + lumaCornersS);
+
+  // determine if edge for this neighborhood is vertical or horizontal
+  bool isHorizontal = (edgeH >= edgeV);
+
+  float luma1 = isHorizontal ? lumaS : lumaW;
+  float luma2 = isHorizontal ? lumaN : lumaE;
+
+  float gradient1 = luma1 - lumaC;
+  float gradient2 = luma2 - lumaC;
+
+  bool isGradient1Steeper = abs(gradient1) >= abs(gradient2);
+
+  float gradientScaled = 0.25 * max(abs(gradient1), abs(gradient2));
+
+  float stepLength = 0.0;
+  float lumaLocalAverage = 0.0;
+
+  if (isGradient1Steeper)
+  {
+    stepLength = -1.0;
+    lumaLocalAverage = 0.5 * (luma1 + lumaC);
+  }
+  else
+  {
+    stepLength = 1.0;
+    lumaLocalAverage = 0.5 * (luma2 + lumaC);
+  }
+
+  ivec2 currentUV = uv;
+
+  // FIRST STEP : ESTABLISH LUMA VARIABLE. WE HAVE A FOOTHOLD.
+
+  // WE ARE EXPLORING SPACE
+  // THEREFORE WE MUST INTERPOLATE
+  ivec2 offset1 = isHorizontal ? ivec2(1, 0) : ivec2(0, 1);
+  ivec2 offset2 = ivec2(0, 0);
+
+  if (isHorizontal)
+  {
+    offset2 = (stepLength < 0) ? ivec2(0, -1) : ivec2(0, 1);
+  }
+  else
+  {
+    offset2 = (stepLength < 0) ? ivec2(-1, 0) : ivec2(1, 0);
+  }
+
+  // WE GO LEFT / DOWN
+  ivec2 uv1 = currentUV - offset1;
+  ivec2 uv1Interp = currentUV - offset1 + offset2;
+  vec3 pix1Interp = mix(imageLoad(img_input, uv1), imageLoad(img_input, uv1Interp), 0.5).rgb;
+  float lumaEnd1 = Luma(pix1Interp);
+  lumaEnd1 -= lumaLocalAverage;
+  bool reached1 = abs(lumaEnd1) >= gradientScaled;
+
+  // WE GO RIGHT / UP
+  ivec2 uv2 = currentUV + offset1;
+  ivec2 uv2Interp = currentUV + offset1 + offset2;
+  vec3 pix2Interp = mix(imageLoad(img_input, uv2), imageLoad(img_input, uv2Interp), 0.5).rgb;
+  float lumaEnd2 = Luma(pix2Interp);
+  lumaEnd2 -= lumaLocalAverage;
+  bool reached2 = abs(lumaEnd2) >= gradientScaled;
+
+  bool reachedBoth = reached1 && reached2;
+
+  if (!reached1)
+  {
+    uv1 -= offset1;
+    uv1Interp -= offset1;
+  }
+
+  if (!reached2)
+  {
+    uv2 += offset1;
+    uv2Interp += offset1;
+  }
+
+  if (!reachedBoth)
+  {
+    for (int i = 2; i < 12; i++)
+    {
+      if (!reached1)
+      {
+        // WE GO LEFT
+        pix1Interp = mix(imageLoad(img_input, uv1), imageLoad(img_input, uv1Interp), 0.5).rgb;
+        lumaEnd1 = Luma(pix1Interp);
+        lumaEnd1 -= lumaLocalAverage;
+      }
+
+      if (!reached2)
+      {
+        // WE GO RIGHT
+        pix2Interp = mix(imageLoad(img_input, uv2), imageLoad(img_input, uv2Interp), 0.5).rgb;
+        lumaEnd2 = Luma(pix2Interp);
+        lumaEnd2 -= lumaLocalAverage;
+      }
+
+      reached1 = abs(lumaEnd1) >= gradientScaled;
+      reached2 = abs(lumaEnd2) >= gradientScaled;
+      reachedBoth = reached1 && reached2;
+
+      int quality = Quality(i);
+
+      if (!reached1)
+      {
+        uv1 -= quality * offset1;
+        uv1Interp -= quality * offset1;
+      }
+
+      if (!reached2)
+      {
+        uv2 += quality * offset1;
+        uv2Interp += quality * offset1;
+      }
+
+      if (reachedBoth)
+      {
+        break;
+      }
+    }
+  }
+
+  float distance1 = isHorizontal ? (uv.x - uv1.x) : (uv.y - uv1.y);
+  float distance2 = isHorizontal ? (uv2.x - uv.x) : (uv2.y - uv.y);
+
+  bool isDirection1 = distance1 < distance2;
+  float distanceFinal = min(distance1, distance2);
+  float edgeThickness = distance1 + distance2;
+
+  float pixelOffset = -(distanceFinal / edgeThickness) + 0.5;
+
+  bool isLumaCSmaller = lumaC < lumaLocalAverage;
+
+  bool correctVariation = ((isDirection1 ? lumaEnd1 : lumaEnd2) < 0.0) != isLumaCSmaller;
+
+  float finalOffset = correctVariation ? pixelOffset : 0.0;
+
+  // subpixel anti-aliasing
+  float lumaAverage = (1.0 / 12.0) * (2.0 * (lumaNS + lumaWE) + lumaCornersW + lumaCornersE);
+  float subPixelOffset1 = clamp(abs(lumaAverage - lumaC) / lumaRange, 0.0, 1.0);
+  float subPixelOffset2 = (-2.0 * subPixelOffset1 + 3.0) * subPixelOffset1 * subPixelOffset1;
+  float subPixelOffsetFinal = subPixelOffset2 * subPixelOffset2 * 0.75;
+  finalOffset = max(finalOffset, subPixelOffsetFinal);
+
+  ivec2 finalUv = uv;
+  ivec2 finalUvFloor;
+  ivec2 finalUvCeil;
+
+  if (isHorizontal)
+  {
+    float ughY = float(finalUv.y) + finalOffset * stepLength;
+    finalUvFloor = ivec2(finalUv.x, floor(ughY));
+    finalUvCeil = ivec2(finalUv.x, ceil(ughY));
+  }
+  else
+  {
+    float ughX = float(finalUv.x) + finalOffset * stepLength;
+    finalUvFloor = ivec2(floor(ughX), finalUv.y);
+    finalUvCeil = ivec2(ceil(ughX), finalUv.y);
+  }
+
+  // output to a specific pixel in the image
+  vec4 floorPix = imageLoad(img_input, finalUvFloor);
+  vec4 ceilPix = imageLoad(img_input, finalUvCeil);
+
+  vec4 finalPix = mix(floorPix, ceilPix, 0.5);
+
+  imageStore(img_output, uv, finalPix);
+}

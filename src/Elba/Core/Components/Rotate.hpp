@@ -16,10 +16,16 @@ public:
 
   void Update(double dt) final;
 
+  void SetRotateSpeed(float speed);
+  void SetMoveSpeed(float speed);
+
 private:
-
   Transform* mTransform;
+  glm::vec3 mOrigPos;
+  float mTimeSince;
 
+  float mRotateSpeed;
+  float mMoveSpeed;
 };
 
 } // End of Elba namespace

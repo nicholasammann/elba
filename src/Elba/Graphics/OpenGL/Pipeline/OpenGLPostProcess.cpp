@@ -55,6 +55,10 @@ void OpenGLPostProcess::DispatchComputeShaders()
                      mTextures[0].id, GL_TEXTURE_2D, 0, 0, 0, 0, 
                      dim.first, dim.second, 1);
 
+  glCopyImageSubData(framebuffer->GetTexture(), GL_TEXTURE_2D, 0, 0, 0, 0,
+                     mTextures[1].id, GL_TEXTURE_2D, 0, 0, 0, 0, 
+                     dim.first, dim.second, 1);
+
   // store clean version of the regular output, copy into real previous buffer after compute shaders run
   glCopyImageSubData(framebuffer->GetTexture(), GL_TEXTURE_2D, 0, 0, 0, 0,
                      mPreviousRenderTemp.id, GL_TEXTURE_2D, 0, 0, 0, 0, 
@@ -159,10 +163,10 @@ void OpenGLPostProcess::SetTransitionTexture(std::vector<Pixel>& image, int widt
 
   glActiveTexture(GL_TEXTURE0 + mTransitionTexture.slot);
   glBindTexture(GL_TEXTURE_2D, mTransitionTexture.id);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, floatImage.data());
 
   glBindImageTexture(mTransitionTexture.slot, mTransitionTexture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
@@ -180,12 +184,10 @@ PostProcessTexture OpenGLPostProcess::CreateTexture(int slot)
   glGenTextures(1, &texture.id);
   glActiveTexture(GL_TEXTURE0 + texture.slot);
   glBindTexture(GL_TEXTURE_2D, texture.id);
-
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, texture.width, texture.height, 0, GL_RGBA, GL_FLOAT, nullptr);
 
   glBindImageTexture(slot, texture.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
@@ -206,16 +208,35 @@ void OpenGLPostProcess::OnResize(const ResizeEvent& event)
 
     glActiveTexture(GL_TEXTURE0 + mTextures[i].slot);
     glBindTexture(GL_TEXTURE_2D, mTextures[i].id);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
-
     glBindImageTexture(mTextures[i].slot, mTextures[i].id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
   }
+
+  mPreviousRender.width = w;
+  mPreviousRender.height = h;
+  glActiveTexture(GL_TEXTURE0 + mPreviousRender.slot);
+  glBindTexture(GL_TEXTURE_2D, mPreviousRender.id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glBindImageTexture(mPreviousRender.slot, mPreviousRender.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+
+  mPreviousRenderTemp.width = w;
+  mPreviousRenderTemp.height = h;
+  glActiveTexture(GL_TEXTURE0 + mPreviousRenderTemp.slot);
+  glBindTexture(GL_TEXTURE_2D, mPreviousRenderTemp.id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glBindImageTexture(mPreviousRenderTemp.slot, mPreviousRenderTemp.id, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 }
 
 } // End of Elba namespace
