@@ -67,6 +67,8 @@ private:
   void AddAntiAliasing();
   void AddVideoTransitions();
 
+  void AddWatercolor();
+
   void OnTransformChanged(const Elba::PhysicsTransform* transform, Elba::OpenGLProgram* prg);
 
   float mTimeElapsed;

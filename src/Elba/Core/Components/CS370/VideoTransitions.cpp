@@ -24,7 +24,7 @@ void VideoTransitions::Initialize()
 {
   // load the static image
   std::string assetDir = Utils::GetAssetsDirectory();
-  std::string texPath = assetDir + "Textures/SunriseOverEasternSea.png";
+  std::string texPath = assetDir + "Textures/morgan.jpg";
   mStaticImage = new OpenGLTexture(texPath);
   auto& image = mStaticImage->GetImage();
   

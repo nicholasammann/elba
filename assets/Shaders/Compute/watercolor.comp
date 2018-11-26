@@ -1,0 +1,252 @@
+#version 430
+layout(local_size_x = 1, local_size_y = 1) in;
+layout(rgba32f, binding = 0) uniform image2D img_input;
+layout(rgba32f, binding = 1) uniform image2D img_output;
+
+vec3 rgbToHsv(vec3 rgb)
+{
+  vec3 hsv;
+
+  float minVal = min(rgb[0], min(rgb[1], rgb[2]));
+  float maxVal = max(rgb[0], max(rgb[1], rgb[2]));
+
+  hsv[2] = maxVal;
+
+  float delta = maxVal - minVal;
+
+  if (maxVal > 0.0)
+  {
+    hsv[1] = delta / maxVal;
+  }
+  else
+  {
+    hsv[0] = -1.0;
+    hsv[1] = 0.0;
+    return hsv;
+  }
+
+  if (rgb[0] == maxVal)
+  {
+    hsv[0] = (rgb[1] - rgb[2]) / delta;
+  }
+  else if (rgb[1] == maxVal)
+  {
+    hsv[0] = 2 + (rgb[2] - rgb[0]) / delta;
+  }
+  else
+  {
+    hsv[0] = 4 + (rgb[0] - rgb[1]) / delta;
+  }
+
+  hsv[0] = hsv[0] * 60.0;
+
+  if (hsv[0] < 0.0)
+  {
+    hsv[0] += 360.0;
+  }
+
+  return hsv;
+}
+
+vec3 hsvToRgb(vec3 hsv)
+{
+  int i;
+  float f, p, q, t;
+  vec3 rgb;
+
+  if (hsv[1] == 0)
+  {
+    rgb[0] = hsv[2];
+    rgb[1] = hsv[2];
+    rgb[2] = hsv[2];
+    return rgb;
+  }
+
+  hsv[0] = hsv[0] / 60.0;
+  i = int(floor(hsv[0]));
+  f = hsv[0] - i;
+  p = hsv[2] * (1 - hsv[1]);
+  q = hsv[2] * (1 - hsv[1] * f);
+  t = hsv[2] * (1 - hsv[1] * (1 - f));
+
+  switch (i)
+  {
+    case 0:
+    {
+      rgb = vec3(hsv[2], t, p);
+      break;
+    }
+
+    case 1:
+    {
+      rgb = vec3(q, hsv[2], p);
+      break;
+    }
+
+    case 2:
+    {
+      rgb = vec3(p, hsv[2], t);
+      break;
+    }
+
+    case 3:
+    {
+      rgb = vec3(p, q, hsv[2]);
+      break;
+    }
+
+    case 4:
+    {
+      rgb = vec3(t, p, hsv[2]);
+      break;
+    }
+
+    default:
+    {
+      rgb = vec3(hsv[2], p, q);
+      break;
+    }
+  }
+
+  return rgb;
+}
+
+float FindMean(float region[9])
+{
+  float sum = 0.0;
+  for (int i = 0; i < 9; i++) {
+    sum += region[i];
+  }
+  return sum / 9.0;
+}
+
+vec3 FindMeanVec3(vec3 region[9])
+{
+  vec3 sum = vec3(0.0);
+  for (int i = 0; i < 9; i++) {
+    sum += region[i];
+  }
+  return (1.0 / 9.0) * sum;
+}
+
+float FindStandardDeviation(float region[9])
+{
+  float mean = FindMean(region);
+
+  float devs[9];
+  for (int i = 0; i < 9; i++) {
+    float diff = region[i] - mean;
+    devs[i] = diff * diff;
+  }
+
+  float meanDevs = FindMean(devs);
+
+  return sqrt(meanDevs);
+}
+
+void main()
+{
+  // get index in global work group, i.e. x,y position
+  ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
+
+  // pixel color from image
+  vec4 pixel = imageLoad(img_input, pixel_coords).rgba;
+
+  // sample a 5x5 kernel
+  vec3 region[25] = {
+    vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f),
+    vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f),
+    vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f),
+    vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f),
+    vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f)
+  };
+
+  // load pixels around currently considered pixels, convert to HSV
+  int i = 0;
+  for (int y = -2; y <= 2; y++) {
+    for (int x = -2; x <= 2; x++) {
+      ivec2 uv = ivec2(pixel_coords.x + x, pixel_coords.y + y);
+      region[i++] = rgbToHsv(imageLoad(img_input, uv).rgb);
+    }
+  }
+
+  // subregion A: V values
+  float subregionA[9] = {
+    region[0].z, region[1].z, region[2].z, 
+    region[5].z, region[6].z, region[7].z, 
+    region[10].z, region[11].z, region[12].z
+  };
+
+  // subregion B: V values
+  float subregionB[9] = {
+    region[2].z, region[3].z, region[4].z, 
+    region[7].z, region[8].z, region[9].z, 
+    region[12].z, region[13].z, region[14].z
+  };
+
+  // subregion C: V values
+  float subregionC[9] = {
+    region[10].z, region[11].z, region[12].z, 
+    region[15].z, region[16].z, region[17].z, 
+    region[20].z, region[21].z, region[22].z
+  };
+
+  // subregion D: V values
+  float subregionD[9] = {
+    region[12].z, region[13].z, region[14].z, 
+    region[17].z, region[18].z, region[19].z, 
+    region[22].z, region[23].z, region[24].z
+  };
+
+  float devA = FindStandardDeviation(subregionA);
+  float devB = FindStandardDeviation(subregionB);
+  float devC = FindStandardDeviation(subregionC);
+  float devD = FindStandardDeviation(subregionD);
+
+  float minDev = min(devA, min(devB, min(devC, devD)));
+
+  vec3 finalColor = vec3(0.0);
+  // choose from subregion A
+  if (minDev == devA)
+  {
+    vec3 A[9] = {
+    hsvToRgb(region[0]), hsvToRgb(region[1]), hsvToRgb(region[2]), 
+    hsvToRgb(region[5]), hsvToRgb(region[6]), hsvToRgb(region[7]), 
+    hsvToRgb(region[10]), hsvToRgb(region[11]), hsvToRgb(region[12])
+    };
+    finalColor = FindMeanVec3(A);
+  }
+  // choose from subregion B
+  else if (minDev == devB)
+  {
+    vec3 B[9] = {
+    hsvToRgb(region[2]), hsvToRgb(region[3]), hsvToRgb(region[4]), 
+    hsvToRgb(region[7]), hsvToRgb(region[8]), hsvToRgb(region[9]), 
+    hsvToRgb(region[12]), hsvToRgb(region[13]), hsvToRgb(region[14])
+    };
+    finalColor = FindMeanVec3(B);
+  }
+  // choose from subregion C
+  else if (minDev == devC)
+  {
+    vec3 C[9] = {
+    hsvToRgb(region[10]), hsvToRgb(region[11]), hsvToRgb(region[12]), 
+    hsvToRgb(region[15]), hsvToRgb(region[16]), hsvToRgb(region[17]), 
+    hsvToRgb(region[20]), hsvToRgb(region[21]), hsvToRgb(region[22])
+    };
+    finalColor = FindMeanVec3(C);
+  }
+  // choose from subregion D
+  else if (minDev == devD)
+  {
+    vec3 D[9] = {
+    hsvToRgb(region[12]), hsvToRgb(region[13]), hsvToRgb(region[14]), 
+    hsvToRgb(region[17]), hsvToRgb(region[18]), hsvToRgb(region[19]), 
+    hsvToRgb(region[22]), hsvToRgb(region[23]), hsvToRgb(region[24])
+    };
+    finalColor = FindMeanVec3(D);
+  }
+
+  // output to a specific pixel in the image
+  imageStore(img_output, pixel_coords, vec4(finalColor, 1.0));
+}

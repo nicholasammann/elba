@@ -36,6 +36,8 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   AddAction<AddEffectContextMenu>("Motion Blur", &AddEffectContextMenu::AddMotionBlur, this, "Implements motion blur");
   AddAction<AddEffectContextMenu>("Video Transitions", &AddEffectContextMenu::AddVideoTransitions, this, "Adds video transitions shader.");
   addSeparator();
+  AddAction<AddEffectContextMenu>("Watercolor", &AddEffectContextMenu::AddWatercolor, this, "Watercolor effect.");
+  addSeparator();
   AddAction<AddEffectContextMenu>("Clear Effects", &AddEffectContextMenu::ClearEffects, this, "Removes all post processing effects");
 
   LevelEditor* editor = mOptionsPanel->GetWorkspace<LevelEditor>();
@@ -119,6 +121,11 @@ void AddEffectContextMenu::AddVideoTransitions()
   video->SetProgram(prg);
 }
 
+void AddEffectContextMenu::AddWatercolor()
+{
+  AddEffect("watercolor", "Watercolor");
+}
+
 void AddEffectContextMenu::AddEdgeDetection()
 {
   AddEffect("edgeDetection", "Edge Detection");
@@ -178,6 +185,16 @@ void AddEffectContextMenu::AddHueChange()
 
 void AddEffectContextMenu::ClearEffects()
 {
+  LevelEditor* editor = mOptionsPanel->GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::VideoTransitions* video = object->GetComponent<Elba::VideoTransitions>();
+  video->SetProgram(nullptr);
+
   mPostProcess->RemoveAllComputeShaders();
   mOptionsPanel->GetTree()->clear();
 }

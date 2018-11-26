@@ -55,7 +55,7 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
 
 
   QCheckBox* hatching = new QCheckBox("Use Hatching");
-  hatching->setChecked(true);
+  hatching->setChecked(false);
   connect(hatching, &QCheckBox::stateChanged,
     this, &PostProcessingOptions::OnUseHatchingChanged);
   layout->addWidget(hatching);
