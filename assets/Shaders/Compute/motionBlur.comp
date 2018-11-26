@@ -27,16 +27,26 @@ void main()
         ivec2( offset, -offset)  // bottom-right    
     );
 
-    vec3 col = vec3(0.0);
-    for(int i = 0; i < 6; i++)
+    vec3 col = vec3(imageLoad(previous_render, pixel_coords));
+    /*for(int i = 0; i < 6; i++)
     {
       col += vec3(imageLoad(previous_render, pixel_coords + offsets[i])) * 0.4 +  vec3(imageLoad(img_input, pixel_coords + offsets[i])) * 0.4;
       col += vec3(imageLoad(previous_render, pixel_coords + offsets[i + 1])) * 0.3 +  vec3(imageLoad(img_input, pixel_coords + offsets[i + 1])) * 0.3;
       col += vec3(imageLoad(previous_render, pixel_coords + offsets[i + 2])) * 0.2 +  vec3(imageLoad(img_input, pixel_coords + offsets[i + 2])) * 0.2;
       col += vec3(imageLoad(previous_render, pixel_coords + offsets[i + 3])) * 0.1 +  vec3(imageLoad(img_input, pixel_coords + offsets[i + 3])) * 0.1;
       //prevTex[i] = vec3(imageLoad(img_input, pixel_coords + prevOffsets[i]));
-    }
+    } */
+    ivec2 motionVec = ivec2(vec3(imageLoad(previous_render, pixel_coords)).xy / 2);
+    ivec2 uv = pixel_coords;
+
+    col += vec3(imageLoad(img_input, uv)) * 0.4;
+    uv -= motionVec;
+    col += vec3(imageLoad(img_input, uv)) * 0.3;
+    uv -= motionVec;
+    col += vec3(imageLoad(img_input, uv)) * 0.2;
+    uv -= motionVec;
+    col += vec3(imageLoad(img_input, uv)) * 0.1;
 
   // output to a specific pixel in the image
-  imageStore(img_output, pixel_coords, vec4(0.2 * (col), 1.0));
+  imageStore(img_output, pixel_coords, vec4(col, 1.0));
 }
