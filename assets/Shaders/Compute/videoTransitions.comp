@@ -6,8 +6,8 @@ layout(rgba32f, binding = 3) uniform image2D transition_texture;
 
 const float offset = 1.0f;
 const float softness = 0.5f;
-const float transX = 10;
-const float transY = 10;
+const float transX = 1000;
+const float transY = 1000;
 
 uniform float transitionAmount;
 uniform int transitionMode;
