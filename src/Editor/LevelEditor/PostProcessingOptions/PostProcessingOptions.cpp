@@ -5,6 +5,7 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/Rotate.hpp"
 #include "Elba/Core/Components/CS370/VideoTransitions.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
@@ -20,6 +21,32 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
   : Widget(workspace)
 {
   QVBoxLayout* layout = new QVBoxLayout(this);
+
+  // Object Movement
+  QWidget* moveSpeedWidg = new QWidget();
+  QHBoxLayout* moveSpeedLayout = new QHBoxLayout(moveSpeedWidg);
+  moveSpeedWidg->setLayout(moveSpeedLayout);
+  QLabel* moveSpeedLabel = new QLabel("Move Speed");
+  QLineEdit* moveSpeed = new QLineEdit(moveSpeedWidg);
+  moveSpeed->setText("0.0");
+  moveSpeed->setValidator(new QDoubleValidator());
+  connect(moveSpeed, &QLineEdit::textEdited, this, &PostProcessingOptions::OnMoveSpeedChanged);
+  moveSpeedLayout->addWidget(moveSpeedLabel);
+  moveSpeedLayout->addWidget(moveSpeed);
+  layout->addWidget(moveSpeedWidg);
+
+  QWidget* rotateSpeedWidg = new QWidget();
+  QHBoxLayout* rotateSpeedLayout = new QHBoxLayout(rotateSpeedWidg);
+  rotateSpeedWidg->setLayout(rotateSpeedLayout);
+  QLabel* rotateSpeedLabel = new QLabel("Rotate Speed");
+  QLineEdit* rotateSpeed = new QLineEdit(rotateSpeedWidg);
+  rotateSpeed->setText("0.0");
+  rotateSpeed->setValidator(new QDoubleValidator());
+  connect(rotateSpeed, &QLineEdit::textEdited, this, &PostProcessingOptions::OnRotateSpeedChanged);
+  rotateSpeedLayout->addWidget(rotateSpeedLabel);
+  rotateSpeedLayout->addWidget(rotateSpeed);
+  layout->addWidget(rotateSpeedWidg);
+
 
   // VIDEO CONTROLS
   QWidget* videoControls = new QWidget(this);
@@ -53,17 +80,23 @@ PostProcessingOptions::PostProcessingOptions(Framework::Workspace* workspace)
   layout->addWidget(videoControls);
   //////////////////
 
-
   QCheckBox* hatching = new QCheckBox("Use Hatching");
   hatching->setChecked(false);
   connect(hatching, &QCheckBox::stateChanged,
     this, &PostProcessingOptions::OnUseHatchingChanged);
   layout->addWidget(hatching);
 
-  QLineEdit* lightIntensity = new QLineEdit();
+  QWidget* lightWidget = new QWidget();
+  QHBoxLayout* lightLayout = new QHBoxLayout(lightWidget);
+  lightWidget->setLayout(lightLayout);
+  QLabel* lightLabel = new QLabel("Light Intensity");
+  QLineEdit* lightIntensity = new QLineEdit(lightWidget);
+  lightIntensity->setText("1.0");
   lightIntensity->setValidator(new QDoubleValidator());
   connect(lightIntensity, &QLineEdit::textEdited, this, &PostProcessingOptions::OnLightIntensityChanged);
-  layout->addWidget(lightIntensity);
+  lightLayout->addWidget(lightLabel);
+  lightLayout->addWidget(lightIntensity);
+  layout->addWidget(lightWidget);
 
   mTree = new QTreeWidget(this);
   mTree->setHeaderLabel("Post Processing Pipeline");
@@ -193,6 +226,40 @@ void PostProcessingOptions::OnTransitionModeChanged(int value)
   if (comp)
   {
     comp->SetMode(value);
+  }
+}
+
+void PostProcessingOptions::OnMoveSpeedChanged(const QString& value)
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::Rotate* comp = object->GetComponent<Elba::Rotate>();
+
+  if (comp)
+  {
+    comp->SetMoveSpeed(value.toFloat());
+  }
+}
+
+void PostProcessingOptions::OnRotateSpeedChanged(const QString& value)
+{
+  LevelEditor* editor = GetWorkspace<LevelEditor>();
+  Elba::Engine* engine = editor->GetEngine();
+  Elba::CoreModule* core = engine->GetCoreModule();
+  Elba::Level* level = core->GetGameLevel();
+  auto& childMap = level->GetChildren();
+  auto firstObj = childMap.begin();
+  Elba::Object* object = firstObj->second.get();
+  Elba::Rotate* comp = object->GetComponent<Elba::Rotate>();
+
+  if (comp)
+  {
+    comp->SetRotateSpeed(value.toFloat());
   }
 }
 

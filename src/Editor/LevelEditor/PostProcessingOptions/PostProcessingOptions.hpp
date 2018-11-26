@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <qtreewidget.h>
 
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLComputeShader.hpp"
@@ -23,6 +25,8 @@ public:
 
   QTreeWidget* GetTree();
 
+  std::vector<Elba::GlobalKey> mMotionBlurKeys;
+
 private:
   QTreeWidget* mTree;
   void OnContextMenu(const QPoint& point);
@@ -33,6 +37,10 @@ private:
   void OnTransitionToRealTime();
   void OnTransitionToStaticImage();
   void OnTransitionModeChanged(int value);
+
+  // object movement
+  void OnMoveSpeedChanged(const QString& value);
+  void OnRotateSpeedChanged(const QString& value);
 };
 
 } // End of Editor namespace

@@ -35,6 +35,7 @@ AddEffectContextMenu::AddEffectContextMenu(Framework::Workspace* workspace, Post
   addSeparator();
   AddAction<AddEffectContextMenu>("Motion Blur", &AddEffectContextMenu::AddMotionBlur, this, "Implements motion blur");
   AddAction<AddEffectContextMenu>("Video Transitions", &AddEffectContextMenu::AddVideoTransitions, this, "Adds video transitions shader.");
+  AddAction<AddEffectContextMenu>("Anti-Aliasing", &AddEffectContextMenu::AddAntiAliasing, this, "FXAA");
   addSeparator();
   AddAction<AddEffectContextMenu>("Watercolor", &AddEffectContextMenu::AddWatercolor, this, "Watercolor effect.");
   addSeparator();
@@ -91,17 +92,22 @@ void AddEffectContextMenu::AddMotionBlur()
   auto firstObj = childMap.begin();
   Elba::Object* object = firstObj->second.get();
   Elba::Transform* transform = object->GetComponent<Elba::Transform>();
-  transform->RegisterForTransformChanged(Elba::GlobalKey(), 
+  
+  Elba::GlobalKey motionBlurKey = Elba::GlobalKey();
+
+  transform->RegisterForTransformChanged(motionBlurKey, 
     [this, prg](const Elba::PhysicsTransform* tr)
     {
       this->OnTransformChanged(tr, prg);
     }
   );
+
+  mOptionsPanel->mMotionBlurKeys.push_back(motionBlurKey);
 }
 
 void AddEffectContextMenu::AddAntiAliasing()
 {
-  AddEffect("antiAliasing", "Anti-Aliasing");
+  AddEffect("fxaa", "Anti-Aliasing");
 }
 
 void AddEffectContextMenu::AddVideoTransitions()
@@ -194,6 +200,13 @@ void AddEffectContextMenu::ClearEffects()
   Elba::Object* object = firstObj->second.get();
   Elba::VideoTransitions* video = object->GetComponent<Elba::VideoTransitions>();
   video->SetProgram(nullptr);
+
+  Elba::Transform* transform = object->GetComponent<Elba::Transform>();
+  for (Elba::GlobalKey& key : mOptionsPanel->mMotionBlurKeys)
+  {
+    transform->DeregisterForTransformChanged(key);
+  }
+  mOptionsPanel->mMotionBlurKeys.clear();
 
   mPostProcess->RemoveAllComputeShaders();
   mOptionsPanel->GetTree()->clear();
