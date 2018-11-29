@@ -21,9 +21,17 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mMasterHeight(600)
   , mScreenWidth(800)
   , mScreenHeight(600)
-  , mUseHistogramEqualization(true)
+  , mUseHistogramEqualization(false)
   , mFourierMethod(FourierMethod::None)
   , mCurrentImage(CurrentImage::Original)
+  , mGaussianMeanX(0.0f)
+  , mGaussianMeanY(0.0f)
+  , mGaussianVarianceX(0.0f)
+  , mGaussianVarianceY(0.0f)
+  , mPa(0.0f)
+  , mPb(0.0f)
+  , mDeviation(0.0f)
+  , mSMax(0.0f)
 {
 }
 
@@ -195,6 +203,45 @@ void ResizeHandler::SetCurrentImage(CurrentImage image)
     // bind the new image data to the gpu
     texture->RebindTexture();
   }
+}
+
+void ResizeHandler::ApplyGaussianNoise()
+{
+  std::vector<Pixel> imagePixels = mMasterImage;
+  int w = mMasterWidth;
+  int h = mMasterHeight;
+
+  for (int y = 0; y < mMasterHeight; y++)
+  {
+    for (int x = 0; x < mMasterWidth; x++)
+    {
+      int noise = static_cast<int>(255.0f * GaussianNoise(x, y));
+      
+      int index = IndexAt(x, y, w);
+      
+
+    }
+  }
+}
+
+void ResizeHandler::ApplySaltPepperNoise()
+{
+
+}
+
+void ResizeHandler::ApplyNoiseReduction()
+{
+
+}
+
+void ResizeHandler::ApplyLocalNoiseReduction()
+{
+
+}
+
+void ResizeHandler::ApplyAdaptiveNoiseReduction()
+{
+
 }
 
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
@@ -515,6 +562,59 @@ void ResizeHandler::CopyFromFrequencyImage(const Fourier::FrequencyImage& freque
       index++;
     }
   }
+}
+
+int ResizeHandler::IndexAt(int x, int y, int w)
+{
+  return y * w + x;
+}
+
+float ResizeHandler::GaussianNoise(int x, int y)
+{
+  float expX = ((x - mGaussianMeanX) * (x - mGaussianMeanX)) / (2 * mGaussianVarianceX * mGaussianVarianceX);
+  float expY = ((y - mGaussianMeanY) * (y - mGaussianMeanY)) / (2 * mGaussianVarianceY * mGaussianVarianceY);
+
+  return pow(2.71828, -(expX + expY));
+}
+
+void ResizeHandler::SetGaussianMeanX(float value)
+{
+  mGaussianMeanX = value;
+}
+
+void ResizeHandler::SetGaussianMeanY(float value)
+{
+  mGaussianMeanY = value;
+}
+
+void ResizeHandler::SetGaussianVarianceX(float value)
+{
+  mGaussianVarianceX = value;
+}
+
+void ResizeHandler::SetGaussianVarianceY(float value)
+{
+  mGaussianVarianceY = value;
+}
+
+void ResizeHandler::SetPa(float value)
+{
+  mPa = value;
+}
+
+void ResizeHandler::SetPb(float value)
+{
+  mPb = value;
+}
+
+void ResizeHandler::SetDeviation(float value)
+{
+  mDeviation = value;
+}
+
+void ResizeHandler::SetSMax(float value)
+{
+  mSMax = value;
 }
 
 } // End of Elba namespace

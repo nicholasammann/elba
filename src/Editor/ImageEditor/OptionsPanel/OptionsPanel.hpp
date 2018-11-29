@@ -38,6 +38,26 @@ private:
   void OnFourierMethodChange(int index);
   void OnFourierImageChange(int index);
 
+
+  // Assignment 4
+  void OnUseGaussianNoise();
+  void OnGaussianMeanX(const QString& text);
+  void OnGaussianMeanY(const QString& text);
+  void OnGaussianVarianceX(const QString& text);
+  void OnGaussianVarianceY(const QString& text);
+
+  void OnUseSaltPepperNoise();
+  void OnPa(const QString& text);
+  void OnPb(const QString& text);
+
+  void OnUseNoiseReduction();
+
+  void OnUseLocalNoiseReduction();
+  void OnDeviation(const QString& text);
+
+  void OnUseAdaptiveNoiseReduction();
+  void OnSMax(const QString& text);
+
   Elba::Object* GetObject();
 };
 

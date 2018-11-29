@@ -62,6 +62,25 @@ public:
   void SetFourierMethod(FourierMethod method);
   void SetCurrentImage(CurrentImage image);
 
+
+  // Assignment 4
+  void ApplyGaussianNoise();
+  void ApplySaltPepperNoise();
+  void ApplyNoiseReduction();
+  void ApplyLocalNoiseReduction();
+  void ApplyAdaptiveNoiseReduction();
+
+  void SetGaussianMeanX(float value);
+  void SetGaussianMeanY(float value);
+  void SetGaussianVarianceX(float value);
+  void SetGaussianVarianceY(float value);
+
+  void SetPa(float value);
+  void SetPb(float value);
+
+  void SetDeviation(float value);
+  void SetSMax(float value);
+
 private:
   Transform* mTransform;
   Model* mModel;
@@ -99,6 +118,23 @@ private:
   std::vector<Pixel> mOriginalImage;
   std::vector<Pixel> mFrequencyImage;
   std::vector<Pixel> mTransformedImage;
+
+  int IndexAt(int x, int y, int w);
+  float GaussianNoise(int x, int y);
+
+  // Assignment 4
+  float mGaussianMeanX;
+  float mGaussianMeanY;
+  float mGaussianVarianceX;
+  float mGaussianVarianceY;
+
+  float mPa;
+  float mPb;
+
+  float mDeviation;
+
+  float mSMax;
+
 };
 
 } // End of Elba namespace
