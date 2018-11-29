@@ -120,10 +120,13 @@ UniquePtr<OpenGLSubmesh> OpenGLMesh::ProcessSubmesh(aiMesh* mesh, const aiScene*
     vertex.mPos.y = mesh->mVertices[i].y;
     vertex.mPos.z = mesh->mVertices[i].z;
 
-    // normal
-    vertex.mNormal.x = mesh->mNormals[i].x;
-    vertex.mNormal.y = mesh->mNormals[i].y;
-    vertex.mNormal.z = mesh->mNormals[i].z;
+    if (mesh->mNormals)
+    {
+      // normal
+      vertex.mNormal.x = mesh->mNormals[i].x;
+      vertex.mNormal.y = mesh->mNormals[i].y;
+      vertex.mNormal.z = mesh->mNormals[i].z;
+    }
 
     // texture coordinates
     if (mesh->mTextureCoords[0])
