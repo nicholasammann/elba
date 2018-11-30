@@ -215,24 +215,20 @@ void ResizeHandler::ApplyGaussianNoise()
   {
     OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
 
-    std::vector<Pixel> imagePixels = mNoisyImage;
-    int w = mNoisyWidth;
-    int h = mNoisyHeight;
-
-    for (int y = 0; y < mMasterHeight; y++)
+    for (int y = 0; y < mNoisyHeight; y++)
     {
-      for (int x = 0; x < mMasterWidth; x++)
+      for (int x = 0; x < mNoisyWidth; x++)
       {
         int noise = static_cast<int>(GaussianNoise(x, y));
-        int index = IndexAt(x, y, w);
-        imagePixels[index].r = std::clamp(imagePixels[index].r + noise, 0, 255);
-        imagePixels[index].g = std::clamp(imagePixels[index].g + noise, 0, 255);
-        imagePixels[index].b = std::clamp(imagePixels[index].b + noise, 0, 255);
+        int index = IndexAt(x, y, mNoisyWidth);
+        mNoisyImage[index].r = std::clamp(mNoisyImage[index].r + noise, 0, 255);
+        mNoisyImage[index].g = std::clamp(mNoisyImage[index].g + noise, 0, 255);
+        mNoisyImage[index].b = std::clamp(mNoisyImage[index].b + noise, 0, 255);
       }
     }
 
     // update the image on the texture
-    texture->SetImage(imagePixels, w, h);
+    texture->SetImage(mNoisyImage, mNoisyWidth, mNoisyHeight);
 
     // bind the new image data to the gpu
     texture->RebindTexture();
@@ -249,32 +245,28 @@ void ResizeHandler::ApplySaltPepperNoise()
   {
     OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
 
-    std::vector<Pixel> imagePixels = mNoisyImage;
-    int w = mNoisyWidth;
-    int h = mNoisyHeight;
-
     static std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
-    for (int y = 0; y < mMasterHeight; y++)
+    for (int y = 0; y < mNoisyHeight; y++)
     {
-      for (int x = 0; x < mMasterWidth; x++)
+      for (int x = 0; x < mNoisyWidth; x++)
       {
-        int index = IndexAt(x, y, w);
+        int index = IndexAt(x, y, mNoisyWidth);
         double noise = distribution(generator);
         if (noise < mPa)
         {
-          imagePixels[index] = Pixel(0, 0, 0, 255);
+          mNoisyImage[index] = Pixel(0, 0, 0, 255);
         }
         else if (noise > mPb)
         {
-          imagePixels[index] = Pixel(255, 255, 255, 255);
+          mNoisyImage[index] = Pixel(255, 255, 255, 255);
         }
       }
     }
 
     // update the image on the texture
-    texture->SetImage(imagePixels, w, h);
+    texture->SetImage(mNoisyImage, mNoisyWidth, mNoisyHeight);
 
     // bind the new image data to the gpu
     texture->RebindTexture();
@@ -283,17 +275,201 @@ void ResizeHandler::ApplySaltPepperNoise()
 
 void ResizeHandler::ApplyNoiseReduction()
 {
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
 
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
+  {
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
+    for (int y = 0; y < mNoisyHeight; y++)
+    {
+      for (int x = 0; x < mNoisyWidth; x++)
+      {
+        int a = ColorAt(x - 1, y - 1, mNoisyWidth, mNoisyImage);
+        int b = ColorAt(x,     y - 1, mNoisyWidth, mNoisyImage);
+        int c = ColorAt(x + 1, y - 1, mNoisyWidth, mNoisyImage);
+        int d = ColorAt(x - 1, y,     mNoisyWidth, mNoisyImage);
+        int e = ColorAt(x,     y,     mNoisyWidth, mNoisyImage);
+        int f = ColorAt(x + 1, y,     mNoisyWidth, mNoisyImage);
+        int g = ColorAt(x - 1, y + 1, mNoisyWidth, mNoisyImage);
+        int h = ColorAt(x,     y + 1, mNoisyWidth, mNoisyImage);
+        int i = ColorAt(x + 1, y + 1, mNoisyWidth, mNoisyImage);
+
+        std::vector<int> kernel = { a , b, c, d, e, f, g, h, i };
+        std::sort(kernel.begin(), kernel.end());
+        int median = kernel[4];
+        mNoisyImage[IndexAt(x, y, mNoisyWidth)] = Pixel(median, median, median, 255);
+      }
+    }
+
+    // update the image on the texture
+    texture->SetImage(mNoisyImage, mNoisyWidth, mNoisyHeight);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
+  }
 }
 
 void ResizeHandler::ApplyLocalNoiseReduction()
 {
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
 
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
+  {
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
+    for (int y = 0; y < mNoisyHeight; y++)
+    {
+      for (int x = 0; x < mNoisyWidth; x++)
+      {
+        int a = ColorAt(x - 1, y - 1, mNoisyWidth, mNoisyImage);
+        int b = ColorAt(x, y - 1, mNoisyWidth, mNoisyImage);
+        int c = ColorAt(x + 1, y - 1, mNoisyWidth, mNoisyImage);
+        int d = ColorAt(x - 1, y, mNoisyWidth, mNoisyImage);
+        int e = ColorAt(x, y, mNoisyWidth, mNoisyImage);
+        int f = ColorAt(x + 1, y, mNoisyWidth, mNoisyImage);
+        int g = ColorAt(x - 1, y + 1, mNoisyWidth, mNoisyImage);
+        int h = ColorAt(x, y + 1, mNoisyWidth, mNoisyImage);
+        int i = ColorAt(x + 1, y + 1, mNoisyWidth, mNoisyImage);
+
+        std::vector<int> kernel = { a , b, c, d, e, f, g, h, i };
+
+        float mean = (a + b + c + d + e + f + g + h + i) / 9.0f;
+        float var = Variance(kernel, mean);
+
+        int col = static_cast<float>(e) - (((mDeviation * mDeviation) / var) * (static_cast<float>(e) - mean));
+
+        mNoisyImage[IndexAt(x, y, mNoisyWidth)] = Pixel(col, col, col, 255);
+      }
+    }
+
+    // update the image on the texture
+    texture->SetImage(mNoisyImage, mNoisyWidth, mNoisyHeight);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
+  }
 }
 
 void ResizeHandler::ApplyAdaptiveNoiseReduction()
 {
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
 
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
+  {
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
+    for (int y = 0; y < mNoisyHeight; y++)
+    {
+      for (int x = 0; x < mNoisyWidth; x++)
+      {
+        int a1 = 0;
+        int a2 = 0;
+        int n = 3;
+        int min = 0;
+        int median = 0;
+        int max = 0;
+
+        while (n <= mSMax)
+        {
+          std::vector<int> kernel;
+          FindKernel(x, y, n, mNoisyWidth, mNoisyImage, kernel);
+          std::sort(kernel.begin(), kernel.end());
+          min = kernel.front();
+          median = kernel[kernel.size() / 2];
+          max = kernel.back();
+
+          a1 = median - min;
+          a2 = median - max;
+
+          if (a1 > 0 && a2 < 0)
+          {
+            break;
+          }
+          n += 2;
+        }
+
+        int col = 0;
+        if (n > mSMax)
+        {
+          col = median;
+        }
+        // stage B
+        else
+        {
+          int zxy = ColorAt(x, y, mNoisyWidth, mNoisyImage);
+          int b1 = zxy - min;
+          int b2 = zxy - max;
+
+          if (b1 > 0 && b2 < 0)
+          {
+            col = zxy;
+          }
+          else
+          {
+            col = median;
+          }
+        }
+
+        mNoisyImage[IndexAt(x, y, mNoisyWidth)] = Pixel(col, col, col, 255);
+      }
+    }
+
+    // update the image on the texture
+    texture->SetImage(mNoisyImage, mNoisyWidth, mNoisyHeight);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
+  }
+}
+
+int ResizeHandler::ColorAt(int x, int y, int w, const std::vector<Pixel>& image)
+{
+  // ASSUME GRAYSCALE
+  int index = IndexAt(x, y, w);
+  if (index < 0 || index >= image.size())
+  {
+    return 0;
+  }
+  return image[index].r;
+}
+
+float ResizeHandler::Variance(const std::vector<int>& arr, float mean)
+{
+  float sum = 0;
+
+  for (int val : arr)
+  {
+    float diff = static_cast<float>(val) - mean;
+    sum += diff * diff;
+  }
+
+  return static_cast<float>(sum) / static_cast<float>(arr.size());
+}
+
+float ResizeHandler::Mean(const std::vector<int>& arr)
+{
+  float sum = 0.0f;
+  for (int val : arr)
+  {
+    sum += val;
+  }
+  return sum / arr.size();
 }
 
 void ResizeHandler::OnTextureChange(const TextureChangeEvent& event)
@@ -633,6 +809,22 @@ float ResizeHandler::GaussianNoise(int x, int y)
   static std::default_random_engine generator;
   std::normal_distribution<double> distribution(mGaussianMean, mGaussianVariance);
   return static_cast<float>(distribution(generator));
+}
+
+void Elba::ResizeHandler::FindKernel(int x, int y, int n, int w,
+  const std::vector<Pixel>& image, std::vector<int>& output)
+{
+  output.clear();
+
+  int bound = n / 2;
+
+  for (int j = -bound; j <= bound; j++)
+  {
+    for (int i = -bound; i <= bound; i++)
+    {
+      output.push_back(ColorAt(x + i, y + j, w, image));
+    }
+  }
 }
 
 void ResizeHandler::SetGaussianMean(float value)

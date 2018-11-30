@@ -93,6 +93,10 @@ private:
   int mNoisyWidth;
   int mNoisyHeight;
 
+  int ColorAt(int x, int y, int w, const std::vector<Pixel>& image);
+  float Variance(const std::vector<int>& arr, float mean);
+  float Mean(const std::vector<int>& arr);
+
   void OnTextureChange(const TextureChangeEvent& event);
   
   void Interpolate(int screenWidth, int screenHeight);
@@ -123,6 +127,10 @@ private:
 
   int IndexAt(int x, int y, int w);
   float GaussianNoise(int x, int y);
+
+  void FindKernel(int x, int y, int n, int w,
+    const std::vector<Pixel>& image,
+    std::vector<int>& output);
 
   // Assignment 4
   float mGaussianMean;
