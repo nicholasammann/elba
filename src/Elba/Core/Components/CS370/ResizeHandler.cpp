@@ -1,4 +1,6 @@
 #include <cmath>
+#include <random>
+#include <algorithm>
 
 #include "Elba/Core/Object.hpp"
 #include "Elba/Core/Components/CS370/ResizeHandler.hpp"
@@ -24,10 +26,8 @@ ResizeHandler::ResizeHandler(Object* parent)
   , mUseHistogramEqualization(false)
   , mFourierMethod(FourierMethod::None)
   , mCurrentImage(CurrentImage::Original)
-  , mGaussianMeanX(0.0f)
-  , mGaussianMeanY(0.0f)
-  , mGaussianVarianceX(0.0f)
-  , mGaussianVarianceY(0.0f)
+  , mGaussianMean(0.0f)
+  , mGaussianVariance(0.0f)
   , mPa(0.0f)
   , mPb(0.0f)
   , mDeviation(0.0f)
@@ -207,26 +207,78 @@ void ResizeHandler::SetCurrentImage(CurrentImage image)
 
 void ResizeHandler::ApplyGaussianNoise()
 {
-  std::vector<Pixel> imagePixels = mMasterImage;
-  int w = mMasterWidth;
-  int h = mMasterHeight;
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
 
-  for (int y = 0; y < mMasterHeight; y++)
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
   {
-    for (int x = 0; x < mMasterWidth; x++)
-    {
-      int noise = static_cast<int>(255.0f * GaussianNoise(x, y));
-      
-      int index = IndexAt(x, y, w);
-      
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
 
+    std::vector<Pixel> imagePixels = mNoisyImage;
+    int w = mNoisyWidth;
+    int h = mNoisyHeight;
+
+    for (int y = 0; y < mMasterHeight; y++)
+    {
+      for (int x = 0; x < mMasterWidth; x++)
+      {
+        int noise = static_cast<int>(GaussianNoise(x, y));
+        int index = IndexAt(x, y, w);
+        imagePixels[index].r = std::clamp(imagePixels[index].r + noise, 0, 255);
+        imagePixels[index].g = std::clamp(imagePixels[index].g + noise, 0, 255);
+        imagePixels[index].b = std::clamp(imagePixels[index].b + noise, 0, 255);
+      }
     }
+
+    // update the image on the texture
+    texture->SetImage(imagePixels, w, h);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
   }
 }
 
 void ResizeHandler::ApplySaltPepperNoise()
 {
+  OpenGLMesh* mesh = static_cast<OpenGLMesh*>(mModel->GetMesh());
 
+  auto it = mesh->GetSubmeshes().begin();
+
+  if (it != mesh->GetSubmeshes().end())
+  {
+    OpenGLTexture* texture = it->GetTexture(TextureType::Diffuse);
+
+    std::vector<Pixel> imagePixels = mNoisyImage;
+    int w = mNoisyWidth;
+    int h = mNoisyHeight;
+
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
+    for (int y = 0; y < mMasterHeight; y++)
+    {
+      for (int x = 0; x < mMasterWidth; x++)
+      {
+        int index = IndexAt(x, y, w);
+        double noise = distribution(generator);
+        if (noise < mPa)
+        {
+          imagePixels[index] = Pixel(0, 0, 0, 255);
+        }
+        else if (noise > mPb)
+        {
+          imagePixels[index] = Pixel(255, 255, 255, 255);
+        }
+      }
+    }
+
+    // update the image on the texture
+    texture->SetImage(imagePixels, w, h);
+
+    // bind the new image data to the gpu
+    texture->RebindTexture();
+  }
 }
 
 void ResizeHandler::ApplyNoiseReduction()
@@ -330,6 +382,10 @@ void ResizeHandler::Interpolate(int screenWidth, int screenHeight)
 
     // update the image on the texture
     texture->SetImage(image, w, h);
+
+    mNoisyImage = image;
+    mNoisyWidth = w;
+    mNoisyHeight = h;
 
     // bind the new image data to the gpu
     texture->RebindTexture();
@@ -571,30 +627,22 @@ int ResizeHandler::IndexAt(int x, int y, int w)
 
 float ResizeHandler::GaussianNoise(int x, int y)
 {
-  float expX = ((x - mGaussianMeanX) * (x - mGaussianMeanX)) / (2 * mGaussianVarianceX * mGaussianVarianceX);
-  float expY = ((y - mGaussianMeanY) * (y - mGaussianMeanY)) / (2 * mGaussianVarianceY * mGaussianVarianceY);
+  //float expX = ((x - mGaussianMeanX) * (x - mGaussianMeanX)) / (2 * mGaussianVarianceX * mGaussianVarianceX);
+  //float expY = ((y - mGaussianMeanY) * (y - mGaussianMeanY)) / (2 * mGaussianVarianceY * mGaussianVarianceY);
 
-  return pow(2.71828, -(expX + expY));
+  static std::default_random_engine generator;
+  std::normal_distribution<double> distribution(mGaussianMean, mGaussianVariance);
+  return static_cast<float>(distribution(generator));
 }
 
-void ResizeHandler::SetGaussianMeanX(float value)
+void ResizeHandler::SetGaussianMean(float value)
 {
-  mGaussianMeanX = value;
+  mGaussianMean = value;
 }
 
-void ResizeHandler::SetGaussianMeanY(float value)
+void ResizeHandler::SetGaussianVariance(float value)
 {
-  mGaussianMeanY = value;
-}
-
-void ResizeHandler::SetGaussianVarianceX(float value)
-{
-  mGaussianVarianceX = value;
-}
-
-void ResizeHandler::SetGaussianVarianceY(float value)
-{
-  mGaussianVarianceY = value;
+  mGaussianVariance = value;
 }
 
 void ResizeHandler::SetPa(float value)

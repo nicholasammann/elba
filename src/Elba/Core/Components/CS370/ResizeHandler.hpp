@@ -70,10 +70,8 @@ public:
   void ApplyLocalNoiseReduction();
   void ApplyAdaptiveNoiseReduction();
 
-  void SetGaussianMeanX(float value);
-  void SetGaussianMeanY(float value);
-  void SetGaussianVarianceX(float value);
-  void SetGaussianVarianceY(float value);
+  void SetGaussianMean(float value);
+  void SetGaussianVariance(float value);
 
   void SetPa(float value);
   void SetPb(float value);
@@ -90,6 +88,10 @@ private:
   std::vector<Pixel> mMasterImage;
   int mMasterWidth;
   int mMasterHeight;
+
+  std::vector<Pixel> mNoisyImage;
+  int mNoisyWidth;
+  int mNoisyHeight;
 
   void OnTextureChange(const TextureChangeEvent& event);
   
@@ -123,10 +125,8 @@ private:
   float GaussianNoise(int x, int y);
 
   // Assignment 4
-  float mGaussianMeanX;
-  float mGaussianMeanY;
-  float mGaussianVarianceX;
-  float mGaussianVarianceY;
+  float mGaussianMean;
+  float mGaussianVariance;
 
   float mPa;
   float mPb;

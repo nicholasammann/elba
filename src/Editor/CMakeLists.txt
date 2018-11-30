@@ -1,6 +1,7 @@
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
 add_executable(editor)
+set_property(TARGET editor PROPERTY CXX_STANDARD 17)
 
 # Include all subdirectories
 add_subdirectory(Framework)

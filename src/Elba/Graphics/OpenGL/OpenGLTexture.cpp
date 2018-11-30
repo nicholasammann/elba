@@ -272,4 +272,13 @@ void OpenGLTexture::InsertPPMToken(std::ofstream& file, int token, int& tokenCou
   }
 }
 
+Pixel::Pixel() : r(0), g(0), b(0), a(255)
+{
+}
+
+Pixel::Pixel(int aR, int aG, int aB, int aA)
+  : r(aR), g(aG), b(aB), a(aA)
+{
+}
+
 } // End of Elba namespace

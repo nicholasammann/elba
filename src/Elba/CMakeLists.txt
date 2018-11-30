@@ -1,5 +1,7 @@
 add_library(elba STATIC)
 
+set_property(TARGET elba PROPERTY CXX_STANDARD 17)
+
 # Include all subdirectories
 add_subdirectory(Core)
 add_subdirectory(Framework)

@@ -41,10 +41,8 @@ private:
 
   // Assignment 4
   void OnUseGaussianNoise();
-  void OnGaussianMeanX(const QString& text);
-  void OnGaussianMeanY(const QString& text);
-  void OnGaussianVarianceX(const QString& text);
-  void OnGaussianVarianceY(const QString& text);
+  void OnGaussianMean(const QString& text);
+  void OnGaussianVariance(const QString& text);
 
   void OnUseSaltPepperNoise();
   void OnPa(const QString& text);
