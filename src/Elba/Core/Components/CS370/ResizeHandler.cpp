@@ -258,7 +258,7 @@ void ResizeHandler::ApplySaltPepperNoise()
         {
           mNoisyImage[index] = Pixel(0, 0, 0, 255);
         }
-        else if (noise > mPb)
+        else if (noise > (1 - mPb))
         {
           mNoisyImage[index] = Pixel(255, 255, 255, 255);
         }
