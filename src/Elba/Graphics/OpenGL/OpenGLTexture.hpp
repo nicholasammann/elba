@@ -8,6 +8,8 @@ namespace Elba
 
 struct Pixel
 {
+  Pixel();
+  Pixel(int aR, int aG, int aB, int aA);
   unsigned char r;
   unsigned char g;
   unsigned char b;

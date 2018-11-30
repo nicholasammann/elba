@@ -101,39 +101,23 @@ OptionsPanel::OptionsPanel(ImageEditor* workspace)
   noiseLayout->addWidget(gaussianNoise, row, 0);
   noiseLayout->addWidget(useGaussianNoise, row++, 1);
   // mean
-  QLabel* gaussianMeanX = new QLabel("Gaussian Mean X");
-  QLineEdit* gaussianMeanXIn = new QLineEdit();
-  connect(gaussianMeanXIn,
+  QLabel* gaussianMean = new QLabel("Gaussian Mean");
+  QLineEdit* gaussianMeanIn = new QLineEdit();
+  connect(gaussianMeanIn,
     &QLineEdit::textChanged,
     this,
-    &OptionsPanel::OnGaussianMeanX);
-  noiseLayout->addWidget(gaussianMeanX, row, 0);
-  noiseLayout->addWidget(gaussianMeanXIn, row++, 1);
-  QLabel* gaussianMeanY = new QLabel("Gaussian Mean Y");
-  QLineEdit* gaussianMeanYIn = new QLineEdit();
-  connect(gaussianMeanYIn,
-    &QLineEdit::textChanged,
-    this,
-    &OptionsPanel::OnGaussianMeanY);
-  noiseLayout->addWidget(gaussianMeanY, row, 0);
-  noiseLayout->addWidget(gaussianMeanYIn, row++, 1);
+    &OptionsPanel::OnGaussianMean);
+  noiseLayout->addWidget(gaussianMean, row, 0);
+  noiseLayout->addWidget(gaussianMeanIn, row++, 1);
   // variance
-  QLabel* gaussianVarianceX = new QLabel("Gaussian Variance X");
-  QLineEdit* gaussianVarianceXIn = new QLineEdit();
-  connect(gaussianVarianceXIn,
+  QLabel* gaussianVariance = new QLabel("Gaussian Variance");
+  QLineEdit* gaussianVarianceIn = new QLineEdit();
+  connect(gaussianVarianceIn,
     &QLineEdit::textChanged,
     this,
-    &OptionsPanel::OnGaussianVarianceX);
-  noiseLayout->addWidget(gaussianVarianceX, row, 0);
-  noiseLayout->addWidget(gaussianVarianceXIn, row++, 1);
-  QLabel* gaussianVarianceY = new QLabel("Gaussian Variance Y");
-  QLineEdit* gaussianVarianceYIn = new QLineEdit();
-  connect(gaussianVarianceYIn,
-    &QLineEdit::textChanged,
-    this,
-    &OptionsPanel::OnGaussianVarianceX);
-  noiseLayout->addWidget(gaussianVarianceY, row, 0);
-  noiseLayout->addWidget(gaussianVarianceYIn, row++, 1);
+    &OptionsPanel::OnGaussianVariance);
+  noiseLayout->addWidget(gaussianVariance, row, 0);
+  noiseLayout->addWidget(gaussianVarianceIn, row++, 1);
 
   // S&P Noise ////
   // checkbox for apply S&P noise
