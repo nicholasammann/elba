@@ -175,6 +175,10 @@ void ImageWindow::RenderNow()
 
       it->LoadTexture(texture);
     }
+
+    auto gam = object->AddComponent<Elba::GammaController>();
+    gam->Initialize();
+
     ////////////////////////
   }
 }
