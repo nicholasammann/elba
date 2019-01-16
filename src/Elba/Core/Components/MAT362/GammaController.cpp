@@ -57,7 +57,7 @@ void GammaController::Update(double dt)
 
 unsigned char GammaController::CalculateAverageIntensity(std::vector<Pixel>& image)
 {
-  unsigned int sum = 0.0f;
+  unsigned int sum = 0;
 
   for (Pixel& pixel : image)
   {

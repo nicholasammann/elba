@@ -22,7 +22,7 @@ void Rotate::Initialize()
 
 void Rotate::Update(double dt)
 {
-  mTimeSince += dt;
+  mTimeSince += static_cast<float>(dt);
 
   glm::quat rot = mTransform->GetWorldRotation();
   glm::quat change(glm::vec3(0.0f, mRotateSpeed * static_cast<float>(.003), 0.0f));
