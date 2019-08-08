@@ -1,7 +1,7 @@
 #include <stbi/stb_image.h>
 
 #include "Elba/Core/Object.hpp"
-#include "Elba/Core/Components/CS370/RealtimeHatching.hpp"
+#include "Elba/GameLogic/CS370/RealtimeHatching.hpp"
 
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
 

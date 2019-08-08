@@ -5,6 +5,7 @@ set_property(TARGET elba PROPERTY CXX_STANDARD 17)
 # Include all subdirectories
 add_subdirectory(Core)
 add_subdirectory(Framework)
+add_subdirectory(GameLogic)
 add_subdirectory(Graphics)
 add_subdirectory(Physics)
 add_subdirectory(Tests)

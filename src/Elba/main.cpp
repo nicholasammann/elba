@@ -11,7 +11,7 @@
 #include "Engine.hpp"
 #include "Core/CoreModule.hpp"
 #include "Physics/PhysicsModule.hpp"
-#include "Elba/Core/Components/Rotate.hpp"
+#include "Elba/GameLogic/Rotate.hpp"
 
 using namespace Elba;
 

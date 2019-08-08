@@ -2,8 +2,8 @@
 
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Core/Object.hpp"
-#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
-#include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
+#include "Elba/GameLogic/CS370/ResizeHandler.hpp"
+#include "Elba/GameLogic/CS370/ImageOperationHandler.hpp"
 #include "Elba/Core/Components/Model.hpp"
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
@@ -31,8 +31,8 @@ void ImageOperationHandler::Initialize()
 
 void ImageOperationHandler::Resize(const ResizeEvent& event)
 {
-  mScreenWidth = event.newSize.x;
-  mScreenHeight = event.newSize.y;
+  mScreenWidth = static_cast<int>(event.newSize.x);
+  mScreenHeight = static_cast<int>(event.newSize.y);
 }
 
 void ImageOperationHandler::SetImageA(OpenGLTexture* image)
@@ -222,9 +222,9 @@ void ImageOperationHandler::NormalizeImage(std::vector<BigPixel>& image, float r
   {
     for (int i = 0; i < image.size(); i++)
     {
-      result[i].r = image[i].r *= ratio;
-      result[i].g = image[i].g *= ratio;
-      result[i].b = image[i].b *= ratio;
+      result[i].r = image[i].r = static_cast<int>(image[i].r * ratio);
+      result[i].g = image[i].g = static_cast<int>(image[i].g * ratio);
+      result[i].b = image[i].b = static_cast<int>(image[i].b * ratio);
       result[i].a = 255;
     }
   }

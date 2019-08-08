@@ -1,5 +1,5 @@
 #include "Elba/Core/Object.hpp"
-#include "Elba/Core/Components/Rotate.hpp"
+#include "Elba/GameLogic/Rotate.hpp"
 #include "Elba/Core/Components/Transform.hpp"
 
 namespace Elba

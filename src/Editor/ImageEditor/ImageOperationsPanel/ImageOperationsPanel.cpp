@@ -2,7 +2,7 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
-#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
+#include "Elba/GameLogic/CS370/ResizeHandler.hpp"
 
 #include "Editor/ImageEditor/ImageOperationsPanel/ImageOperationsPanel.hpp"
 #include "Editor/ImageEditor/ImageEditor.hpp"

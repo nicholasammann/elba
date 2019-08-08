@@ -10,7 +10,7 @@
 #include "Editor/Framework/Widget.hpp"
 
 #include "Elba/Core/CoreModule.hpp"
-#include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
+#include "Elba/GameLogic/CS370/ImageOperationHandler.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 
 namespace Editor

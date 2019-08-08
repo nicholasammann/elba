@@ -1,5 +1,5 @@
 #include "Elba/Core/Object.hpp"
-#include "Elba/Core/Components/MAT362/GammaController.hpp"
+#include "Elba/GameLogic/MAT362/GammaController.hpp"
 
 #include "Elba/Core/CoreModule.hpp"
 #include "Elba/Engine.hpp"

@@ -3,7 +3,7 @@
 #include <qfiledialog.h>
 
 #include "Elba/Core/CoreModule.hpp"
-#include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
+#include "Elba/GameLogic/CS370/ImageOperationHandler.hpp"
 #include "Elba/Core/Components/Model.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"

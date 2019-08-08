@@ -5,9 +5,9 @@
 #include <qevent.h>
 
 #include "Elba/Core/CoreModule.hpp"
-#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
-#include "Elba/Core/Components/CS370/ImageOperationHandler.hpp"
-#include "Elba/Core/Components/MAT362/GammaController.hpp"
+#include "Elba/GameLogic/CS370/ResizeHandler.hpp"
+#include "Elba/GameLogic/CS370/ImageOperationHandler.hpp"
+#include "Elba/GameLogic/MAT362/GammaController.hpp"
 
 #include "Elba/Engine.hpp"
 

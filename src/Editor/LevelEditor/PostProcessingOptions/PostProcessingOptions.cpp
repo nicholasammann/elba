@@ -5,8 +5,8 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Core/CoreModule.hpp"
-#include "Elba/Core/Components/Rotate.hpp"
-#include "Elba/Core/Components/CS370/VideoTransitions.hpp"
+#include "Elba/GameLogic/Rotate.hpp"
+#include "Elba/GameLogic/CS370/VideoTransitions.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
 

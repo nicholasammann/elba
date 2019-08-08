@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "Elba/Core/Object.hpp"
-#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
+#include "Elba/GameLogic/CS370/ResizeHandler.hpp"
 
 #include "Elba/Core/Components/Model.hpp"
 #include "Elba/Core/Components/Transform.hpp"

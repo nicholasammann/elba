@@ -6,7 +6,7 @@
 
 #include "Elba/Engine.hpp"
 #include "Elba/Core/CoreModule.hpp"
-#include "Elba/Core/Components/CS370/VideoTransitions.hpp"
+#include "Elba/GameLogic/CS370/VideoTransitions.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/PostProcessingOptions/AddEffectContextMenu.hpp"

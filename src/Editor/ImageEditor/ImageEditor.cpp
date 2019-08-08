@@ -1,7 +1,7 @@
 #include <qtimer.h>
 
 #include "Elba/Core/CoreModule.hpp"
-#include "Elba/Core/Components/CS370/ResizeHandler.hpp"
+#include "Elba/GameLogic/CS370/ResizeHandler.hpp"
 
 #include "Editor/ImageEditor/ImageEditor.hpp"
 #include "Editor/ImageEditor/ImageWindow/ImageWindow.hpp"
