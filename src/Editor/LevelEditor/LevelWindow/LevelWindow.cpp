@@ -2,13 +2,27 @@
 
 #include <qpainter.h>
 #include <qopenglpaintdevice.h>
+#include <qevent.h>
+
+#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Core/Components/Rotate.hpp"
+#include "Elba/Core/Components/CS370/RealtimeHatching.hpp"
+#include "Elba/Core/Components/CS370/VideoTransitions.hpp"
 
 #include "Elba/Engine.hpp"
+
 #include "Elba/Graphics/GraphicsModule.hpp"
-#include "Elba/Core/CoreModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLModule.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLMesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 
 #include "Editor/LevelEditor/LevelEditor.hpp"
 #include "Editor/LevelEditor/LevelWindow/LevelWindow.hpp"
+
+#include "Elba/Utilities/Utils.hpp"
+
 
 Editor::LevelWindow::LevelWindow(LevelEditor* editor, QWindow* parent)
 : QWindow(parent)
@@ -57,12 +71,23 @@ void Editor::LevelWindow::Render()
 
 void Editor::LevelWindow::Initialize()
 {
+  GLenum err = glewInit();
+
   glEnable(GL_DEPTH_TEST);
 
-  GLenum err = glewInit();
+  Elba::OpenGLModule* glModule = dynamic_cast<Elba::OpenGLModule*>(mGraphicsModule);
+  if (glModule)
+  {
+    glModule->InitializePostProcessing();
+    Elba::OpenGLPostProcess* postProcess = glModule->GetPostProcess();
+  }
+
+  Elba::ResizeEvent resize;
+  resize.oldSize = resize.newSize = glm::vec2(width(), height());
+  mGraphicsModule->OnResize(resize);
 }
 
-void Editor::LevelWindow::SetAnimating(bool animating)
+void Editor::LevelWindow::SetAnimating(bool animating)  
 {
   mAnimating = animating;
 
@@ -114,19 +139,33 @@ void Editor::LevelWindow::RenderNow()
 
   if (needsInitialize)
   {
-    // Test Level
+    // Create objects in level
     Elba::CoreModule* core = mEditor->GetEngine()->GetCoreModule();
     Elba::Level* level = core->GetGameLevel();
 
     Elba::Object* object = level->CreateChild();
 
+    // Add components
     Elba::Transform* transform = object->AddComponent<Elba::Transform>();
-    transform->SetWorldTranslation(glm::vec3(0.0f, -1.0f, 0.0f));
+    transform->SetWorldTranslation(glm::vec3(0.0f, -10.0f, 1.0f));
+    transform->SetWorldRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    transform->SetWorldScale(glm::vec3(1.0f));
 
     Elba::Model* model = object->AddComponent<Elba::Model>();
     model->LoadMesh("crysis/nanosuit.obj");
-    model->LoadShader("simple");
-    ////////////////////////
+    model->LoadShader("textured");
+
+    Elba::Rotate* rotate = object->AddComponent<Elba::Rotate>();
+
+    Elba::RealtimeHatching* hatching = object->AddComponent<Elba::RealtimeHatching>();
+    Elba::VideoTransitions* video = object->AddComponent<Elba::VideoTransitions>();
+
+    // Initialize components
+    transform->Initialize();
+    model->Initialize();
+    rotate->Initialize();
+    hatching->Initialize();
+    video->Initialize();
   }
 }
 
@@ -135,6 +174,25 @@ bool Editor::LevelWindow::event(QEvent* event)
   switch (event->type())
   {
     case QEvent::UpdateRequest:
+    {
+      RenderNow();
+      return true;
+    }
+
+    case QEvent::Resize:
+    {
+      QResizeEvent* realEvent = static_cast<QResizeEvent*>(event);
+
+      Elba::ResizeEvent resize;
+      resize.oldSize = glm::vec2(realEvent->oldSize().width(), realEvent->oldSize().height());
+      resize.newSize = glm::vec2(realEvent->size().width(), realEvent->size().height());
+
+      mGraphicsModule->OnResize(resize);
+
+      return QWindow::event(event);
+    }
+
+    case QEvent::Paint:
     {
       RenderNow();
       return true;

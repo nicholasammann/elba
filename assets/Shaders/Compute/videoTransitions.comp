@@ -1,0 +1,120 @@
+#version 430
+layout(local_size_x = 1, local_size_y = 1) in;
+layout(rgba32f, binding = 0) uniform image2D img_input;
+layout(rgba32f, binding = 1) uniform image2D img_output;
+layout(rgba32f, binding = 4) uniform image2D transition_texture;
+
+const float offset = 1.0f;
+const float softness = 0.5f;
+const float transX = 1000;
+const float transY = 1000;
+const ivec2 squaresMin = ivec2(1);
+const int steps = 50; 
+
+uniform float transitionAmount;
+uniform int transitionMode;
+
+void main()
+{
+  // get index in global work group, i.e. x,y position
+  ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
+
+  // load pixel from real time display
+  vec3 inputPixel = vec3(imageLoad(img_input, pixel_coords));
+
+  // load pixel from transition texture
+  vec3 transitionPixel = vec3(imageLoad(transition_texture, pixel_coords));
+
+  vec3 color = vec3(0.0);
+
+  // transition type A (Fade from to another)
+  if (transitionMode == 0)
+  {
+
+    float luma = transitionPixel.x;
+    float t = mix(0.0, 1 + softness, transitionAmount);
+
+    if(luma <= t - softness)
+    {
+      color = transitionPixel;
+    }
+    else if(luma >= t)
+    {
+      color = inputPixel;
+    }
+    else
+    {
+      float alpha = (t - luma) / softness;
+      color = mix(inputPixel, transitionPixel, alpha);
+    }
+  }
+  // transition type B 
+  else if (transitionMode == 1)
+  {
+    highp int x = int(transitionAmount * transX);
+    highp int y = int(transitionAmount * transY);
+
+    if(x >= 0 && y >= 0)
+    {
+      if(pixel_coords.x >= x && pixel_coords.y >= y)
+      {
+        color = vec3(imageLoad(img_input, pixel_coords - ivec2(x, y)));
+      }
+      else
+      {
+        ivec2 uv;
+        if(x > 0)
+        {
+          uv = ivec2(x - 1, y);
+        }
+        else if(y > 0)
+        {
+          uv = ivec2(x, y - 1);
+        }
+        color = vec3(imageLoad(transition_texture, pixel_coords));
+      }
+    }
+    else if(x <= 0 && y <= 0)
+    {
+      if(pixel_coords.x <= (1 + x) && pixel_coords.y <= (1 + y))
+      {
+        color = vec3(imageLoad(img_input, pixel_coords - ivec2(x, y)));
+      }
+      else
+      {
+        ivec2 uv;
+        if(x < 0)
+        {
+          uv = ivec2(x + 1, y);
+        }
+        else if(y < 0)
+        {
+          uv = ivec2(x, y + 1);
+        }
+        color = vec3(imageLoad(transition_texture, pixel_coords));
+      }
+
+    }
+    else
+    {
+      color = transitionPixel;
+    }
+    
+  }
+  // transition type C (undecided?)
+  else if (transitionMode == 2)
+  {
+    float d = min(transitionAmount, 1.0 - transitionAmount);
+    float dist = steps>0 ? ceil(d * float(steps)) / float(steps) : d;
+    vec2 squareSize = 2.0 * dist / vec2(squaresMin);
+
+    ivec2 p = dist > 0.0 ? ivec2(floor(pixel_coords / squareSize) + 0.5 * squareSize) : pixel_coords;
+    vec3 inPix = vec3(imageLoad(img_input, p));
+    vec3 tPix = vec3(imageLoad(transition_texture, p));
+    color =  mix(inPix, tPix, transitionAmount);
+
+  }
+
+  // output to a specific pixel in the image
+  imageStore(img_output, pixel_coords, vec4(color, 1.0));
+}

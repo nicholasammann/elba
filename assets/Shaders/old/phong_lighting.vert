@@ -183,13 +183,11 @@ vec4 pointlight_computeColor(in vec4 viewPos, in vec4 viewNorm, in int lightIdx,
   float diffuseFactor = max(dot(viewNorm, lightUnitVec), 0);
   vec4 diffuse = diffuseFactor * light.diffuse * adiffuse;
 
-
   // calculate specular color
   vec4 viewVec = normalize(-vec4(viewPos.xyz, 0));
   vec4 reflec = 2.0 * viewVec * dot(viewVec, lightUnitVec) - lightUnitVec;
   float specFactor = pow(max(dot(reflec, viewVec), 0), shininess);
   vec4 specColor = light.specular * Material.specular * specFactor;
-  
 
   // calculate light source attenuation
   vec4 d = lightVec;

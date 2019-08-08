@@ -9,29 +9,29 @@ namespace Editor
 namespace Framework
 {
 
-class MainWindow;
+class Workspace;
 
 class Menu : public QMenu
 {
 public:
-  Menu(const char* aHeader, MainWindow* mainWindow);
+  Menu(const char* header, Workspace* workspace);
 
   template<typename T>
-  void AddAction(const char* aHeader, void (T::*aFn)(), Menu* aMenu, const char* aTooltip = "");
+  void AddAction(const char* header, void (T::*fn)(), Menu* menu, const char* tooltip = "");
 
-  void AddMenu(Menu* aMenu);
+  void AddMenu(Menu* menu);
 
 protected:
-  MainWindow* mMainWindow;
+  Workspace* mWorkspace;
 };
 
 template<typename T>
-void Menu::AddAction(const char* aHeader, void(T::*aFn)(), Menu* aMenu, const char* aTooltip)
+void Menu::AddAction(const char* header, void(T::*fn)(), Menu* menu, const char* tooltip)
 {
-  QAction* action = new QAction(aHeader);
+  QAction* action = new QAction(header);
   addAction(action);
-  connect(action, &QAction::triggered, static_cast<T*>(aMenu), aFn);
-  action->setToolTip(aTooltip);
+  connect(action, &QAction::triggered, static_cast<T*>(menu), fn);
+  action->setToolTip(tooltip);
 }
 
 } // End of Framework namespace

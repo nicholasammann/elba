@@ -44,9 +44,11 @@ T* MainWindow::LoadWorkspace(Args&&... args)
 
   if (inserted.second)
   {
-    return static_cast<T*>(inserted.first->second);
+    if (inserted.first->second->Initialize())
+    {
+      return static_cast<T*>(inserted.first->second);
+    }
   }
-
   return nullptr;
 }
 
@@ -57,10 +59,10 @@ bool MainWindow::UnloadWorkspace(T* workspace)
 
   if (it != mWorkspaces.end())
   {
+    it->second->Shutdown();
     mWorkspaces.erase(it);
     return true;
   }
-
   return false;
 }
 

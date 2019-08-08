@@ -1,17 +1,26 @@
-#include <gl/glew.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <algorithm>
 
-#include "OpenGLSubmesh.hpp"
+#include <gl/glew.h>
+
+#include "Elba/Graphics/OpenGL/OpenGLSubmesh.hpp"
+#include "Elba/Graphics/OpenGL/OpenGLTexture.hpp"
 
 namespace Elba
 {
 
+static std::string uniformNames[4] = { "diffuseTex", "specularTex", "normalTex", "heightTex" };
+
 OpenGLSubmesh::OpenGLSubmesh()
   : Submesh()
+  , mProgram(nullptr)
+  , mTextures{ nullptr }
 {
 }
 
 OpenGLSubmesh::OpenGLSubmesh(const std::vector<Vertex>& verts, const std::vector<Face>& faces)
+  : Submesh()
+  , mProgram(nullptr)
+  , mTextures{ nullptr }
 {
   mVertices = verts;
   mFaces = faces;
@@ -54,16 +63,43 @@ void OpenGLSubmesh::Initialize()
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mNormal));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mColor));
+
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mTexCoords));
+
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mNormal));
 
   glBindVertexArray(0);
 }
 
-void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model)
+void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm::mat4& model, const PointLight& light)
 {
-  if (mShader)
+  // Can't draw anything without a shader
+  if (!mProgram)
   {
-    mShader->UseShaderProgram();
+    return;
+  }
+
+  mProgram->Use();
+  GLuint prg = mProgram->Get();
+
+  unsigned int usedTextures = 0;
+
+  for (int i = 0; i < TextureType::TypeCount; ++i)
+  {
+    if (mTextures[i])
+    {
+      mTextures[i]->SetUniform(prg, uniformNames[i], usedTextures);
+      mTextures[i]->Bind(usedTextures++);
+    }
+  }
+
+  for (OpenGLTexture* texture : mExtraTextures)
+  {
+    texture->SetUniform(prg, texture->GetUniformName(), usedTextures);
+    texture->Bind(usedTextures++);
   }
 
   /*
@@ -84,25 +120,119 @@ void OpenGLSubmesh::Draw(const glm::mat4& proj, const glm::mat4& view, const glm
   matLoc = glGetUniformLocation(shdrPrg, "Material.shininess");
   glUniform1f(matLoc, mMaterial.shininess);
   */
-  GLuint shdrPrg = mShader->GetShaderProgram();
 
-  unsigned int viewLoc = glGetUniformLocation(shdrPrg, "view");
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-  unsigned int projLoc = glGetUniformLocation(shdrPrg, "projection");
-  glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-
-  unsigned int modelLoc = glGetUniformLocation(shdrPrg, "model");
-  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+  mProgram->SetUniform("view", view);
+  mProgram->SetUniform("projection", proj);
+  mProgram->SetUniform("model", model);
+  mProgram->SetUniform("pointLight.position", light.GetPosition());
+  mProgram->SetUniform("pointLight.intensity", light.GetIntensity());
 
   glBindVertexArray(mVAO);
-  glDrawElements(GL_TRIANGLES, mFaces.size() * 3, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, static_cast<int>(mFaces.size()) * 3, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
+
+  for (int i = 0; i < TextureType::TypeCount; ++i)
+  {
+    if (mTextures[i])
+    {
+      mTextures[i]->Unbind();
+    }
+  }
+
+  for (OpenGLTexture* texture : mExtraTextures)
+  {
+    texture->Unbind();
+  }
 }
 
-void OpenGLSubmesh::SetShader(OpenGLShader* shader)
+void OpenGLSubmesh::SetShaders(std::shared_ptr<OpenGLProgram> program)
 {
-  mShader = shader;
+  mProgram = program;
+}
+
+void OpenGLSubmesh::LoadTexture(const std::string& path, TextureType type)
+{
+  if (mTextures[type])
+  {
+    delete mTextures[type];
+  }
+
+  // should validate path at some point
+  mTextures[type] = new OpenGLTexture(path);
+
+  // dispatch event to all listeners
+  TextureChangeEvent event;
+  event.newTexture = mTextures[type];
+  event.type = type;
+
+  for (auto cb : mTextureChangeCallbacks)
+  {
+    cb.second(event);
+  }
+}
+
+void OpenGLSubmesh::LoadTexture(OpenGLTexture* texture, TextureType type)
+{
+  // make sure the new texture exists before we...
+  if (!texture)
+  {
+    return;
+  }
+
+  // DELETE OUR CURRENT GOOD BOI
+  if (mTextures[type])
+  {
+    delete mTextures[type];
+  }
+
+  // fine, we'll take the new doggo
+  mTextures[type] = texture;
+
+  // dispatch event to all listeners
+  TextureChangeEvent event;
+  event.newTexture = mTextures[type];
+  event.type = type;
+
+  for (auto cb : mTextureChangeCallbacks)
+  {
+    cb.second(event);
+  }
+}
+
+OpenGLTexture* OpenGLSubmesh::GetTexture(TextureType type) const
+{
+  return mTextures[type];
+}
+
+void OpenGLSubmesh::RegisterForTextureChange(Elba::GlobalKey key, TextureChangeCallback callback)
+{
+  mTextureChangeCallbacks.emplace_back(std::make_pair(key, callback));
+}
+
+bool OpenGLSubmesh::DeregisterForTextureChange(Elba::GlobalKey key)
+{
+  auto result = std::find_if(mTextureChangeCallbacks.begin(), mTextureChangeCallbacks.end(),
+    [key](const std::pair<Elba::GlobalKey, TextureChangeCallback>& pair)
+  {
+    if (key.ToStdString() == pair.first.ToStdString())
+    {
+      return true;
+    }
+    return false;
+  });
+
+  if (result != mTextureChangeCallbacks.end())
+  {
+    mTextureChangeCallbacks.erase(result);
+    return true;
+  }
+
+  return false;
+}
+
+void OpenGLSubmesh::AddTexture(OpenGLTexture* texture)
+{
+  mExtraTextures.push_back(texture);
 }
 
 } // End of Elba namespace

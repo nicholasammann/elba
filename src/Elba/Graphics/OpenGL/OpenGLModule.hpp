@@ -5,8 +5,12 @@
 
 #include "Elba/Graphics/GraphicsModule.hpp"
 #include "Elba/Graphics/OpenGL/OpenGLFactory.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLFramebuffer.hpp"
+#include "Elba/Graphics/OpenGL/Pipeline/OpenGLPostProcess.hpp"
 
 #include "Elba/Graphics/Camera.hpp"
+
+#include "Elba/Utilities/StdTypedefs.hpp"
 
 namespace Elba
 {
@@ -28,9 +32,14 @@ public:
   void Initialize() final;
 
   /**
+  * \brief Initializes framebuffer for post processing.
+  */
+  void InitializePostProcessing();
+
+  /**
   * \brief Update function called by Engine. Updates graphics.
   */
-  void Update() final;
+  void Update(double dt) final;
 
   /**
   * \brief Window/context agnostic rendering calls.
@@ -44,10 +53,29 @@ public:
   */
   UniquePtr<Mesh> RequestMesh(std::string name) final;
 
+  std::pair<int, int> GetScreenDimensions() const;
+
+  void SetClearColor(glm::vec4 color);
+
+  Camera* GetCamera();
+
+  OpenGLFramebuffer* GetFramebuffer();
+
+  void SetUseFramebuffer(bool useFramebuffer);
+
+  OpenGLPostProcess* GetPostProcess();
+
 private:
   UniquePtr<OpenGLFactory> mFactory;
   GLFWwindow* mWindow;
   UniquePtr<Camera> mCamera;
+
+  UniquePtr<OpenGLFramebuffer> mFramebuffer;
+  bool mUseFramebuffer;
+
+  UniquePtr<OpenGLPostProcess> mPostProcess;
+
+  glm::vec4 mClearColor;
 };
 
 } // End of Elba namespace
