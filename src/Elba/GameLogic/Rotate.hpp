@@ -22,7 +22,7 @@ public:
 private:
   Transform* mTransform;
   glm::vec3 mOrigPos;
-  float mTimeSince;
+  double mTimeSince;
 
   float mRotateSpeed;
   float mMoveSpeed;

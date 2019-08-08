@@ -1,5 +1,5 @@
 /******************************************************************************
- * All content © 2014 DigiPen (USA) Corporation, all rights reserved.
+ * All content ï¿½ 2014 DigiPen (USA) Corporation, all rights reserved.
  * Reproduction or disclosure of this file or its contents without the prior
  * written consent of DigiPen Institute of Technology is prohibited.
  *
@@ -80,6 +80,8 @@
                                                  Hayaki Saito
                                                  Johan Duparc
 */
+
+#pragma warning( disable : 4312)
 
 #ifndef STBI_INCLUDE_STB_IMAGE_H
 #define STBI_INCLUDE_STB_IMAGE_H

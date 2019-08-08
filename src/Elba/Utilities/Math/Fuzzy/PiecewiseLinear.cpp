@@ -52,7 +52,7 @@ void PiecewiseLinear::ClearPoints()
 
 unsigned int PiecewiseLinear::GetNumPoints() const
 {
-  return mPoints.size();
+  return static_cast<unsigned int>(mPoints.size());
 }
 
 } // End of Elba namespace

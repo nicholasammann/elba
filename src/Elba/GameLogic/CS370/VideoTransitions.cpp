@@ -39,11 +39,11 @@ void VideoTransitions::Update(double dt)
   // update transition amount
   if (mTransitionAmount < mTargetTransitionAmount)
   {
-    mTransitionAmount += dt;
+    mTransitionAmount += static_cast<float>(dt);
   }
   else if (mTransitionAmount > mTargetTransitionAmount)
   {
-    mTransitionAmount -= dt;
+    mTransitionAmount -= static_cast<float>(dt);
   }
 
   if (mTransitionAmount < 0.0f)

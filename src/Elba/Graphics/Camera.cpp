@@ -1,4 +1,5 @@
 #include <cmath>
+#include <exception>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -96,6 +97,8 @@ glm::mat4 Camera::ConstructProjMatrix(int aWidth, int aHeight)
       return glm::ortho(-w, w, -h, h, 0.01f, 100.0f);
     }
   }
+
+  throw std::exception("Camera is not set to a valid projection mode. Camera::mProjectionMode is invalid.");
 }
 
 void Camera::SetPosition(glm::vec3 aPos)

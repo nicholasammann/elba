@@ -347,7 +347,7 @@ void ResizeHandler::ApplyLocalNoiseReduction()
         float mean = (a + b + c + d + e + f + g + h + i) / 9.0f;
         float var = Variance(kernel, mean);
 
-        int col = static_cast<float>(e) - (((mDeviation * mDeviation) / var) * (static_cast<float>(e) - mean));
+        int col = static_cast<int>(static_cast<float>(e) - (((mDeviation * mDeviation) / var) * (static_cast<float>(e) - mean)));
 
         mNoisyImage[IndexAt(x, y, mNoisyWidth)] = Pixel(col, col, col, 255);
       }

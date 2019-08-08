@@ -29,7 +29,7 @@ void Rotate::Update(double dt)
   rot *= change;
   mTransform->SetWorldRotation(rot);
 
-  float move = sin(mMoveSpeed * mTimeSince);
+  float move = static_cast<float>(sin(mMoveSpeed * mTimeSince));
   glm::vec3 pos = mOrigPos;
   pos.x += 3.0f * move;
   mTransform->SetWorldTranslation(pos);

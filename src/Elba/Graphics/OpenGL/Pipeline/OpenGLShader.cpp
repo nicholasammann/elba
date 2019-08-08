@@ -48,7 +48,7 @@ const GLchar* OpenGLShader::ReadShader(const std::string& filename)
   }
 
   char* sourceChar = new char[source.size() + 1];
-  strcpy(sourceChar, source.data());
+  strcpy_s(sourceChar, source.size(), source.data());
 
   sourceChar[source.size()] = '\0';
 
