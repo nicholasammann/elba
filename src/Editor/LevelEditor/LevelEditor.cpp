@@ -39,8 +39,8 @@ bool LevelEditor::Initialize()
   QWidget* container = mainWindow->createWindowContainer(mLevelWindow);
   tabs->addTab(container, "Level Window");
 
-  //AddWidget<ObjectBrowser>(this);
-  AddWidget<PostProcessingOptions>(this);
+  AddWidget<ObjectBrowser>(this);
+  //AddWidget<PostProcessingOptions>(this);
 
   return true;
 }

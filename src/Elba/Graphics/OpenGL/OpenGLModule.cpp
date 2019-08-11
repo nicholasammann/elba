@@ -78,7 +78,7 @@ void OpenGLModule::InitializePostProcessing()
   mFramebuffer->InitializeProgram();
 
   mPostProcess->Initialize();
-  //mPostProcess->AddComputeShader("noeffect.comp");
+  mPostProcess->AddComputeShader("noeffect.comp");
 }
 
 void OpenGLModule::Update(double dt)

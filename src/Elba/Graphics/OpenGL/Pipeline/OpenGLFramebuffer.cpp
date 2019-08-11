@@ -117,6 +117,13 @@ void OpenGLFramebuffer::Draw()
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
+#ifdef _DEBUG
+  if (!mProgram)
+  {
+    throw std::exception("No shaders have been loaded onto this framebuffer.");
+  }
+#endif
+
   mProgram->Use();
 
   glActiveTexture(GL_TEXTURE0);

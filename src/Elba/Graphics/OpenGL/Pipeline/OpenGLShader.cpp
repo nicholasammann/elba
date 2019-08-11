@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+  #define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <fstream>
 
 #include "Elba/Graphics/OpenGL/Pipeline/OpenGLShader.hpp"
@@ -48,7 +52,7 @@ const GLchar* OpenGLShader::ReadShader(const std::string& filename)
   }
 
   char* sourceChar = new char[source.size() + 1];
-  strcpy_s(sourceChar, source.size(), source.data());
+  strcpy(sourceChar, source.data());
 
   sourceChar[source.size()] = '\0';
 

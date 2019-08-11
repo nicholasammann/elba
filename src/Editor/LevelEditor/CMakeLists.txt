@@ -1,5 +1,5 @@
+add_subdirectory(LevelToolbar)
 add_subdirectory(LevelWindow)
-add_subdirectory(Menus)
 add_subdirectory(ObjectBrowser)
 add_subdirectory(PostProcessingOptions)
 

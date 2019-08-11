@@ -19,7 +19,6 @@ int main(int argc, char** argv)
 
   Framework::MainWindow* mainWindow = new Editor::Framework::MainWindow();
   LevelEditor* editor = mainWindow->LoadWorkspace<LevelEditor>(mainWindow);
-  //ImageEditor* editor = mainWindow->LoadWorkspace<ImageEditor>(mainWindow);
 
   mainWindow->resize(1280, 800);
   mainWindow->show();
